@@ -12,14 +12,19 @@ apis-main間のネゴシエーションはEthernetなどのコミュニケーシ
 ソフトウェアであるapis-mainのみで自律分散制御が行われる。 (apis-mainはGrid Masterと呼ばれるアドホックな
 集中管理ソフトウェアを立てて制御を行う。Grid Masterは予め設定されたルールに基づいてどのapis-mainでも立てられる。)
 
+
 ## Getting Started
 
+
 ## Usage
+
 
 ## Documentation
 [apis-main specification](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
 
+
 ## License
 [Apache License Version 2.0](https://github.com/oes-github/apis-main/blob/master/LICENSE)
+
 
 ## Notice
