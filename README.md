@@ -28,3 +28,4 @@ apis-main間のネゴシエーションはEthernetなどのコミュニケーシ
 
 
 ## Notice
+[Notice](https://github.com/oes-github/apis-main/blob/master/NOTICE.md)
