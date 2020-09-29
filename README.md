@@ -19,5 +19,6 @@ apis-main間のネゴシエーションはEthernetなどのコミュニケーシ
 ## Documentation
 
 ## License
+LICENSE
 
 ## Notice
