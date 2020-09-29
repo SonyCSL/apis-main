@@ -19,6 +19,6 @@ apis-main間のネゴシエーションはEthernetなどのコミュニケーシ
 ## Documentation
 
 ## License
-LICENSE
+https://github.com/oes-github/apis-main/blob/master/LICENSE
 
 ## Notice
