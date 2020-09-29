@@ -1,6 +1,6 @@
 # apis-main
 
-## Introdtion
+## Introduction
 apis-mainはSony CSLが開発した自律分散制御の電力相互融通ソフトウェアである。
 apis-mainは各ノード(双方向DC/DC Converter 経由でDC Gridと接続された蓄電システム)毎にインストールされ、
 Device Driver経由で定期的に自身のBattery残容量を取得し、Battery残容量によって決められた行動ルールに
