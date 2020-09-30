@@ -1,1 +1,1 @@
-# This is apis-main specification.
+# This is apis-main's specification.
