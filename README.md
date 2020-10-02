@@ -8,6 +8,7 @@ apis-main間のネゴシエーションはイーサネットなどのコミュ�
 apis-mainは集中管理制御のように中央で制御を行うソフトウェアは存在せず、すべて同一のソフトウェアであるapis-mainのみで  
 自律分散制御が行われる。  
 
+![キャプチャ](https://user-images.githubusercontent.com/71874910/94899039-87ea0600-04cd-11eb-96a0-afa5466b3742.PNG)
 
 ## Getting Started
 
