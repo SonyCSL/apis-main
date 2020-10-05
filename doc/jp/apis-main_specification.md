@@ -354,20 +354,20 @@ Hazelcastの共有メモリに登録された電力融通取引情報は以下�
 
 Grid Masterは共有メモリ上に登録されている全電力融通取引情報を集め、それぞれの状態に合わせて一つずつ、最適な処理を実行する。
 
-1. not activated 　
+1. not activated  
   電力融通が行われておらずDC Gridの電圧がRamp Upしていない状態を示す。
   共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電圧Reference側のapis-mainに対してDC/DC ConverterをCV Modeに設定するように指示する。CV Modeに設定されたDC/DC   ConverterはDC Gridを指定された電圧までRamp Upさせる。Ramp Upが完了した場合はステータスを(2)のactivatedへ移行させる。 (7.2 電圧Ramp Up参照)
 
-2. activated
+2. activated  
   DC Grid の電圧Ramp upが完了し電力融通が開始できる状態を示す。既に電力融通が行われておりDC Gridの電圧のRamp Upが完了している場合には新しく登録された電力融通取引情報のステータスはactivated   になる。共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電力融通を実施するapis-mainのDC/DC Converterをそれぞれ適切なCC Modeに設定し、(3)のstartedへ移行させ   る。
 
-3. started
+3. started  
   共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通が開始されていることを示す。Grid Masterは自身のループ処理の中で電力融通した電力量の累積が目標の電力量に達している   ことを確認する。達していれば、放電ノードのapis-mainに対してDC/DC ConverterのModeをWaitに設定するように指示し電力融通を止めてステータスを(4)のstoppedへ移行させる。
 
-4. stopped
+4. stopped  
   共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通した電力量の累積が目標の電力量に達し、放電側のDCDC ConverterがWait Modeになっていることを示す。Grid Masterは充電   ノードのapis-mainに対してDC/DC ConverterのModeをWaitに設定するように指示し、ステータスを(5)のdeactivateに移行させる。その際、他に継続して電力融通が行われており、CV ModeになっていたDC/DC   Converterの電力融通を停止する場合にはCV Modeの移動を実施 する。 (7.5 Constant Voltage(CV) 移動参照)
 
-5. deactivate
+5. deactivate  
   共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通が完了したことを示す。放電ノードと充電ノードの双方に電力融通結果をファイルとして書き込み、電力融通情報を共有メモリ   から削除する。(最終的な 電力融通結果の保存は 電力融通処理の最後に行われるが、電力融通中も放電側と充電双方のノードにその時点での電力融通情報をファイルとして保存する。)
 
 <a id="anchor4-6"></a>
