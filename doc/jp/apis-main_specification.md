@@ -354,7 +354,7 @@ Hazelcastの共有メモリに登録された電力融通取引情報は以下�
 
 Grid Masterは共有メモリ上に登録されている全電力融通取引情報を集め、それぞれの状態に合わせて一つずつ、最適な処理を実行する。
 
-1.not activated 　
+1. not activated 　
   電力融通が行われておらずDC Gridの電圧がRamp Upしていない状態を示す。
   共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電圧Reference側のapis-mainに対してDC/DC ConverterをCV Modeに設定するように指示する。CV Modeに設定されたDC/DC   ConverterはDC Gridを指定された電圧までRamp Upさせる。Ramp Upが完了した場合はステータスを(2)のactivatedへ移行させる。 (7.2 電圧Ramp Up参照)
 
