@@ -1351,19 +1351,24 @@ Battery容量管理機能を起動しGateway機能を有効にする。
 　各ノードはhwConfigファイルのdataAcquisitionPeriodMsecで規定された間隔で自身Dataの収集処理を行いハードウェア性能に対する逸脱確認を行う。
 
 ・DC/DC Converter温度  
-　DC/DC Converter温度がhwConfigファイルで規定されたスペックに収まっていることを確認する。温度の最小値はhwConfigファイルのsafety.range.DC/DC.meter. tpm.min で、最大値は      safety.range.DC/DC.meter.tpm.maxで規定されている。  
+　DC/DC Converter温度がhwConfigファイルで規定されたスペックに収まっていることを確認する。温度の最小値はhwConfigファイルのsafety.range.DC/DC.meter. tpm.min で、
+  最大値はsafety.range.DC/DC.meter.tpm.maxで規定されている。  
 
 ・DC/DC Converter DC Grid側電圧  
-  DC/DC ConverterのDC Grid側の電圧がhwConfigファイルで規定されたスペックに収まっていることを確認する。電圧の最小値はhwConfigファイルのsafety.range.　DC/DC.meter.vg.min で、最大値は    safety.range.DC/DC.meter.vg.maxで規定されている。  
+  DC/DC ConverterのDC Grid側の電圧がhwConfigファイルで規定されたスペックに収まっていることを確認する。電圧の最小値はhwConfigファイルのsafety.range.　DC/DC.meter.vg.min で、
+  最大値はsafety.range.DC/DC.meter.vg.maxで規定されている。  
 
 ・DC/DC Converter DC Grid側電流  
-　DC/DC ConverterのDC Grid側の電流がhwConfigファイルで規定されたスペックに収まっていることを確認する。電流の最小値はhwConfigファイルのsafety.range.　DC/DC.meter.ig.min で、最大値は    safety.range.DC/DC.meter.ig.maxで規定されている。  
+　DC/DC ConverterのDC Grid側の電流がhwConfigファイルで規定されたスペックに収まっていることを確認する。電流の最小値はhwConfigファイルのsafety.range.　DC/DC.meter.ig.min で、
+  最大値はsafety.range.DC/DC.meter.ig.maxで規定されている。  
 
 ・DC/DC Converter Battery側電圧  
-　DC/DC ConverterのBattery側の電圧がhwConfigファイルで規定されたスペックに収まっていることを確認する。電圧の最小値はhwConfigファイルのsafety.range.emu.　DC/DC.meter.vb.min で、最大値は  safety.range.emu.DC/DC.meter.vb.maxで規定されている。  
+　DC/DC ConverterのBattery側の電圧がhwConfigファイルで規定されたスペックに収まっていることを確認する。電圧の最小値はhwConfigファイルのsafety.range.emu.　DC/DC.meter.vb.min で、
+  最大値はsafety.range.emu.DC/DC.meter.vb.maxで規定されている。  
 
 ・DC/DC Converter Battery側電流  
-　DC/DC ConverterのBattery側の電流がhwConfigファイルで規定されたスペックに収まっていることを確認する。電流の最小値はhwConfigファイルのsafety.range.emu.　DC/DC.meter.ib.min で、最大値は  safety.range.emu.DC/DC.meter.ib.maxで規定されている。  
+　DC/DC ConverterのBattery側の電流がhwConfigファイルで規定されたスペックに収まっていることを確認する。電流の最小値はhwConfigファイルのsafety.range.emu.　DC/DC.meter.ib.min で、
+  最大値は safety.range.emu.DC/DC.meter.ib.maxで規定されている。  
 
 <a id="anchor12-2-2"></a>
 **12.2.2. 動的Local Safety Check**
@@ -1377,7 +1382,7 @@ DC/DC ConverterやDC Gridの電圧、電流がPolicyファイルやhwConfigフ�
   DC/DC ConverterのDC Grid側の電流がhwConfigファイルで規定された許容量に収まっていることを確認する。許容量はhwConfigファイルのgridCurrentCapacityAで規定されている。  
 
 ・DC/DC Converter DC Grid側電流誤差  
-　DC/DC ConverterのDC Grid側の電流誤差がhwConfigファイルで規定された範囲に収まっていることを確認する。範囲はhwConfigファイルの±gridCurrent AllowanceAで規定されている。  
+  DC/DC ConverterのDC Grid側の電流誤差がhwConfigファイルで規定された範囲に収まっていることを確認する。範囲はhwConfigファイルの±gridCurrent AllowanceAで規定されている。  
 
 <a id="anchor13"></a>
 **13.セキュリティ**
@@ -1394,7 +1399,7 @@ apis-main間のやり取りはフレームワーク(Vertx, Hazelcast )がサポ�
   -SSL自己署名証明書  
 
 2. Hazelcast通信  
-　-共通鍵暗号方式(AES 128bit)  
+  -共通鍵暗号方式(AES 128bit)  
 
 <a id="anchor13-2"></a>
 **13.2.Device Driver アクセス制限**
