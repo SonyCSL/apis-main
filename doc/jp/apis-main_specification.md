@@ -1,11 +1,6 @@
 **apis-main仕様書**
 ====================
-
 **Rev 0.69**
-
-**改版履歴**
-
-<table><thead><tr class="header"><th><strong>日付</strong></th><th><strong>Rev.</strong></th><th><strong>担当</strong></th><th><strong>変更内容</strong></th></tr></thead><tbody><tr class="odd"><td>2020/4/17</td><td>0.5</td><td>岩瀬</td><td>初回Release</td></tr><tr class="even"><td>2020/4/20</td><td>0.6</td><td>岩瀬</td><td>OES Member Comment修正</td></tr><tr class="odd"><td>2020/4/21</td><td>0.61</td><td>岩瀬</td><td>OES Member Comment修正第二弾</td></tr><tr class="even"><td>2020/4/28</td><td>0.62</td><td>岩瀬</td><td>“8.Grid Master Data収集”、”9.3 電力融通Log”の項目不備のため追記</td></tr><tr class="odd"><td>2020/9/18</td><td>0.63</td><td>岩瀬</td><td><p>用語にEZA2500の説明を追記</p><p>P.18 5.1 apis-main – Device Driver間Web APIの誤記修正</p></td></tr><tr class="even"><td>2020/9/24</td><td>0.64</td><td>岩瀬</td><td><p>用語にdcdc_batt_commの説明を追記</p><p>P.18 5.1 apis-main – Device Driver間Web APIに各Web API利用時に期待する戻り値を追記</p></td></tr><tr class="odd"><td>2020/9/25</td><td>0.65</td><td>岩瀬</td><td>P.18 5.1 apis-main – Device Driver間Web APIに/dcdc/set系のWeb API利用時に期待する戻り値を追記</td></tr><tr class="even"><td>2020/9/29</td><td>0.66</td><td>岩瀬</td><td><p>P.19 5.1 apis-main – Device Driver間Web API についてapis-mainの制御に使用していないWeb APIを削除し、/dcdc/set系のWeb API利用時に期待する戻り値について修正</p><p>P.48 誤記修正</p></td></tr><tr class="odd"><td>2020/9/29</td><td>0.67</td><td>岩瀬</td><td>目次のPage番号振り直し</td></tr><tr class="even"><td>2020/10/5</td><td>0.68</td><td>岩瀬</td><td><p>P.37の以下の項目の説明を修正</p><p>・controller.dataAcquisitionPeriodMsec</p><p>・controller.retryLimit</p><p>P.47の8. Grid Master収集データのstatus.operationModeに情報を追記</p></td></tr><tr class="odd"><td>2020/10/5</td><td>0.69</td><td>岩瀬</td><td>P.47の8. Grid Master収集データのstatus.operationModeに情報を修正</td></tr></tbody></table>
 
 **目次**
 ========
@@ -420,15 +415,18 @@ Hazelcastの共有メモリや各ノードのLocalメモリを使用してデー
 
 <a id="anchor5-1"></a>
 **5.1.apis-main – Device Driver間Web API**
+------------------------------------------
 apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以下にそのWeb APIの仕様を説明する。
 
 <table><thead><tr class="header"><th><p>DC/DC Converter</p><p>制御</p></th><th>/dcdc/get</th><th>情報取得</th></tr></thead><tbody><tr class="odd"><td></td><td>/dcdc/get/status</td><td>ステータス情報のみ取得</td></tr><tr class="even"><td></td><td>/dcdc/set?dig=&lt;Grid電流値&gt;</td><td>DC Grid側電流値設定</td></tr><tr class="odd"><td></td><td>/dcdc/set?dvg=&lt;Grid電圧値&gt; &amp;drg=&lt;Grid Droop率&gt;</td><td>DC Grid側電圧値&amp;Droop値設定</td></tr><tr class="even"><td></td><td><p>/dcdc/set?mode=&lt;Mode&gt;</p><p>&amp;dvg=&lt;Grid電圧値&gt;</p><p>&amp;dig=&lt;Grid電流値&gt; &amp;drg=&lt;Grid Droop率&gt;</p></td><td>DC Grid側Mode&amp;電圧値&amp;電流値&amp;Droop値設定</td></tr><tr class="odd"><td>Battery情報取得</td><td>/battery/get</td><td>情報取得</td></tr><tr class="even"><td>全Device情報取得</td><td>/all/get</td><td>/dcdc/get +/battery/get情報取得</td></tr><tr class="odd"><td>Version情報取得</td><td>/version/get</td><td>Device Driver Version情報取得</td></tr></tbody></table>
 
 <a id="anchor5-2"></a>
 **5.2.apis-main – Device Driver間の各get 系Web APIで期待される戻り値**
+---------------------------------------------------------------------
 
 <a id="anchor5-2-1"></a>
 **5.2.1.**“/dcdc/get” で期待される戻り値**
+-----------------------------------------
 
 以下に/dcdc/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -482,6 +480,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-2"></a>
 **5.2.2.“/dcdc/get/status” で期待される戻り値**
+-----------------------------------------------
 
 　以下に/dcdc/get/statusのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -521,6 +520,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-3"></a>
 **5.2.3.“/dcdc/set?dig=&lt;Grid電流&gt;” で期待される戻り値**
+---------------------------------------------------------------
 
 　以下に/dcdc/set?dig=&lt;Grid電流&gt;のWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -538,6 +538,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-4"></a>
 **5.2.4“/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;” で期待される戻り値**
+-------------------------------------------------------------------------------------
 
 　以下に/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;のWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -555,6 +556,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-5"></a>
 **5.2.5.“/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&dig=&lt;GridDroop率&gt;” で期待される戻り値**
+---------------------------------------------------------------------------------------------------------------------------
 
 　以下に/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&drg=&lt;GridDroop率&gt;のWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -592,6 +594,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-6"></a>
 **5.2.6.“/battery/get” で期待される戻り値**
+-------------------------------------------
 
 　以下に/battery/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のbatteryの項目を参照のこと)
 
@@ -607,6 +610,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-7"></a>
 **5.2.7“/all/get” で期待される戻り値**
+--------------------------------------
 
 　以下に/all/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”のdcdcとbatteryの項目を参照のこと)
 
@@ -674,6 +678,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 <a id="anchor5-2-8"></a>
 **5.2.8.“/version/get” で期待される戻り値**
+------------------------------------------
 
 　以下に/version/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。
 
@@ -713,6 +718,7 @@ apis-mainとDevice Driver間のインターフェースを定義することで�
 
 <a id="anchor5-3"></a>
 **5.3.Device Driver – ハードウェア間通信仕様**
+----------------------------------------------
 
 ハードウェア環境の違いはDevice Driverによって吸収する。Device Driver –ハードウェア間の通信は環境によって異なる為、各ハードウェアの通信仕様書を参照し適切にDevice Driverを開発する。
 
@@ -724,6 +730,7 @@ apis-mainには複数の設定ファイルや鍵ファイル等が存在する�
 
 <a id="anchor6-1"></a>
 **6.1config.json**
+-------------------
 
 json形式のファイルで以下のノード固有の基本情報を設定する。apis-main起動時に一度だけ読み込まれるためパラメータを変更した場合はapis-mainの再起動が必要となる。
 
@@ -731,13 +738,15 @@ json形式のファイルで以下のノード固有の基本情報を設定す�
 
 <a id="anchor6-2"></a>
 **6.2.hwConfig.json**
+----------------------
 
 json形式のファイルでノード固有のハードウェア情報を設定する。refreshingPeriodMsecで設定された間隔毎にファイルの再読み込みが行われるためapis-mainを再起動することなくパラメータを動的に変更することが可能である。
 
 <table><thead><tr class="header"><th>refreshingPeriodMsec</th><th>hwConfigファイル再読み込み間隔(ms)</th></tr></thead><tbody><tr class="odd"><td>batteryNominalCapacityWh</td><td>Battery容量(Wh)</td></tr><tr class="even"><td>gridCurrentCapacityA</td><td>自ノードがDC Gridに充放電可能な最大電流(A)</td></tr><tr class="odd"><td>gridCurrentAllowanceA</td><td>自ノードが充放電する電流のDC Gridに対する誤差(A)</td></tr><tr class="even"><td>droopRatio</td><td>CV移動時のDroop率　(%)</td></tr><tr class="odd"><td><p>efficientBatteryGrid</p><p>valtageRatio</p></td><td><p>DC/DC Converterの効率が最大となる入出力電圧比N</p><p>設定</p></td></tr><tr class="even"><td>safety.range.dcdc.meter.tmp.min</td><td>Local Safety Check : DC/DC Converter温度最小値 (℃)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.tmp.max</td><td>Local Safety Check : DC/DC Converter 温度最大値 (℃)</td></tr><tr class="even"><td>safety.range.dcdc.meter.vg.min</td><td>Local Safety Check : DC Grid電圧最小値 (V)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.vg.max</td><td>Local Safety Check : DC Grid電圧最大値 (V)</td></tr><tr class="even"><td>safety.range.dcdc.meter.vb.min</td><td>Local Safety Check : Battery電圧最小値 (V)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.vb.max</td><td>Local Safety Check : Battery電圧最大値 (V)</td></tr><tr class="even"><td>safety.range.dcdc.meter.ig.min</td><td>Local Safety Check : DC Grid電流最小値 (A)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.ig.max</td><td>Local Safety Check : DC Grid電流最大値 (A)</td></tr><tr class="even"><td>safety.range.dcdc.meter.ib.min</td><td>Local Safety Check : Battery電流最小値 (A)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.ib.max</td><td>Local Safety Check : Battery電流最大値 (A)</td></tr></tbody></table>
 
 <a id="anchor6-3"></a>
-**6.3scenario.json**
+**6.3.scenario.json**
+----------------------
 
 json形式のファイルでノード毎に独自に定義することが可能な電力融通のためのRequestを設定する。refreshingPeriodMsecで設定された間隔毎にファイルの再読み込みが行われるためapis-mainを再起動することなくパラメータを動的に変更することが可能である。
 
@@ -756,7 +765,8 @@ Battery容量の最大が4800Whとし上記の設定を行った際のScenario�
 
 
 <a id="anchor6-4"></a>
-**6.4policy.json**
+**6.4.policy.json**
+----------------------
 
 json形式のファイルでシステム全体の秩序を維持するために必要な制御アルゴリズムとそのアルゴリズムを安全に実行するために必要なパラメータを設定する。
 
@@ -770,6 +780,7 @@ refreshingPeriodMsecで設定された間隔毎にファイルの再読み込み
 
 <a id="anchor6-5"></a>
 **6.5.cluster.xml**
+----------------------
 
 xml形式のファイルでHazelcastがクラスタを構築する際に必要なパラメータ(クラスタ名称、パスワード、ネットワーク設定、マルチキャスト設定など)を設定する。
 
@@ -777,11 +788,13 @@ xml形式のファイルでHazelcastがクラスタを構築する際に必要�
 
 <a id="anchor6-6"></a>
 **6.6.logging.properties**
+--------------------------
 
 Javaの標準APIであるjava.util.loggingのLogの出力に関する設定(Logファイルの保存先、Log の保存容量、Logレベルの設定など)が記述されているファイル。
 
 <a id="anchor6-7"></a>
 **6.7.start.sh**
+----------------------
 
 apis-mainを起動させるスクリプトファイル。OS起動時の自動実行で実行される。
 
@@ -822,6 +835,7 @@ java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.
 
 <a id="anchor6-8"></a>
 **6.8.stop-kill.sh**
+----------------------
 
 apis-mainを停止させるスクリプトファイル。
 
@@ -833,11 +847,13 @@ Javaプロセスを強制終了させる処理を行う。スクリプトの中�
 
 <a id="anchor6-9"></a>
 **6.9.key.pem**
+-----------------------
 
 Event BusのSSL化に使われる秘密鍵。
 
 <a id="anchor6-10"></a>
 **6.10.cert.pem**
+-----------------------
 
 Event BusのSSL化に使われる証明書。
 
@@ -848,21 +864,25 @@ Event BusのSSL化に使われる証明書。
 
 <a id="anchor7-1"></a>
 **7.1.電圧Referenceの選定**
+----------------------------
 
 ノード間の交渉が成立し電力融通を開始する際に、DC Grid上に電圧Referenceが存在しない場合には、Policyファイルに記載されたパラメータ(gridMaster.voltageRefereceSide)を元に電圧Referenceのノードを決定する。電圧Referenceを充電側にするか放電側にするか選択可能だが放電側を選択する場合には、使用する蓄電システム仕様や融通条件などの検証が必要である。
 
 <a id="anchor7-2"></a>
 **7.2.電圧Ramp Up**
+----------------------
 
 Grid Masterは電圧ReferenceとなるノードのDC/DC ConverterのModeをWait ModeからCV Modeに変更し、Policyファイル内に記載されたターゲット電圧値(oprationGridVoltageV)になるまでDC Grid電圧をRamp Upさせる。ただし、電圧Ramp Up前にDC Grid電圧がPolicyファイルに規定された電圧( operationGridVoltageVRange.min+gridUvloMaskV+10V)以上である場合には、他に電圧源が存在する可能性があるためハードウェアエラーを発生させ電圧Ramp Upを停止させる。DC Grid電圧がPolicyファイルに規定された電圧領域(operationGridVoltageVRange.min±gridUvloMaskV)である場合には、DC/DC Converterの仕様で起動できない電圧領域であるため、電圧Reference ノードのDC/DC ConverterのModeをWait状態とする。DC Grid電圧がPolicyファイル内に規定された時間内(controller.dcdc.voltageReference.rampUp.first.timeoutMsec)にターゲット電圧値まで上がったら電圧Ramp upは完了するが、時間内にターゲット電圧に達しない場合には電圧Ramp Upを停止させる。
 
 <a id="anchor7-3"></a>
 **7.3.電圧Reference権限獲得動作**
+---------------------------------
 
 電圧Ramp Up完了後、電圧Referenceの ノードはDC Gridの電圧をランダムに変化させる。これを電圧Reference権限獲得動作と呼ぶ。DC Grid電圧をランダムに変化させた際に、一度でもターゲット電圧に追従できない、もしくは異常電流が検知される場合には電圧Referenceの競合が発生したとして、該当するDC/DC Converterのターゲット電圧をPolicyファイルに規定されたDC Grid停止電圧( operationGridVoltageVRange.min+gridUvloMaskV)に設定後、待機状態にして、一定時間Waitした後、再度電圧Ramp up、電圧Reference権獲得動作を実施する。この一連の動作を設定回繰り返しても電圧Reference権獲得動作が終了しない場合には、電圧Referenceの競合が発生したとして、該当する電力融通を停止する。
 
 <a id="anchor7-4"></a>
 **7.4.電流補正機能**
+-----------------------
 
 電力融通の電流値は理想的には放電側と充電側は同じ値になるべきだが、各 ノードのDC/DC Converter搭載の電流計にはセンサ誤差があるため、例えば放電側のセンサが2Aと表示しても充電側のセンサでは1.9Aの表示になることがある。そこで各ノードの誤差を電圧Referenceが吸収してしまうのを防ぐためReference側ではない方のノードの電流を調整してReference側の電流を期待値に補正する。
 
@@ -877,6 +897,7 @@ Grid Masterは電圧ReferenceとなるノードのDC/DC ConverterのModeをWait 
 
 <a id="anchor7-5"></a>
 **7.5.Constant Voltage(CV)移動**
+---------------------------------
 
 Constant Voltage(CV)の移動は以下のようにDroop制御によって行われる。
 
@@ -904,6 +925,7 @@ Constant Voltage(CV)の移動は以下のようにDroop制御によって行わ�
 
 <a id="anchor7-6"></a>
 **7.6.電圧最適化**
+----------------------
 
 電力融通の効率最大化を目的としてDC/DC Converterを最大効率点で動作させるために以下の流れでDC Grid電圧の最適化を行う。(この機能はpolicy.json のgridVoltageOptimizationでON/OFF可能である。)
 
@@ -941,6 +963,7 @@ Grid Masterが収集した情報を不揮発性メモリに記録することは
 
 <a id="anchor9-1"></a>
 **9.1.apis-main動作Log**
+------------------------
 
 Log出力にはJava標準APIのjava.util.loggingを使っており以下の7つのLevelに分類されている。apis-mainとしては”CONFIG”, “FINER”のLevelは使用しない。これらのapis-mainの動作Logはlogging.propertiesファイルに記載することでLogファイルの保存先、保存するLog Level、最大Logサイズ、最大保存Log数などの設定を行っている。
 
@@ -985,6 +1008,7 @@ apis-mainとしてはこのLevelのLog出力はない。
 
 <a id="anchor9-2"></a>
 **9.2.apis-main動作Log出力先**
+-------------------------------
 
 apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある。logging.propertiesの設定でそれぞれの出力の有無や前頁で述べた出力Levelの制限をかけることができる。UDPはCommunication Lineに出力されるため情報漏洩や通信のトラフィックを考慮して設定し、ファイルへの出力は不揮発性メモリの容量を考慮して設定する。
 
@@ -993,6 +1017,7 @@ apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある
 
 <a id="anchor9-3"></a>
 **9.3.電力融通Log**
+-----------------------
 
 電力融通を行った両側のノードに同じ内容の情報が電力融通Logとして保存される。
 
@@ -1006,6 +1031,7 @@ apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある
 
 <a id="anchor10-1"></a>
 **10.1apis-main Error処理**
+---------------------------
 
 apis-mainのError処理は大きく分けてHardware, Framework, Logic, Userの4つのカテゴリがある。それぞれのカテゴリの中にはクラスタ全体に影響があるGlobalと、不具合が発生したノードだけに影響があるLocalがあり、Globalの場合はGrid MasterがError処理を行い、Localの場合は各apis-mainがError処理を行う。
 
@@ -1109,7 +1135,7 @@ USER:LOCAL:FATAL : 該当するapis-main をShutdownする。
 
 <a id="anchor11-1"></a>
 **11.1トポロジー検出**
- 
+ ----------------------
 
 DC Gridに流れる電流を随時管理することにより、許容電流以上の電流を流せない仕組みがあり以下にその方法を示す。
 
@@ -1278,8 +1304,9 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 <img src="media/media/image32.png" style="width:5.90556in;height:1.55in" />
 
 
-<a id="anchor11-1"></a>
+<a id="anchor11-2"></a>
 **11.2Gateway機能**
+-----------------------
 
 クラスタ間の電力融通を実現するGateway機能について説明する。Gateway機能はクラスタ間を繋ぐGatewayノードによって実現する。Gatewayノードは以下の図11-9のようにBattery　1台に対して複数のapis-mainとDevice DriverそしてDC/DC Converterを持つ構成となる。
 
@@ -1327,6 +1354,7 @@ Battery容量管理機能を起動しGateway機能を有効にする。
 
 <a id="anchor12-1"></a>
 **12.1Global Safety Check**
+----------------------------
 
  Grid MasterはPolicyファイルのgridMaster.dataCollectionPeriodMsecで規定された間隔で全ノードDataの収集処理を行う。その後収集されたDataを元に以下の確認を行う。
 
@@ -1344,9 +1372,11 @@ Battery容量管理機能を起動しGateway機能を有効にする。
 
 <a id="anchor12-2"></a>
 **12.2Local Safety Check**
+---------------------------
 
 <a id="anchor12-2-1"></a>
 **12.2.1.静的Local Safety Check**
+-----------------------------------
 
 　各ノードはhwConfigファイルのdataAcquisitionPeriodMsecで規定された間隔で自身Dataの収集処理を行いハードウェア性能に対する逸脱確認を行う。
 
@@ -1373,6 +1403,7 @@ Battery容量管理機能を起動しGateway機能を有効にする。
 
 <a id="anchor12-2-2"></a>
 **12.2.2. 動的Local Safety Check**
+-----------------------------------
 
 DC/DC ConverterやDC Gridの電圧、電流がPolicyファイルやhwConfigファイルで規定された誤差範囲に収まっていることや、最大許容電流を超えていないことなどDC/DC Converterの制御Modeに基づき正しく制御が行われていることを確認する。
 
@@ -1392,6 +1423,7 @@ DC/DC ConverterやDC Gridの電圧、電流がPolicyファイルやhwConfigフ�
 
 <a id="anchor13-1"></a>
 **13.1apis-main間通信セキュリティ**
+-----------------------------------
 
 apis-main間のやり取りはフレームワーク(Vertx, Hazelcast )がサポートするEvent Bus通信とHazelcast通信によって行われている。それぞれの通信ではセキュリティのため以下の方法で暗号化を行っている。
 
@@ -1407,6 +1439,7 @@ apis-main間のやり取りはフレームワーク(Vertx, Hazelcast )がサポ�
 
 <a id="anchor13-2"></a>
 **13.2.Device Driver アクセス制限**
+-----------------------------------
 
 Device DriverはWeb APIでアクセスを行うが、IP AddressとPortで制限をかけることにより他のノードからのアクセスは制限され自身内からのみアクセスを可能とする。
 
@@ -1436,6 +1469,7 @@ Localネットワーク内のみで成立するSystem構成の場合はapis-main
 
 <a id="anchor16-1"></a>
 **16.1ハードウェア要求**
+------------------------
 
 以下にapis-mainのハードウェア要求を示す。
 
@@ -1443,6 +1477,7 @@ Localネットワーク内のみで成立するSystem構成の場合はapis-main
 
 <a id="anchor16-2"></a>
 **16.2OS要求**
+---------------
 
 以下にapis-main用のコンピュータのOS要求を示す。
 
