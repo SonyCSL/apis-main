@@ -163,7 +163,7 @@ apis-mainはSony CSLが開発した自律分散制御の電力相互融通ソフ
 
 <img src="media/media/image1.png" style="width:4.03333in;height:1.74892in" />
 
-<div style="text-align: center;">図2-1</div>
+<div style="text-align: center;">"図2-1"</div>
     
 Battery間の電力融通例を図2-2に示す。Battery AからBattery Bへ電力を融通する場合にはapis-mainがDevice Driver経由で各ノードの双方向DC/DC ConverterのModeについて放電側をConstant Current Mode(CC Mode)に、充電側をConstant Voltage Mode(CV Mode)に制御することによって電力融通が行われる。
 
