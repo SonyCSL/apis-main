@@ -799,28 +799,28 @@ apis-mainを起動させるスクリプトファイル。OS起動時の自動実
 
 java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-main-2.xx.x-a01-fat.jar -conf ./config.json -cp ./ -cluster -cluster-host 192.168.0.1 &
 
-“java”の後の引き数の意味を以下に説明する。
+“java”の後の引き数の意味を以下に説明する。  
 
-  -XX:OnOutOfMemoryError="'kill -KILL %p'"　
-   メモリ不足(OOM Error)発生時プロセスをKillするオプション。
+  -XX:OnOutOfMemoryError="'kill -KILL %p'"  　
+   メモリ不足(OOM Error)発生時プロセスをKillするオプション  
 
-  -Duser.timezone=Asia/Tokyo
-   Timezone設定。
+  -Duser.timezone=Asia/Tokyo  
+   Timezone設定  
 
-  -Djava.util.logging.config.file=./logging.properties
-   Log構成ファイルを指定するオプション。
+  -Djava.util.logging.config.file=./logging.properties  
+   Log構成ファイルを指定するオプション  
 
-  -jar ./apis-main-2.xx.x-a01-fat.jar
-   JARファイルの中にカプセル化されたプログラムの実行を指定するオプション。
+  -jar ./apis-main-2.xx.x-a01-fat.jar  
+   JARファイルの中にカプセル化されたプログラムの実行を指定するオプション  
 
-  -conf ./config.json
-   構成ファイルを指定するオプション。
+  -conf ./config.json  
+   構成ファイルを指定するオプション  
 
-  -cp ./
-   cluseter.xmlファイルの位置を指定するオプション。
+  -cp ./  
+   cluseter.xmlファイルの位置を指定するオプション  
 
-  -cluster-host 192.168.0.1 &
-   自身のIP Addressを指定するオプション。
+  -cluster-host 192.168.0.1 &  
+   自身のIP Addressを指定するオプション  
 
 
 <a id="anchor6-8"></a>
