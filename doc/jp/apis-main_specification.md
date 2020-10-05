@@ -422,7 +422,7 @@ Hazelcastの共有メモリや各ノードのLocalメモリを使用してデー
 ------------------------------------------
 apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以下にそのWeb APIの仕様を説明する。
 
-<table><thead><tr class="header"><td><p>DC/DC Converter</p><p>制御</p></td><td>/dcdc/get</td><th>情報取得</th></tr></thead><tbody><tr class="odd"><td></td><td>/dcdc/get/status</td><td>ステータス情報のみ取得</td></tr><tr class="even"><td></td><td>/dcdc/set?dig=&lt;Grid電流値&gt;</td><td>DC Grid側電流値設定</td></tr><tr class="odd"><td></td><td>/dcdc/set?dvg=&lt;Grid電圧値&gt; &amp;drg=&lt;Grid Droop率&gt;</td><td>DC Grid側電圧値&amp;Droop値設定</td></tr><tr class="even"><td></td><td><p>/dcdc/set?mode=&lt;Mode&gt;</p><p>&amp;dvg=&lt;Grid電圧値&gt;</p><p>&amp;dig=&lt;Grid電流値&gt; &amp;drg=&lt;Grid Droop率&gt;</p></td><td>DC Grid側Mode&amp;電圧値&amp;電流値&amp;Droop値設定</td></tr><tr class="odd"><td>Battery情報取得</td><td>/battery/get</td><td>情報取得</td></tr><tr class="even"><td>全Device情報取得</td><td>/all/get</td><td>/dcdc/get +/battery/get情報取得</td></tr><tr class="odd"><td>Version情報取得</td><td>/version/get</td><td>Device Driver Version情報取得</td></tr></tbody></table>
+<table><thead><tr class="header"><td><p>DC/DC Converter</p><p>制御</p></td><td>/dcdc/get</td><td>情報取得</td></tr></thead><tbody><tr class="odd"><td></td><td>/dcdc/get/status</td><td>ステータス情報のみ取得</td></tr><tr class="even"><td></td><td>/dcdc/set?dig=&lt;Grid電流値&gt;</td><td>DC Grid側電流値設定</td></tr><tr class="odd"><td></td><td>/dcdc/set?dvg=&lt;Grid電圧値&gt; &amp;drg=&lt;Grid Droop率&gt;</td><td>DC Grid側電圧値&amp;Droop値設定</td></tr><tr class="even"><td></td><td><p>/dcdc/set?mode=&lt;Mode&gt;</p><p>&amp;dvg=&lt;Grid電圧値&gt;</p><p>&amp;dig=&lt;Grid電流値&gt; &amp;drg=&lt;Grid Droop率&gt;</p></td><td>DC Grid側Mode&amp;電圧値&amp;電流値&amp;Droop値設定</td></tr><tr class="odd"><td>Battery情報取得</td><td>/battery/get</td><td>情報取得</td></tr><tr class="even"><td>全Device情報取得</td><td>/all/get</td><td>/dcdc/get +/battery/get情報取得</td></tr><tr class="odd"><td>Version情報取得</td><td>/version/get</td><td>Device Driver Version情報取得</td></tr></tbody></table>
 
 <a id="anchor5-2"></a>
 **5.2.apis-main – Device Driver間の各get 系Web APIで期待される戻り値**
@@ -1095,7 +1095,6 @@ Config, Policy, Scenarioファイルの不備や設定値の不備があり、Gr
 分類毎にその後の処理が異なり、それぞれ以下の処理を行う。
 
 | HARDWARE  | GLOBAL | FATAL | 実行中の全電力融通停止 → 全apis-main Shutdown |
-|-----------|--------|-------|-----------------------------------------------|
 |           |        | ERROR | 実行中の全電力融通停止 → 電力融通停止         |
 |           |        | WARN  | Warning Log出力                               |
 |           | LOCAL  | FATAL | 該当電力融通停止 → 該当apis-main Shutdown     |
