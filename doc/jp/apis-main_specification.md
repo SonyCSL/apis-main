@@ -232,6 +232,7 @@ DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV Mod
 図3-1はソフトウェアアーキテクチャを示した図である。Linux OS上にJDK(Java Development Kit)、その上にイベントドリブンの負荷分散プラットフォームであるVert.xとインメモリ分散コンピューティングのHazelcastの2つのフレームワークを使用してapis-mainを動作させている。apis-mainとDevice Driver間はWeb API経由にて情報の受け渡しを行う。(動作確認済みOSSソフトウェアのVersionは15.OSSライセンス参照)
 
 <img src="media/media/image13.png" style="width:3.63333in;height:2.81838in" />
+<p align="center">図3-1</p>
 
 **apis-main内Service構成**
 --------------------------
@@ -257,6 +258,7 @@ DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV Mod
 > また、自身もしくは他のapis-main上のGrid Master Serviceからの要求でDC/DC Converterを制御し電力融通を行わせる。
 
 <img src="media/media/image14.png" style="width:5.00152in;height:2.78333in" />
+<p align="center">図3-2</p>
 
 1.  **動作詳細説明**
     ================
@@ -424,8 +426,8 @@ Hazelcastの共有メモリや各ノードのLocalメモリを使用してデー
 　 後述するGateway機能で同一ノード上に複数のプロセス(apis-main)を起動させる際に使用する。ファイルシステムを利用することでプロセス間(apis-main間)の排他制御を行う。(11.2 Gateway機能参照)
 
 　　　<img src="media/media/image15.png" style="width:4.24242in;height:2.1946in" />
+   <p align="center">図4-1</p>
 
-　　　　　　　　　　　　　　　　　　　 図4-1
 
 1.  **通信仕様について**
     ====================
@@ -756,8 +758,8 @@ Battery容量の最大が4800Whとし上記の設定を行った際のScenario�
 <img src="media/media/image16.png" style="width:3.152in;height:4.21022in" />
 
 　　　　　　　※取引pointはすべて10 point
+<p align="center">図2-9</p>
 
-<img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" />
 
 **policy.json**
 ---------------
@@ -877,7 +879,8 @@ Grid Masterは電圧ReferenceとなるノードのDC/DC ConverterのModeをWait 
 
 ・二つ目以降の電力融通の場合は二つ目の電力融通を立ち上げた後にReferenceではない方のCCの 電流を調整しCVの電流を電力融通立ち上げ前の電流に戻すように補正する。
 
-<img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" /><img src="media/media/image17.png" style="width:5.90278in;height:2.57431in" />
+<img src="media/media/image17.png" style="width:5.90278in;height:2.57431in" />
+<p align="center">図7-1</p>
 
 **Constant Voltage(CV)移動**
 ----------------------------
@@ -886,25 +889,25 @@ Constant Voltage(CV)の移動は以下のようにDroop制御によって行わ�
 
 ・図7-2は２つの電力融通が行われている様子を示している。
 
-> <img src="media/media/image18.png" style="width:2.73028in;height:1.33913in" />
+<img src="media/media/image18.png" style="width:2.73028in;height:1.33913in" />
+<p align="center">図7-2</p>
 
 ・図7-3はCVを含んだ電力融通が終了した様子を示している。
 
-> <img src="media/media/image19.png" style="width:2.88064in;height:1.4in" />
->
-> <img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" />
+<img src="media/media/image19.png" style="width:2.88064in;height:1.4in" />
+<p align="center">図7-3</p>
 
 ・図7-4は旧CVにDroop設定を行い、さらに新CVもDroop設定を行って起動させる様子を示している。
 
 <img src="media/media/image20.png" style="width:2.77391in;height:1.51797in" />
+<p align="center">図7-4</p>
 
-<img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" />
 
 ・図7-5は新CVが起動したら旧CVのDC/DC ConverterはWait Modeにして新CVのDroop率を0に設定する様子を示している。
 
 <img src="media/media/image21.png" style="width:2.74783in;height:1.50966in" />
+<p align="center">図7-5</p>
 
-<img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" />
 
 **電圧最適化**
 --------------
@@ -995,7 +998,8 @@ apis-mainとしてはこのLevelのLog出力はない。
 
 apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある。logging.propertiesの設定でそれぞれの出力の有無や前頁で述べた出力Levelの制限をかけることができる。UDPはCommunication Lineに出力されるため情報漏洩や通信のトラフィックを考慮して設定し、ファイルへの出力は不揮発性メモリの容量を考慮して設定する。
 
-<img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" /><img src="media/media/image22.png" style="width:4.71779in;height:3.28205in" />
+<img src="media/media/image22.png" style="width:4.71779in;height:3.28205in" />
+<p align="center">図9-1</p>
 
 **電力融通Log**
 ---------------
@@ -1128,7 +1132,8 @@ DC Gridに流れる電流を随時管理することにより、許容電流以�
 
 以下の図はA8 -&gt; A1への電力融通が終了すると、逆向きの電流による相殺が消えてしまうためA4-A5配線の電流値が6Aとなり許容電流値の5Aを超えてしまうケースを示したものである。
 
-<img src="media/media/image2.png" style="width:0.78704in;height:0.30139in" /><img src="media/media/image23.png" style="width:4.48466in;height:2.68056in" />
+<img src="media/media/image23.png" style="width:4.48466in;height:2.68056in" />
+<p align="center">図11-1</p>
 
 apis-mainは各ノードが非同期で電力融通を行うため上記のような問題が発生する可能性があるため以下の計算と比較を行って各配線の許容電流値以上を流せないようにしている。
 
@@ -1146,11 +1151,13 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 例として以下のDC Gridのトポロジーで計算方法について説明する。
 
-<img src="media/media/image2.png" style="width:0.78704in;height:0.30139in" /><img src="media/media/image24.png" style="width:5.89583in;height:1.74236in" />
+<img src="media/media/image24.png" style="width:5.89583in;height:1.74236in" />
+<p align="center">図11-2</p>
 
 支流A-1を以下とする。
 
-<img src="media/media/image2.png" style="width:0.78704in;height:0.30139in" /><img src="media/media/image25.png" style="width:5.90208in;height:2.15347in" />
+<img src="media/media/image25.png" style="width:5.90208in;height:2.15347in" />
+<p align="center">図11-3</p>
 
 支流A-1の電力融通電流計算式は以下のようになる。
 
@@ -1166,7 +1173,10 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 (F012 F026) = F022 + F021 + F020 + F019 + F018 + F026
 
-<img src="media/media/image2.png" style="width:0.78704in;height:0.30139in" />支流A-2を以下とする。<img src="media/media/image26.png" style="width:5.90208in;height:1.80972in" />
+
+支流A-2を以下とする。
+<img src="media/media/image26.png" style="width:5.90208in;height:1.80972in" />
+<p align="center">図11-4</p>
 
 支流A-2の電力融通電流計算式は以下のようになる。
 
@@ -1186,7 +1196,9 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 (F012 F005) = F011 + F010 + F009 + F008 + F007 + F006 + F005
 
-<img src="media/media/image27.emf" style="width:0.78704in;height:0.30139in" />支流B-1を以下とする。<img src="media/media/image28.png" style="width:5.90764in;height:1.95069in" />
+支流B-1を以下とする。
+<img src="media/media/image28.png" style="width:5.90764in;height:1.95069in" />
+<p align="center">図11-5</p>
 
 支流B-1の電力融通電流計算式は以下のようになる。
 
@@ -1207,8 +1219,8 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 支流B-2を以下とする。
 
 <img src="media/media/image29.png" style="width:5.90208in;height:1.79167in" />
+<p align="center">図11-6</p>
 
-<img src="media/media/image27.emf" style="width:0.78704in;height:0.30139in" />
 
 支流B-2 の電力融通電流計算式は以下のようになる。
 
@@ -1230,7 +1242,9 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 (F012 F026) = F022 + F021 + F020 + F019 + F018 + F026
 
-<img src="media/media/image27.emf" style="width:0.78704in;height:0.30139in" />支流C-1を以下とする。<img src="media/media/image30.png" style="width:5.90208in;height:1.87708in" />
+支流C-1を以下とする。
+<img src="media/media/image30.png" style="width:5.90208in;height:1.87708in" />
+<p align="center">図11-7</p>
 
 支流C-1の電力融通電流計算式は以下のようになる。
 
@@ -1244,7 +1258,9 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 (F012 F013) = F004 + F017 + F015 + F014 + F013
 
-<img src="media/media/image27.emf" style="width:0.78704in;height:0.30139in" />支流C-2を以下とする。<img src="media/media/image31.png" style="width:5.90556in;height:1.85417in" />
+支流C-2を以下とする。
+<img src="media/media/image31.png" style="width:5.90556in;height:1.85417in" />
+<p align="center">図11-8</p>
 
 支流C-2の電力融通電流計算式は以下のようになる。
 
@@ -1270,12 +1286,14 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 <img src="media/media/image32.png" style="width:5.90556in;height:1.55in" />
 
+
 **Gateway機能**
 ---------------
 
 クラスタ間の電力融通を実現するGateway機能について説明する。Gateway機能はクラスタ間を繋ぐGatewayノードによって実現する。Gatewayノードは以下の図11-9のようにBattery　1台に対して複数のapis-mainとDevice DriverそしてDC/DC Converterを持つ構成となる。
 
-<img src="media/media/image27.emf" style="width:0.78704in;height:0.30139in" /><img src="media/media/image33.png" style="width:5.9in;height:2.59167in" />
+<img src="media/media/image33.png" style="width:5.9in;height:2.59167in" />
+<p align="center">図11-9</p>
 
 ハードウェアとソフトウェアの主な構成を以下に示す。
 
