@@ -18,127 +18,127 @@
 
 [3.1.ソフトウェアアーキテクチャ](#anchor3-1)
 
-[**3.2.** **apis-main内Service構成** 11][]
+[3.2.apis-main内Service構成](#anchor3-2)
 
-[**4.** **動作詳細説明** 13][]
+[4.動作詳細説明](#anchor4)
 
-[**4.1.** **クラスタ構築** 13][]
+[4.1.クラスタ構築](#anchor4-1)
 
-[**4.2.** **Grid Master選定** 13][]
+[4.2.Grid Master選定](#anchor4-2)
 
-[**4.3.** **apis-main処理** 14][]
+[4.3.apis-main処理](#anchor4-3)
 
-[**4.4.** **Grid Master処理** 15][]
+[4.4.Grid Master処理](#anchor4-4)
 
-[**4.5.** **電力融通処理** 16][]
+[4.5.電力融通処理](#anchor4-5)
 
-[**4.6.** **各種ロック処理** 17][]
+[4.6.各種ロック処理](#anchor4-6)
 
-[**5.** **通信仕様について** 19][]
+[5.通信仕様について](#anchor5)
 
-[**5.1.** **apis-main – Device Driver間Web API** 19][]
+[5.1.apis-main – Device Driver間Web API](#anchor5-1)
 
-[**5.2.** **apis-main – Device Driver間の各get 系Web APIで期待される戻り値** 20][]
+[5.2.apis-main – Device Driver間の各get 系Web APIで期待される戻り値](#anchor5-2)
 
-[**5.2.1.** **“/dcdc/get” で期待される戻り値** 20][]
+[5.2.1.“/dcdc/get” で期待される戻り値](#anchor5-2-1)
 
-[**5.2.2.** **“/dcdc/get/status” で期待される戻り値** 21][]
+[5.2.2.“/dcdc/get/status” で期待される戻り値](#anchor5-2-2)
 
-[**5.2.3.** **“/dcdc/set?dig=&lt;Grid電流&gt;” で期待される戻り値** 22][]
+[5.2.3.“/dcdc/set?dig=&lt;Grid電流&gt;” で期待される戻り値](#anchor5-2-3)
 
-[**5.2.4.** **“/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;” で期待される戻り値** 22][]
+[5.2.4.“/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;” で期待される戻り値](#anchor5-2-4)
 
-[**5.2.5.** **“/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&dig=&lt;GridDroop率&gt;” で期待される戻り値** 23][]
+[5.2.5.“/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&dig=&lt;GridDroop率&gt;” で期待される戻り値](#anchor5-2-5)
 
-[**5.2.6.** **“/battery/get” で期待される戻り値** 24][]
+[5.2.6.“/battery/get” で期待される戻り値](#anchor5-2-6)
 
-[**5.2.7.** **“/all/get” で期待される戻り値** 24][]
+[5.2.7.“/all/get” で期待される戻り値](#anchor5-2-7)
 
-[**5.2.8.** **“/version/get” で期待される戻り値** 26][]
+[5.2.8.“/version/get” で期待される戻り値](#anchor5-2-8)
 
-[**5.3.** **Device Driver – ハードウェア間通信仕様** 27][]
+[5.3.Device Driver – ハードウェア間通信仕様](#anchor5-3)
 
-[**6.** **設定ファイルについて** 28][]
+[6.設定ファイルについて](#anchor6)
 
-[**6.1.** **config.json** 28][]
+[6.1.config.json](#anchor6-1)
 
-[**6.2.** **hwConfig.json** 30][]
+[6.2.hwConfig.json](#anchor6-2)
 
-[**6.3.** **scenario.json** 31][]
+[6.3.scenario.json](#anchor6-3)
 
-[**6.4.** **policy.json** 35][]
+[6.4.policy.json](#anchor6-4)
 
-[**6.5.** **cluster.xml** 39][]
+[6.5.cluster.xml](#anchor6-5)
 
-[**6.6.** **logging.properties** 39][]
+[6.6.logging.properties](#anchor6-6)
 
-[**6.7.** **start.sh** 40][]
+[6.7.start.sh](#anchor6-7)
 
-[**6.8.** **stop-kill.sh** 40][]
+[6.8.stop-kill.sh](#anchor6-8)
 
-[**6.9.** **key.pem** 41][]
+[6.9.key.pem](#anchor6-9)
 
-[**6.10.** **cert.pem** 41][]
+[6.10.cert.pem](#anchor6-10)
 
-[**7.** **DC Grid制御機能** 42][]
+[7.DC Grid制御機能](#anchor7)
 
-[**7.1.** **電圧Referenceの選定** 42][]
+[7.1.電圧Referenceの選定](#anchor7-1)
 
-[**7.2.** **電圧Ramp Up** 42][]
+[7.2.電圧Ramp Up](#anchor7-2)
 
-[**7.3.** **電圧Reference権限獲得動作** 42][]
+[7.3.電圧Reference権限獲得動作](#anchor7-3)
 
-[**7.4.** **電流補正機能** 43][]
+[7.4.電流補正機能](#anchor7-4)
 
-[**7.5.** **Constant Voltage(CV)移動** 44][]
+[7.5.Constant Voltage(CV)移動](#anchor7-5)
 
-[**7.6.** **電圧最適化** 45][]
+[7.6.電圧最適化](#anchor7-6)
 
-[**8.** **Grid Master Data収集** 47][]
+[8.Grid Master Data収集](#anchor8)
 
-[**9.** **Log取得・保存機能** 50][]
+[9.Log取得・保存機能](#anchor9)
 
-[**9.1.** **apis-main動作Log** 50][]
+[9.1.apis-main動作Log](#anchor9-1)
 
-[**9.2.** **apis-main動作Log出力先** 51][]
+[9.2.apis-main動作Log出力先](#anchor9-2)
 
-[**9.3.** **電力融通Log** 52][]
+[9.3.電力融通Log](#anchor9-3)
 
-[**10.** **Error処理・保護機能** 54][]
+[10.Error処理・保護機能](#anchor10)
 
-[**10.1.** **apis-main Error処理** 54][]
+[10.1.apis-main Error処理](#anchor10-1)
 
-[**11.** **その他の機能** 58][]
+[11.その他の機能](#anchor11)
 
-[**11.1.** **トポロジー検出** 58][]
+[11.1.トポロジー検出](#anchor11-1)
 
-[**11.2.** **Gateway機能** 64][]
+[11.2.Gateway機能](#anchor11-2)
 
-[**12.** **安全確認機能** 66][]
+[12.安全確認機能(#anchor12)
 
-[**12.1.** **Global Safety Check** 66][]
+[12.1.Global Safety Check](#anchor12-1)
 
-[**12.2.** **Local Safety Check** 66][]
+[12.2.Local Safety](#anchor12-2)
 
-[**12.2.1.静的Local Safety Check** 66][]
+[12.2.1.静的Local Safety Check](#anchor12-2-1)
 
-[**12.2.2. 動的Local Safety Check** 68][]
+[12.2.2. 動的Local Safety Check](#anchor12-2-2)
 
-[**13.** **セキュリティ** 69][]
+[13.セキュリティ](#anchor13)
 
-[**13.1.** **apis-main間通信セキュリティ** 69][]
+[13.1.apis-main間通信セキュリティ](#anchor13-1)
 
-[**13.2.** **Device Driver アクセス制限** 69][]
+[13.2.Device Driver アクセス制限](#anchor13-2)
 
-[**14.** **プライバシー** 69][]
+[14.プライバシー](#anchor14)
 
-[**15.** **OSSライセンス** 70][]
+[15.OSSライセンス](#anchor15)
 
-[**16.** **動作環境** 71][]
+[16.動作環境](#anchor16)
 
-[**16.1.** **ハードウェア要求** 71][]
+[16.1.ハードウェア要求](#anchor16-1)
 
-[**16.2.** **OS要求** 71][]
+[16.2.OS要求](#anchor16-2)
 
 <a id="anchor1"></a>
 **用語・略語**
