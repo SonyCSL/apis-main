@@ -175,13 +175,13 @@ Battery間の電力融通例を図2-2に示す。Battery AからBattery Bへ電�
 
 1.  apis-mainはDevice Driver経由で定期的に自身のBattery残容量を取得する。
 
-2.  ①で取得したBattery残容量を自身の行動ルールAと比較する。
+2.  1.で取得したBattery残容量を自身の行動ルールAと比較する。
 
 3.  行動ルールAと比較した結果、必要であれば他のapis-mainにRequestを発行する。
 
 4.  Requestを受けた他のapis-mainは自身のBattery残容量を取得する。
 
-5.  ④で取得したBattery残容量を自身の行動ルールBと比較する。
+5.  4.で取得したBattery残容量を自身の行動ルールBと比較する。
 
 6.  行動ルールBと比較した結果、Requestに承認可能であればRequest発行元にAcceptを発行する。
 
@@ -241,30 +241,30 @@ DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV Mod
 
 1.  User Service
 
-> Battery残容量毎のBattery充放電要求(“2.製品概要”では行動ルールとして説明)を記したファイルをScenarioファイルと呼び、そのScenarioファイルの内容と現在のBattery残容量を比較することで充放電に関する要求を判定する。充放電が必要と判定した場合はMediator Serviceに対して他のapis-mainとネゴシエーションを行うように要求する。
+Battery残容量毎のBattery充放電要求(“2.製品概要”では行動ルールとして説明)を記したファイルをScenarioファイルと呼び、そのScenarioファイルの内容と現在のBattery残容量を比較することで充放電に関する要求を判定する。充放電が必要と判定した場合はMediator Serviceに対して他のapis-mainとネゴシエーションを行うように要求する。
 
-1.  Mediator Service
+2.  Mediator Service
 
-> User Serviceの要求に基づき、他のapis-mainとネゴシエーションを行い、電力融通取引情報を作成する。必要に応じてGrid Masterを起動させる役割も担う。
+User Serviceの要求に基づき、他のapis-mainとネゴシエーションを行い、電力融通取引情報を作成する。必要に応じてGrid Masterを起動させる役割も担う。
 
-1.  Grid Master Service
+3.  Grid Master Service
 
-> 自身もしくは他のapis-mainから成立した電力融通取引情報を受け取り、電力融通に必要なDC/DC Converterを制御して電力融通を行わせる。電力融通中は融通された電力量を監視し、電力融通取引情報で決められた電力融通量に到達後融通を止める。電力融通記録は電力融通を行った双方のapis-mainが動作するハードウェアの不揮発性メモリに保存される。
+自身もしくは他のapis-mainから成立した電力融通取引情報を受け取り、電力融通に必要なDC/DC Converterを制御して電力融通を行わせる。電力融通中は融通された電力量を監視し、電力融通取引情報で決められた電力融通量に到達後融通を止める。電力融通記録は電力融通を行った双方のapis-mainが動作するハードウェアの不揮発性メモリに保存される。
 
-1.  Controller Service
+4.  Controller Service
 
-> User Serviceの要求でDC/DC ConverterやBatteryの情報を取得する。
->
-> また、自身もしくは他のapis-main上のGrid Master Serviceからの要求でDC/DC Converterを制御し電力融通を行わせる。
+User Serviceの要求でDC/DC ConverterやBatteryの情報を取得する。
+
+また、自身もしくは他のapis-main上のGrid Master Serviceからの要求でDC/DC Converterを制御し電力融通を行わせる。
 
 <img src="media/media/image14.png" style="width:5.00152in;height:2.78333in" />
 <p align="center">図3-2</p>
 
-1.  **動作詳細説明**
-    ================
+**動作詳細説明**
+================
 
-    1.  **クラスタ構築**
-        ----------------
+4.1**クラスタ構築**
+----------------
 
 apis-mainは起動時にHazelcastと呼ばれるVert.xフレームワークが使用するクラスタリングマネージャを用いてコミュニケーションライン上に存在する複数のapis-mainとクラスタを構築する。同一クラスタに参加するためには設定ファイルであるcluster.xml上で同一クラスタ名を指定する必要がある。
 
