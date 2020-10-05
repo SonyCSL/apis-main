@@ -292,29 +292,33 @@ Grid Masterになるノードを固定する選定方法である。fixedでGrid
 
 apis-mainはループ処理として以下の内容を継続して行う。
 
-　1.Event BusにHelloメッセージを送信し、自身と同じIDがクラスタに存在しないことを確認する。(存在した場合はError処理として自身(apis-main)をShutdownさせる。)
+1.Event BusにHelloメッセージを送信し、自身と同じIDがクラスタに存在しないことを確認する。(存在した場合はError処理として自身(apis-main)をShutdownさせる。)
 
-  2.自身のLocal Error情報をキャッシュから取り出して処理を行う。(apis-mainは発生したすべてのError情報をEvent Bus上の全ノードに送信する。Error情報を受信したノードは自身かつLocal Error情報のみを自身のキャッシュに保存する。Global Error情報はGrid Masterが起動しているノードのキャッシュに保存される。具体的なErrorの内容とその処理方法は後述する。Local ErrorとGlobal Error及びそれらのError処理に関しては10.1. apis-main Error処理参照)
+2.自身のLocal Error情報をキャッシュから取り出して処理を行う。(apis-mainは発生したすべてのError情報をEvent Bus上の全ノードに送信する。Error情報を受信したノードは自身かつLocal Error情報のみ 
+  を自身のキャッシュに保存する。Global Error情報はGrid Masterが起動しているノードのキャッシュに保存される。具体的なErrorの内容とその処理方法は後述する。Local ErrorとGlobal Error及びそれら 
+  のError処理に関しては10.1. apis-main Error処理参照)
 
-  3.Grid MasterにGlobal Error情報を確認する。
+3.Grid MasterにGlobal Error情報を確認する。
 
-  4.自身のSettingを確認する。(Settingの種類は以下)
-    Run: 電力融通生成を有効にする電力融通稼働時の標準Settingである。
-    Soft Stop: 既存の電力融通は実施するが、新たな電力融通生成は行わない。
-    Force Stop: 既存の電力融通を停止させ、新たな電力融通生成も行わない。
-    Manual: 検査等でDC/DC Converter等をManualで動作させるためのModeである。
+4.自身のSettingを確認する。(Settingの種類は以下)
+  Run: 電力融通生成を有効にする電力融通稼働時の標準Settingである。
+  Soft Stop: 既存の電力融通は実施するが、新たな電力融通生成は行わない。
+  Force Stop: 既存の電力融通を停止させ、新たな電力融通生成も行わない。
+  Manual: 検査等でDC/DC Converter等をManualで動作させるためのModeである。
 
-  5.Controller Service経由で自身のDC/DC ConverterやBatteryの情報を取得する。
+5.Controller Service経由で自身のDC/DC ConverterやBatteryの情報を取得する。
 
-  6.Local Safety Checkを行う。(12.2 Local Safety Check参照)
+6.Local Safety Checkを行う。(12.2 Local Safety Check参照)
 
-  7.自身のScenario情報を取得する。
+7.自身のScenario情報を取得する。
 
-  8.自身のBattery情報とScenario情報と比較する。比較した結果、過不足ありと判定した場合はUser ServiceはMediator Service に指示を出しクラスタ内の全apis-mainに電力融通Requestを発信する。
+8.自身のBattery情報とScenario情報と比較する。比較した結果、過不足ありと判定した場合はUser ServiceはMediator Service に指示を出しクラスタ内の全apis-mainに電力融通Requestを発信する。
 
-  9.他のapis-mainから電力融通Requestを受け取ったMediator Service は電力融通Requestを 自身のUser Service に渡す。User Serviceは⾃ノードのBattery残容量とScenarioファイルを元に電力融通Requestに応じられるかを評価し、応じられる場合は電力融通可能な電力量を計算しその結果をAccept情報としてRequest元に返信する。応じられない場合はRequestを無視してAccept情報は返信しない。
+9.他のapis-mainから電力融通Requestを受け取ったMediator Service は電力融通Requestを 自身のUser Service に渡す。User Serviceは⾃ノードのBattery残容量とScenarioファイルを元に電力融通 
+  Requestに応じられるかを評価し、応じられる場合は電力融通可能な電力量を計算しその結果をAccept情報としてRequest元に返信する。応じられない場合はRequestを無視してAccept情報は返信しない。
 
- 10.電力融通Request元の Mediator Service は自身のUser Serviceに処理を渡して他のapis-mainから返信された電力融通可能電力量を元に、Scenarioファイルにて指定された選択アルゴリズムに従って、最適な電力融通相⼿のノードを選択させ、その後電⼒融通の情報が記載された 電力融通取引情報をHazelcastの共有メモリに登録し、Grid Masterの処理を待つ。
+10.電力融通Request元の Mediator Service は自身のUser Serviceに処理を渡して他のapis-mainから返信された電力融通可能電力量を元に、Scenarioファイルにて指定された選択アルゴリズムに従って、最適
+  な電力融通相⼿のノードを選択させ、その後電⼒融通の情報が記載された 電力融通取引情報をHazelcastの共有メモリに登録し、Grid Masterの処理を待つ。
 
 <a id="anchor4-4"></a>
 **4.4.Grid Master処理**
@@ -339,7 +343,7 @@ Grid Master はループ処理として以下の内容を継続して行う。
 8.Hazelcastの共有メモリに登録された電力融通取引情報に基づき順次電力融通を実施する。
 
 9.Grid Masterの移動が発生した場合は適切なノードにGrid Masterを移動させる。
-(Grid Masterが移動する際に既存の融通情報など引き継ぐ情報はすべてHazelcastの共有メモリ上に存在するため旧新Grid Master間で通信し情報を引き継ぐ必要はなく、新Grid Masterは起動後、共有メモリ上のGrid Masterの情報を参照し動作を開始する。)
+  (Grid Masterが移動する際に既存の融通情報など引き継ぐ情報はすべてHazelcastの共有メモリ上に存在するため旧新Grid Master間で通信し情報を引き継ぐ必要はなく、新Grid Masterは起動後、共有メモリ上のGrid Masterの情報を参照し動作を開始する。)
 
 <a id="anchor4-5"></a>
 **4.5.電力融通処理**
@@ -389,7 +393,7 @@ Hazelcastの共有メモリや各ノードのLocalメモリを使用してデー
    Grid Masterが電力融通を行う両端のノードに対してかけるロックである。DC/DC Converterの最大電流量と１電力融通の電流量で電力融通数を決めている。
 
  ・電力融通インタロック用排他ロック
-  電力融通インタロックの取得/解放は、非同期で行われるが、整合性を取るために排他ロックで同期を取る。
+   電力融通インタロックの取得/解放は、非同期で行われるが、整合性を取るために排他ロックで同期を取る。
 
  ・データ取得排他ロック
    apis-mainからDevice Driverに対してデータを取得する際にLocalにあるデータキャッシュの上書き競合を防ぐため、この排他ロックを使用してデータ取得用Commandと制御用Commandを制御する。all/getと /dcdc/get/statusと/dcdc/setが排他制御されている。
