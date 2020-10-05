@@ -194,35 +194,32 @@ Battery間の電力融通例を図2-2に示す。Battery AからBattery Bへ電�
 
 8.  Requestと選択されたAcceptから電力融通取引情報を作成する。
 
-<img src="media/media/image2.png" style="width:0.59538in;height:0.30163in" /><img src="media/media/image4.png" style="width:5.9in;height:2.45833in" />
+<img src="media/media/image4.png" style="width:5.9in;height:2.45833in" />
 
 単体のapis-mainがコミュニケーションラインとDC Gridに接続された様子を図2-4に示す。
 
-<img src="media/media/image2.png" style="width:0.6185in;height:0.30163in" /><img src="media/media/image5.png" style="width:5.01294in;height:2.025in" />
+<img src="media/media/image5.png" style="width:5.01294in;height:2.025in" />
 
 次に複数のapis-mainによる構成を図2-5に示す。
 
-<img src="media/media/image2.png" style="width:0.62428in;height:0.30163in" /><img src="media/media/image6.png" style="width:5.15452in;height:2.01667in" />
+<img src="media/media/image6.png" style="width:5.15452in;height:2.01667in" />
 
 apis-mainは図2-6のように複数の電力融通を並行して行うことが可能である。
 
-<img src="media/media/image2.png" style="width:0.62428in;height:0.30163in" /><img src="media/media/image7.png" style="width:5.0125in;height:1.93279in" />
+<img src="media/media/image7.png" style="width:5.0125in;height:1.93279in" />
 
 DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV ModeのDC/DC Converterが２台以上存在すると電圧の衝突が発生することである。
 
-<img src="media/media/image2.png" style="width:0.62428in;height:0.30163in" /><img src="media/media/image8.png" style="width:5.9in;height:2.29167in" />
+<img src="media/media/image8.png" style="width:5.9in;height:2.29167in" />
 
 そのため図2-8のようにDC Grid上にCV ModeのDC/DC Converterは1台のみとし、他のDC/DC ConverterはすべてCC Modeで制御を行う。
 
 <img src="media/media/image9.png" style="width:5.9in;height:2.24167in" />
 
-<img src="media/media/image2.png" style="width:0.60116in;height:0.30163in" />
-
 上記の制御を行うためにapis-mainにはGrid MasterというGridを制御するServiceが存在する。apis-mainは起動時にコミュニケーションライン経由で通信を行ってクラスタを形成し、予め決められたルールに従ってクラスタに1台だけGrid Masterを選定する。Grid MasterはDevice Driver経由でクラスタ内の全DC/DC Converterを制御しDC Grid経由で電力融通を行わせる。全apis-mainがGrid Masterになることができ、決められたルールに従って動的にGrid Masterの移動を行うことも可能である。
 
 <img src="media/media/image10.png" style="width:5.9in;height:2.28333in" />
 
-<img src="media/media/image2.png" style="width:0.70833in;height:0.30163in" />
 
 **ソフトウェア構成**
 ====================
