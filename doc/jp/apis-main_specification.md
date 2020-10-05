@@ -114,7 +114,7 @@
 
 [11.2.Gateway機能](#anchor11-2)
 
-[12.安全確認機能(#anchor12)
+[12.安全確認機能](#anchor12)
 
 [12.1.Global Safety Check](#anchor12-1)
 
@@ -141,7 +141,7 @@
 [16.2.OS要求](#anchor16-2)
 
 <a id="anchor1"></a>
-**用語・略語**
+**1.用語・略語**
 ==============
 
 | **用語**         | **説明**                                                                                                                                                                     |
@@ -238,7 +238,8 @@ DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV Mod
 <img src="media/media/image13.png" style="width:3.63333in;height:2.81838in" />
 <p align="center">図3-1</p>
 
-**apis-main内Service構成**
+<a id="anchor3-2"></a>
+**3.2.apis-main内Service構成**
 --------------------------
 
 電力融通を実現するソフトウェアであるapis-mainと、BatteryやDC/DC Converterとのやり取りを行うDevice Driverで構成しており、apis-mainは以下の4つのServiceに分けられる。(図3-2参照)
@@ -263,15 +264,18 @@ User Serviceの要求でDC/DC ConverterやBatteryの情報を取得する。
 <img src="media/media/image14.png" style="width:5.00152in;height:2.78333in" />
 <p align="center">図3-2</p>
 
-4.**動作詳細説明**
+<a id="anchor4"></a>
+**4.動作詳細説明**
 ================
 
-4.1**クラスタ構築**
+<a id="anchor4-1"></a>
+**4.1.クラスタ構築**
 ----------------
 
 apis-mainは起動時にHazelcastと呼ばれるVert.xフレームワークが使用するクラスタリングマネージャを用いてコミュニケーションライン上に存在する複数のapis-mainとクラスタを構築する。同一クラスタに参加するためには設定ファイルであるcluster.xml上で同一クラスタ名を指定する必要がある。
 
-4.2**Grid Master選定**
+<a id="anchor4-2"></a>
+**4.2.Grid Master選定**
 -------------------
 
 apis-mainが起動するとMediator Service のGird Master Management機能が、ランダムなタイミングでクラスタ内にGrid Masterの存在を問い合わせる。起動直後等でクラスタ内にGrid Masterが存在しない場合には、設定ルールに従って、適切なGrid Masterを選定する。Grid Master選定には "voltageReference", "fixed", "anywhere"の3種類の選定方法がある。
@@ -281,13 +285,14 @@ apis-mainが起動するとMediator Service のGird Master Management機能が�
 電力融通時に電圧Reference(CV Mode)となるノードがGrid Masterになる選定方法である。電圧Referenceが変わればそれに伴ってGrid Masterも移動する。
 電圧Referenceとなるノードは、電力融通開始時に決定されるためapis-main起動直後にはGrid Masterは決まらない。そのため起動時はGrid Masterの存在を問い合わせ、返信がなければ自らがGrid Masterになろうとする。(複数のGrid Masterの同時起動を防ぐため、自身のGrid Master Serviceを起動させる前にランダム時間待ち、その後再びGrid Masterの不在が確認された場合は自らGrid Master Serviceを起動させる。)
 
-1.  fixed　
+2.  fixed　
 Grid Masterになるノードを固定する選定方法である。fixedでGrid Masterを選定する場合はクラスタ内で最初にfixedで指定したノードのapis-mainを起動させる必要がある。
 
-1.  anywhere　
+3.  anywhere　
 最初にapis-mainが起動したノードがGrid Masterとなる選定方法である。後に不具合等でGrid Masterが不在になった場合には不在を検知したノードが自らGrid Masterになろうとする。
 
-**apis-main処理**
+<a id="anchor4-3"></a>
+**4.3.apis-main処理**
 -----------------
 
 apis-mainはループ処理として以下の内容を継続して行う。
@@ -316,7 +321,8 @@ apis-mainはループ処理として以下の内容を継続して行う。
 
  10.電力融通Request元の Mediator Service は自身のUser Serviceに処理を渡して他のapis-mainから返信された電力融通可能電力量を元に、Scenarioファイルにて指定された選択アルゴリズムに従って、最適な電力融通相⼿のノードを選択させ、その後電⼒融通の情報が記載された 電力融通取引情報をHazelcastの共有メモリに登録し、Grid Masterの処理を待つ。
 
-4.4**Grid Master処理**
+<a id="anchor4-4"></a>
+**4.4.Grid Master処理**
 -------------------
 
 Grid Master はループ処理として以下の内容を継続して行う。
@@ -338,10 +344,10 @@ Grid Master はループ処理として以下の内容を継続して行う。
 8.Hazelcastの共有メモリに登録された電力融通取引情報に基づき順次電力融通を実施する。
 
 9.Grid Masterの移動が発生した場合は適切なノードにGrid Masterを移動させる。
+(Grid Masterが移動する際に既存の融通情報など引き継ぐ情報はすべてHazelcastの共有メモリ上に存在するため旧新Grid Master間で通信し情報を引き継ぐ必要はなく、新Grid Masterは起動後、共有メモリ上のGrid Masterの情報を参照し動作を開始する。)
 
-> (Grid Masterが移動する際に既存の融通情報など引き継ぐ情報はすべてHazelcastの共有メモリ上に存在するため旧新Grid Master間で通信し情報を引き継ぐ必要はなく、新Grid Masterは起動後、共有メモリ上のGrid Masterの情報を参照し動作を開始する。)
-
-4.5**電力融通処理**
+<a id="anchor4-5"></a>
+**4.5.電力融通処理**
 ----------------
 
 Hazelcastの共有メモリに登録された電力融通取引情報は以下の5つの状態を持つ。
@@ -354,93 +360,77 @@ Grid Masterは共有メモリ上に登録されている全電力融通取引情
 
 電力融通が行われておらずDC Gridの電圧がRamp Upしていない状態を示す。
 
-> 共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電圧Reference側のapis-mainに対してDC/DC ConverterをCV Modeに設定するように指示する。CV Modeに設定されたDC/DC ConverterはDC Gridを指定された電圧までRamp Upさせる。Ramp Upが完了した場合はステータスを(2)のactivatedへ移行させる。 (7.2 電圧Ramp Up参照)
+共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電圧Reference側のapis-mainに対してDC/DC ConverterをCV Modeに設定するように指示する。CV Modeに設定されたDC/DC ConverterはDC Gridを指定された電圧までRamp Upさせる。Ramp Upが完了した場合はステータスを(2)のactivatedへ移行させる。 (7.2 電圧Ramp Up参照)
 
 \(2\) activated
 
-> DC Grid の電圧Ramp upが完了し電力融通が開始できる状態を示す。既に電力融通が行われておりDC Gridの電圧のRamp Upが完了している場合には新しく登録された電力融通取引情報のステータスはactivatedになる。共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電力融通を実施するapis-mainのDC/DC Converterをそれぞれ適切なCC Modeに設定し、(3)のstartedへ移行させる。
+DC Grid の電圧Ramp upが完了し電力融通が開始できる状態を示す。既に電力融通が行われておりDC Gridの電圧のRamp Upが完了している場合には新しく登録された電力融通取引情報のステータスはactivatedになる。共有メモリに登録された電力融通取引情報がこのステータスの場合にはGrid Masterは電力融通を実施するapis-mainのDC/DC Converterをそれぞれ適切なCC Modeに設定し、(3)のstartedへ移行させる。
 
 \(3\) started
 
-> 共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通が開始されていることを示す。Grid Masterは自身のループ処理の中で電力融通した電力量の累積が目標の電力量に達していることを確認する。達していれば、放電ノードのapis-mainに対してDC/DC ConverterのModeをWaitに設定するように指示し電力融通を止めてステータスを(4)のstoppedへ移行させる。
+共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通が開始されていることを示す。Grid Masterは自身のループ処理の中で電力融通した電力量の累積が目標の電力量に達していることを確認する。達していれば、放電ノードのapis-mainに対してDC/DC ConverterのModeをWaitに設定するように指示し電力融通を止めてステータスを(4)のstoppedへ移行させる。
 
 \(4\) stopped
 
-> 共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通した電力量の累積が目標の電力量に達し、放電側のDCDC ConverterがWait Modeになっていることを示す。Grid Masterは充電ノードのapis-mainに対してDC/DC ConverterのModeをWaitに設定するように指示し、ステータスを(5)のdeactivateに移行させる。その際、他に継続して電力融通が行われており、CV ModeになっていたDC/DC Converterの電力融通を停止する場合にはCV Modeの移動を実施 する。 (7.5 Constant Voltage(CV) 移動参照)
+共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通した電力量の累積が目標の電力量に達し、放電側のDCDC ConverterがWait Modeになっていることを示す。Grid Masterは充電ノードのapis-mainに対してDC/DC ConverterのModeをWaitに設定するように指示し、ステータスを(5)のdeactivateに移行させる。その際、他に継続して電力融通が行われており、CV ModeになっていたDC/DC Converterの電力融通を停止する場合にはCV Modeの移動を実施 する。 (7.5 Constant Voltage(CV) 移動参照)
 
 \(5\) deactivate
 
-> 共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通が完了したことを示す。放電ノードと充電ノードの双方に電力融通結果をファイルとして書き込み、電力融通情報を共有メモリから削除する。(最終的な 電力融通結果の保存は 電力融通処理の最後に行われるが、電力融通中も放電側と充電双方のノードにその時点での電力融通情報をファイルとして保存する。)
+共有メモリに登録された電力融通取引情報がこのステータスの場合には既に電力融通が完了したことを示す。放電ノードと充電ノードの双方に電力融通結果をファイルとして書き込み、電力融通情報を共有メモリから削除する。(最終的な 電力融通結果の保存は 電力融通処理の最後に行われるが、電力融通中も放電側と充電双方のノードにその時点での電力融通情報をファイルとして保存する。)
 
-4.6**各種ロック処理**
+<a id="anchor4-6"></a>
+**4.6.各種ロック処理**
 ------------------
 
 Hazelcastの共有メモリや各ノードのLocalメモリを使用してデータの整合性を保つために同時アクセス制限を行う排他ロックや、ある一定の条件が整わないと他の動作を制限するインタロック機能があり、それらについて以下に説明する。
 
 1.  共有メモリ上のロック
+ ・GMインタロック
+　 Grid Master Serviceを起動する前に共有メモリ上に自身のIDを設定することで別のノードがGrid Master Serviceを起動しないようにロックをかける。
+　 Grid Masterを移動する際はGrid Master Serviceを終了させた後、共有メモリ上のGMインタロックを解除し新しいノードのIDを設定してロックを行った上で移動する。
 
-> ・GMインタロック
+2.  Localメモリ上のロック
+ ・電力融通インタロック
+   Grid Masterが電力融通を行う両端のノードに対してかけるロックである。DC/DC Converterの最大電流量と１電力融通の電流量で電力融通数を決めている。
 
-　　 Grid Master Serviceを起動する前に共有メモリ上に自身のIDを設定することで別の
+ ・電力融通インタロック用排他ロック
+  電力融通インタロックの取得/解放は、非同期で行われるが、整合性を取るために排他ロックで同期を取る。
 
-ノードがGrid Master Serviceを起動しないようにロックをかける。
+ ・データ取得排他ロック
+   apis-mainからDevice Driverに対してデータを取得する際にLocalにあるデータキャッシュの上書き競合を防ぐため、この排他ロックを使用してデータ取得用Commandと制御用Commandを制御する。all/getと /dcdc/get/statusと/dcdc/setが排他制御されている。
 
-　　 Grid Masterを移動する際はGrid Master Serviceを終了させた後、共有メモリ上のGMインタロックを解除し新しいノードのIDを設定してロックを行った上で移動する。
+ ・GM処理ループ排他ロック
+　 Grid MasterのMain loop実行中にGrid Masterの停止が発生しないようにGrid Masterの移動(起動及び停止)とGrid MasterのMain Loop処理を排他制御するために使用する。
 
-1.  Localメモリ上のロック
+ ・共有メモリ電力融通情報読み書き排他ロック
+   自ノード内の複数スレッドによる共有メモリへの同時書き込みを防ぐために使用する。
 
-> ・電力融通インタロック
->
-> Grid Masterが電力融通を行う両端のノードに対してかけるロックである。DC/DC
->
-> Converterの最大電流量と１電力融通の電流量で電力融通数を決めている。
->
-> ・電力融通インタロック用排他ロック
->
-> 電力融通インタロックの取得/解放は、非同期で行われるが、整合性を取るために
-
-排他ロックで同期を取る。
-
-> ・データ取得排他ロック
-
-　　　apis-mainからDevice Driverに対してデータを取得する際にLocalにあるデータキャッシュの上書き競合を防ぐため、この排他ロックを使用してデータ取得用Commandと制御用Commandを制御する。all/getと /dcdc/get/statusと/dcdc/setが排他制御されている。
-
-> ・GM処理ループ排他ロック
-
-　　　Grid MasterのMain loop実行中にGrid Masterの停止が発生しないようにGrid Masterの移動(起動及び停止)とGrid MasterのMain Loop処理を排他制御するために使用する。
-
-　　・共有メモリ電力融通情報読み書き排他ロック
-
-　　　自ノード内の複数スレッドによる共有メモリへの同時書き込みを防ぐために使用する。
-
-1.  ファイルシステム上のロック
-
-> ・融通方向インタロック
->
-> 同一ノード上の複数のプロセス間で排他制御を実現するための排他ロックである。
-
+3.  ファイルシステム上のロック
+ ・融通方向インタロック
+   同一ノード上の複数のプロセス間で排他制御を実現するための排他ロックである。
 　 後述するGateway機能で同一ノード上に複数のプロセス(apis-main)を起動させる際に使用する。ファイルシステムを利用することでプロセス間(apis-main間)の排他制御を行う。(11.2 Gateway機能参照)
 
-　　　<img src="media/media/image15.png" style="width:4.24242in;height:2.1946in" />
+　　<img src="media/media/image15.png" style="width:4.24242in;height:2.1946in" />
    <p align="center">図4-1</p>
 
 
-1.  **通信仕様について**
-    ====================
+<a id="anchor5"></a>
+**5.通信仕様について**
+====================
 
-    1.  **apis-main – Device Driver間Web API**
-        --------------------------------------
-
+<a id="anchor5-1"></a>
+**5.1.apis-main – Device Driver間Web API**
 apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以下にそのWeb APIの仕様を説明する。
 
 <table><thead><tr class="header"><th><p>DC/DC Converter</p><p>制御</p></th><th>/dcdc/get</th><th>情報取得</th></tr></thead><tbody><tr class="odd"><td></td><td>/dcdc/get/status</td><td>ステータス情報のみ取得</td></tr><tr class="even"><td></td><td>/dcdc/set?dig=&lt;Grid電流値&gt;</td><td>DC Grid側電流値設定</td></tr><tr class="odd"><td></td><td>/dcdc/set?dvg=&lt;Grid電圧値&gt; &amp;drg=&lt;Grid Droop率&gt;</td><td>DC Grid側電圧値&amp;Droop値設定</td></tr><tr class="even"><td></td><td><p>/dcdc/set?mode=&lt;Mode&gt;</p><p>&amp;dvg=&lt;Grid電圧値&gt;</p><p>&amp;dig=&lt;Grid電流値&gt; &amp;drg=&lt;Grid Droop率&gt;</p></td><td>DC Grid側Mode&amp;電圧値&amp;電流値&amp;Droop値設定</td></tr><tr class="odd"><td>Battery情報取得</td><td>/battery/get</td><td>情報取得</td></tr><tr class="even"><td>全Device情報取得</td><td>/all/get</td><td>/dcdc/get +/battery/get情報取得</td></tr><tr class="odd"><td>Version情報取得</td><td>/version/get</td><td>Device Driver Version情報取得</td></tr></tbody></table>
 
-1.  **apis-main – Device Driver間の各get 系Web APIで期待される戻り値**
-    ------------------------------------------------------------------
+<a id="anchor5-2"></a>
+**5.2.apis-main – Device Driver間の各get 系Web APIで期待される戻り値**
 
-    1.  ###  **“/dcdc/get” で期待される戻り値**
+<a id="anchor5-2-1"></a>
+**5.2.1.**“/dcdc/get” で期待される戻り値**
 
-　以下に/dcdc/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
+以下に/dcdc/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
 &lt;例&gt;
 
@@ -490,7 +480,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-### **“/dcdc/get/status” で期待される戻り値**
+<a id="anchor5-2-2"></a>
+**5.2.2.“/dcdc/get/status” で期待される戻り値**
 
 　以下に/dcdc/get/statusのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -528,7 +519,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-### **“/dcdc/set?dig=&lt;Grid電流&gt;” で期待される戻り値**
+<a id="anchor5-2-3"></a>
+**5.2.3.“/dcdc/set?dig=&lt;Grid電流&gt;” で期待される戻り値**
 
 　以下に/dcdc/set?dig=&lt;Grid電流&gt;のWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -544,7 +536,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-### **“/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;” で期待される戻り値**
+<a id="anchor5-2-4"></a>
+**5.2.4“/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;” で期待される戻り値**
 
 　以下に/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;のWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -560,7 +553,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-###  **“/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&dig=&lt;GridDroop率&gt;” で期待される戻り値**
+<a id="anchor5-2-5"></a>
+**5.2.5.“/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&dig=&lt;GridDroop率&gt;” で期待される戻り値**
 
 　以下に/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&drg=&lt;GridDroop率&gt;のWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のdcdcの項目を参照のこと)
 
@@ -596,7 +590,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-### **“/battery/get” で期待される戻り値**
+<a id="anchor5-2-6"></a>
+**5.2.6.“/battery/get” で期待される戻り値**
 
 　以下に/battery/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”の表のbatteryの項目を参照のこと)
 
@@ -610,7 +605,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-### **“/all/get” で期待される戻り値**
+<a id="anchor5-2-7"></a>
+**5.2.7“/all/get” で期待される戻り値**
 
 　以下に/all/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。(各パラメータの説明に関しては“8. Grid Master Data収集”のdcdcとbatteryの項目を参照のこと)
 
@@ -676,7 +672,8 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 }
 
-### **“/version/get” で期待される戻り値**
+<a id="anchor5-2-8"></a>
+**5.2.8.“/version/get” で期待される戻り値**
 
 　以下に/version/getのWeb API利用時に期待されるDevice Driverからの戻り値のパラメータを示す。
 
@@ -714,32 +711,33 @@ apis-mainとDevice Driver間のインターフェースを定義することで�
 
 　　apis-main Shutdown : apis-main major ver. &lt; dcdc\_batt\_comm major ver.
 
-**Device Driver – ハードウェア間通信仕様**
-------------------------------------------
+<a id="anchor5-3"></a>
+**5.3.Device Driver – ハードウェア間通信仕様**
 
 ハードウェア環境の違いはDevice Driverによって吸収する。Device Driver –ハードウェア間の通信は環境によって異なる為、各ハードウェアの通信仕様書を参照し適切にDevice Driverを開発する。
 
-**設定ファイルについて**
+<a id="anchor6"></a>
+**6.設定ファイルについて**
 ========================
 
 apis-mainには複数の設定ファイルや鍵ファイル等が存在する。それらのファイルについて説明する。
 
-**config.json**
----------------
+<a id="anchor6-1"></a>
+**6.1config.json**
 
 json形式のファイルで以下のノード固有の基本情報を設定する。apis-main起動時に一度だけ読み込まれるためパラメータを変更した場合はapis-mainの再起動が必要となる。
 
 <table><thead><tr class="header"><th>programId</th><th>プログラム識別文字列</th></tr></thead><tbody><tr class="odd"><td>comminityId</td><td>コミュニティ識別文字列で1つ以上のクラスタをまとめる上位概念のID、clusterId及びapis-mainのVersion文字列と共に暗号化のSeedとして用いられる</td></tr><tr class="even"><td>clusterId</td><td>クラスタ識別文字列でcomminityId及びapis-mainのVersion文字列と共に暗号化のSeedとして用いられる</td></tr><tr class="odd"><td>security.enable</td><td>共有メモリ暗号化とEvent Bus SSL化の有効/無効設定</td></tr><tr class="even"><td>security.pemKeyFile</td><td>Event Bus SSL化に使われる秘密鍵</td></tr><tr class="odd"><td>security.pemCertFile</td><td>Event Bus SSL化に使われる証明書</td></tr><tr class="even"><td>unitId</td><td>ノード識別文字列</td></tr><tr class="odd"><td>unitName</td><td>ノード名称</td></tr><tr class="even"><td>serialNumber</td><td>ノードシリアル番号　(IoT Board管理番号として使用可能)</td></tr><tr class="odd"><td>systemType</td><td><p>ハードウェアの種類</p><p>dcdc_emulator : ハードウェアエミュレータ</p><p>dcdc_v1 : 旧Device Driver dcdc_controller 用</p><p>dcdc_v2 : dcdc_batt_comm用</p></td></tr><tr class="even"><td>hwConfigFile</td><td>hwConfigファイル保存先</td></tr><tr class="odd"><td>policyFile</td><td>Policyファイル保存先</td></tr><tr class="even"><td>scenarioFile</td><td>Scenarioファイル保存先</td></tr><tr class="odd"><td>stateFileFormat</td><td>Local Operation Mode保存先&amp;フォーマット</td></tr><tr class="even"><td>dealLogDirFormat</td><td>電力融通Log保存先&amp;フォーマット</td></tr><tr class="odd"><td><p>fileSystemExclusive</p><p>LockFileFormat</p></td><td>ファイルシステムを用いたプロセス間排他制御で用いるロックファイルの保存先及びフォーマット</td></tr><tr class="even"><td>policyFileReadTimeoutMsec</td><td>PolicyファイルのRead Timeout設定</td></tr><tr class="odd"><td>connection.emulator.host</td><td>systemTypeがdcdc_emulatorの場合のハードウェアエミュレータのIP Address</td></tr><tr class="even"><td>connection.emulator.port</td><td>systemTypeがdcdc_emulatorの場合のハードウェアエミュレータのPort番号</td></tr><tr class="odd"><td><p>connection.dcdc_controller</p><p>.host</p></td><td>systemTypeがdcdc_v1の場合のdcdc_controller用IP Address情報、もしくはdcdc_v2の場合のdcdc_batt_comm用IP Address</td></tr><tr class="even"><td><p>connection.dcdc_controller</p><p>.port</p></td><td>systemTypeがdcdc_v1の場合のdcdc_controller用Port番号、もしくはdcdc_v2の場合のdcdc_batt_comm用Port番号</td></tr><tr class="odd"><td>connection.emu_driver.host</td><td>systemTypeがdcdc_v1の場合のEMU Driver用IP Address</td></tr><tr class="even"><td>connection.emu_driver.port</td><td>systemTypeがdcdc_v1の場合のEMU Driver用Port番号</td></tr><tr class="odd"><td>controlCenter.enabled</td><td>Service Centerの有効/無効設定</td></tr><tr class="even"><td>controlCenter.account</td><td>Service Centerへのログインアカウント</td></tr><tr class="odd"><td>controlCenter.password</td><td>Service Centerへのログインパスワード</td></tr><tr class="even"><td><p>controlCenter.account</p><p>.encrypted</p></td><td><p>Service Centerへの暗号化されたログインアカウント</p><p>(項目毎の個別暗号化用)</p></td></tr><tr class="odd"><td><p>controlCenter.password</p><p>.encrypted</p></td><td><p>Service Centerへの暗号化されたログインパスワード</p><p>(項目毎の個別暗号化用)</p></td></tr><tr class="even"><td><p>controlCenter.encrypted_</p><p>.enabled</p></td><td><p>Service Centerへの暗号化された有効/無効設定</p><p>(controlCenter.encrypted 以下全体暗号化用)</p></td></tr><tr class="odd"><td><p>controlCenter.encrypted_</p><p>.account</p></td><td><p>Service Centerへの暗号化されたログインアカウント</p><p>(controlCenter.encrypted 以下全体暗号化用)</p></td></tr><tr class="even"><td><p>controlCenter.encrypted_</p><p>.password</p></td><td><p>Service Centerへの暗号化されたログインパスワード</p><p>(controlCenter.encrypted 以下全体暗号化用)</p></td></tr><tr class="odd"><td>watchdog.enabled</td><td>apis-mian Alive情報有効無効設定</td></tr><tr class="even"><td>watchdog.periodMsec</td><td>Watch Dog Reset周期　(ms)</td></tr><tr class="odd"><td>watchdog.host</td><td>Watch DogがperiodMsec間隔でAccessするIP Address</td></tr><tr class="even"><td>watchdog.port</td><td>Watch DogがperiodMsec間隔でAccessするPort番号</td></tr><tr class="odd"><td>watchdog.uri</td><td>Watch DogサービスのURI</td></tr><tr class="even"><td><p>watchdog.requestTimeout</p><p>Msec</p></td><td>Watch DogのTimeout時間(ms)</td></tr><tr class="odd"><td><p>batteryCapacityManagement</p><p>.enabled</p></td><td>Battery容量管理機能有効/無効設定</td></tr></tbody></table>
 
-**hwConfig.json**
------------------
+<a id="anchor6-2"></a>
+**6.2.hwConfig.json**
 
 json形式のファイルでノード固有のハードウェア情報を設定する。refreshingPeriodMsecで設定された間隔毎にファイルの再読み込みが行われるためapis-mainを再起動することなくパラメータを動的に変更することが可能である。
 
 <table><thead><tr class="header"><th>refreshingPeriodMsec</th><th>hwConfigファイル再読み込み間隔(ms)</th></tr></thead><tbody><tr class="odd"><td>batteryNominalCapacityWh</td><td>Battery容量(Wh)</td></tr><tr class="even"><td>gridCurrentCapacityA</td><td>自ノードがDC Gridに充放電可能な最大電流(A)</td></tr><tr class="odd"><td>gridCurrentAllowanceA</td><td>自ノードが充放電する電流のDC Gridに対する誤差(A)</td></tr><tr class="even"><td>droopRatio</td><td>CV移動時のDroop率　(%)</td></tr><tr class="odd"><td><p>efficientBatteryGrid</p><p>valtageRatio</p></td><td><p>DC/DC Converterの効率が最大となる入出力電圧比N</p><p>設定</p></td></tr><tr class="even"><td>safety.range.dcdc.meter.tmp.min</td><td>Local Safety Check : DC/DC Converter温度最小値 (℃)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.tmp.max</td><td>Local Safety Check : DC/DC Converter 温度最大値 (℃)</td></tr><tr class="even"><td>safety.range.dcdc.meter.vg.min</td><td>Local Safety Check : DC Grid電圧最小値 (V)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.vg.max</td><td>Local Safety Check : DC Grid電圧最大値 (V)</td></tr><tr class="even"><td>safety.range.dcdc.meter.vb.min</td><td>Local Safety Check : Battery電圧最小値 (V)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.vb.max</td><td>Local Safety Check : Battery電圧最大値 (V)</td></tr><tr class="even"><td>safety.range.dcdc.meter.ig.min</td><td>Local Safety Check : DC Grid電流最小値 (A)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.ig.max</td><td>Local Safety Check : DC Grid電流最大値 (A)</td></tr><tr class="even"><td>safety.range.dcdc.meter.ib.min</td><td>Local Safety Check : Battery電流最小値 (A)</td></tr><tr class="odd"><td>safety.range.dcdc.meter.ib.max</td><td>Local Safety Check : Battery電流最大値 (A)</td></tr></tbody></table>
 
-**scenario.json**
------------------
+<a id="anchor6-3"></a>
+**6.3scenario.json**
 
 json形式のファイルでノード毎に独自に定義することが可能な電力融通のためのRequestを設定する。refreshingPeriodMsecで設定された間隔毎にファイルの再読み込みが行われるためapis-mainを再起動することなくパラメータを動的に変更することが可能である。
 
@@ -757,8 +755,8 @@ Battery容量の最大が4800Whとし上記の設定を行った際のScenario�
 <p align="center">図2-9</p>
 
 
-**policy.json**
----------------
+<a id="anchor6-4"></a>
+**6.4policy.json**
 
 json形式のファイルでシステム全体の秩序を維持するために必要な制御アルゴリズムとそのアルゴリズムを安全に実行するために必要なパラメータを設定する。
 
@@ -770,20 +768,20 @@ refreshingPeriodMsecで設定された間隔毎にファイルの再読み込み
 
 <table><thead><tr class="header"><th>gridUvloMaskV</th><th>DC/DC Converter EZA2500を使用する際に用いる。EZA2500はDC Grid電圧が最小動作電圧付近にある場合、CV Modeで起動できないという制限がある。そこでapis-main側で　operationGridVoltageRange.min±gridUvloMaskVの電圧範囲ではCV Modeで起動しないように制御している。</th></tr></thead><tbody><tr class="odd"><td><p>safety.sumOfDealingUnitGrid</p><p>CurrentAllownacePerUnitA</p></td><td>Global Safety Check : 1ノード毎のDC Grid電流誤差 (A) (N台のノードが電力融通に参加していた場合は N倍がDC Grid電流誤差となる。)</td></tr><tr class="even"><td>safety.sumOfDealGridCurrentMaxA</td><td>Global Safety Check : DC Grid上の最大電流 (A)</td></tr><tr class="odd"><td><p>safety.gridTopologyBasedEvaluation</p><p>.enabled</p></td><td>DC Grid配線トポロジーの各ブランチの最大電流容量Checkの有効/無効設定</td></tr><tr class="even"><td><p>safety.gridTopologyBasedEvaluation</p><p>.branchIds</p></td><td>DC Grid配線トポロジーの各ブランチへの割振り　(割り振られたIDは後の設定で使用する。)</td></tr><tr class="odd"><td><p>safety.gridTopologyBasedEvaluation</p><p>.branchAssociation.branchIds</p><p>.forwardUnitIds</p></td><td>各ブランチの支流の前方向に存在するノード列挙</td></tr><tr class="even"><td><p>safety.gridTopologyBasedEvaluation</p><p>.branchAssociation.branchIds</p><p>.backwardUnitIds</p></td><td>各ブランチの支流の後方向に存在するノード列挙</td></tr><tr class="odd"><td>safety.branchCurrentCapacityA</td><td>ブランチ毎の電流容量 (A)</td></tr><tr class="even"><td>heloPeriodMsec</td><td>自身のIDが重複するのを防ぐためにコミュニケーションラインに自身のIDでHelloを送る間隔 (ms)</td></tr><tr class="odd"><td><p>controller.dcdc.checkpoint</p><p>.retryLimit</p></td><td>DC/DC Converterの電圧Checkを行う際のリトライ回数</td></tr><tr class="even"><td><p>controller.dcdc.checkpoint</p><p>.retryWaitMsec</p></td><td>DC/DC Converterの電圧Checkを行う際のリトライ間隔 (ms)</td></tr><tr class="odd"><td><p>controller.dcdc.voltageReference</p><p>.rampUp.first.timeoutMsec</p></td><td>DC Grid 電圧Ramp UpのTimeout時間 (ms)</td></tr><tr class="even"><td><p>controller.dcdc.voltageReference</p><p>.authorization.numberOfTraials</p></td><td><p>DC Grid電圧 Ramp Up後の電圧Reference 権限獲得動作の電圧変更回数</p><p>(7.3電圧Reference権限獲得動作参照)</p></td></tr><tr class="odd"><td><p>controller.scramVoltageReference</p><p>DelayMsec</p></td><td>電力融通中に異常が発生した場合には全電力融通処理を止めることがあり、先にCC ModeのDC/DC ConverterをWait Modeに設定した後でCV　ModeのDC/DC ConverterをWait Modeに設定する。この項目はCC ModeをWait ModeにしてからCV ModeをWait Modeにするまでの待ち時間を設定する。 (ms)</td></tr><tr class="even"><td>controller.stopMeTimeoutMsec</td><td>Grid Masterに自身のDC/DC ConverterのWaitを依頼後、この設定時間待ってもWaitしない場合は自身でDC/DC ConverterをWaitさせる。(ms)</td></tr><tr class="odd"><td>controller.stopMeCheckPeriodMsec</td><td>Error処理で自身のDC/DC ConverterをWaitする際に定期的に電力融通の有無を確認し、Grid MasterにWaitを依頼する間隔 (ms)</td></tr><tr class="even"><td><p>controller.dataAcquisition</p><p>PeriodMsec</p></td><td>自身のDC/DC ConverterやBatteryから情報を取得する間隔 (ms)</td></tr><tr class="odd"><td>controller.retryLimit</td><td>自身のDC/DC ConverterやBatteryから情報を取得する際に失敗した場合にRetryする回数</td></tr><tr class="even"><td>user.errorHandlingPeriodMsec</td><td>Local Error処理を終了してから次のLocal Error処理を開始するまでの待ち時間 (ms)</td></tr><tr class="odd"><td>user.errorSustainingMsec</td><td>Error処理後から電力融通RequestやAcceptを開始するまでの待ち時間 (ms)</td></tr><tr class="even"><td>user.houseKeepingPeriodMsec</td><td>Battery残容量とScenarioファイルを確認してから次の確認を開始するまでの待ち時間 (ms)</td></tr><tr class="odd"><td>mediator.deal.gridCurrentA</td><td>1電力融通の電流 (A)</td></tr><tr class="even"><td>mediator.deal.amountMinWh</td><td>1電力融通の最小電力量 (Wh)</td></tr><tr class="odd"><td>mediator.deal.amountMaxWh</td><td>1電力融通の最大電力量 (Wh)</td></tr><tr class="even"><td>mediator.deal.amountUnitWh</td><td>1電力融通の電力量の単位 (Wh)</td></tr><tr class="odd"><td>mediator.negotiationTimeoutMsec</td><td>他のapis-mainにRequestを発行した後に待つ時間(ms)</td></tr><tr class="even"><td>mediator.dealLoggingPeriodMsec</td><td>電力融通中のLogの書き込み完了から次のLogの書き込み開始までの待ち時間 (ms)</td></tr><tr class="odd"><td>gridMaster.voltageReferenceSide</td><td><p>電圧Referenceが放電側か充電側か決定する方法</p><p>charge : 放電側</p><p>discharge : 充電側　</p></td></tr><tr class="even"><td><p>gridMaster.voltageReference</p><p>TakeOverDvg</p></td><td><p>電圧Reference移動時の移動先電圧を決定する方法</p><p>　theoretical : 移動元DC Grid電圧使用</p><p>上記以外 : 移動先DC Grid電圧使用</p></td></tr><tr class="odd"><td><p>gridMaster.masterDealSelection</p><p>.strategy</p></td><td><p>電圧Referenceを含んだ電力融通が終了するときに次のmaster dealを選択する方法</p><p>　newestDeal : 最新電力融通を選択</p><p>　それ以外 : Error</p></td></tr><tr class="even"><td><p>gridMaster.gridMasterSelection</p><p>.strategy</p></td><td><p>Grid Master選択方法 (4.2 Grid Master選定参照)</p><p>　　anywhere</p><p>fixed</p><p>voltageReference</p></td></tr><tr class="odd"><td><p>gridMaster.gridMasterEnsuring</p><p>.interlockinconsistency.retryWaitMsec</p></td><td>Grid Master不在検知後の起動でGrid Masterのインタロックの不整合を検知した時の再試行までの待ち時間 (ms)</td></tr><tr class="even"><td><p>gridMaster.gridMasterWatching</p><p>.absence.ensureWaitMsecc</p></td><td>Grid Master不在検知後に再確認するまでの待ち時間 (ms)</td></tr><tr class="odd"><td><p>gridMaster.deal.forceStopCondition</p><p>.dischargeUnitLowerLimitRsoc</p></td><td>電力融通を強制的に停止するBattery残容量の下限 (%)</td></tr><tr class="even"><td><p>gridMaster.deal.forceStopCondition</p><p>.chargeUnitUpperLimitRsoc</p></td><td>電力融通を強制的に停止するBattery残容量の上限 (%)</td></tr><tr class="odd"><td>gridMaster.deal.referenceSide</td><td><p>融通電力算出する際に放電側をReferenceにするか、充電側をReferenceにするかを決定する方法</p><p>　chargeノード : 充電側</p><p>dischargeノード : 放電側</p></td></tr><tr class="even"><td>gridMaster.deal.resetLimit</td><td>電力融通情報ごとの電圧Reference権限獲得失敗回数の上限</td></tr><tr class="odd"><td><p>gridMaster.currentCompensation</p><p>.limitOfTraials</p></td><td><p>電流補正の回数の上限</p><p>(7.4 電流補正機能参照)</p></td></tr><tr class="even"><td><p>gridMaster.currentCompensation</p><p>.driftAllowanceA</p></td><td><p>電流補正後の許容誤差 (A)</p><p>(7.4 電流補正機能参照)</p></td></tr><tr class="odd"><td><p>gridMaster.gridVoltageOptimization</p><p>.enabled</p></td><td>Grid電圧最適化処理有効/無効設定</td></tr><tr class="even"><td>gridMaster.heloPeriodMsec</td><td>Grid Masterの重複起動を防ぐためにEvent BusにHelloを送る間隔 (ms)</td></tr><tr class="odd"><td>gridMaster.dataCollectionPeriodMsec</td><td>Grid Masterが全ノードからの情報収集間隔 (ms)</td></tr><tr class="even"><td>gridMaster.dataCollectionTimeoutMsec</td><td>Grid Master情報収集Timeout時間 (ms)</td></tr><tr class="odd"><td>gridMaster.mainLoopPeriodMsec</td><td>Grid MasterのMain Loop処理が終了し、次のMain Loop処理を開始するまでの待ち時間 (ms)</td></tr><tr class="even"><td>gridMastererrorSustainingMsec</td><td>Grid MasterがGlobal Error処理を終了してから次のGlobal Error処理を開始するまでの待ち時間 (ms)</td></tr></tbody></table>
 
-**cluster.xml**
----------------
+<a id="anchor6-5"></a>
+**6.5.cluster.xml**
 
 xml形式のファイルでHazelcastがクラスタを構築する際に必要なパラメータ(クラスタ名称、パスワード、ネットワーク設定、マルチキャスト設定など)を設定する。
 
 暗号化しcluster.xml.encrypted として保存される。
 
-**logging.properties**
-----------------------
+<a id="anchor6-6"></a>
+**6.6.logging.properties**
 
 Javaの標準APIであるjava.util.loggingのLogの出力に関する設定(Logファイルの保存先、Log の保存容量、Logレベルの設定など)が記述されているファイル。
 
-**start.sh**
-------------
+<a id="anchor6-7"></a>
+**6.7.start.sh**
 
 apis-mainを起動させるスクリプトファイル。OS起動時の自動実行で実行される。
 
@@ -821,8 +819,9 @@ java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.
 
 -&gt;自身のIP Addressを指定するオプション。
 
-**stop-kill.sh**
-----------------
+
+<a id="anchor6-8"></a>
+**6.8.stop-kill.sh**
 
 apis-mainを停止させるスクリプトファイル。
 
@@ -832,54 +831,52 @@ Javaプロセスを強制終了させる処理を行う。スクリプトの中�
 
 ことが可能である。
 
-**key.pem**
------------
+<a id="anchor6-9"></a>
+**6.9.key.pem**
 
 Event BusのSSL化に使われる秘密鍵。
 
-**cert.pem**
-------------
+<a id="anchor6-10"></a>
+**6.10.cert.pem**
 
 Event BusのSSL化に使われる証明書。
 
-1.  **DC Grid制御機能**
-    ===================
 
-    1.  **電圧Referenceの選定**
-        -----------------------
+<a id="anchor7"></a>
+**7.DC Grid制御機能**
+===================
+
+<a id="anchor7-1"></a>
+**7.1.電圧Referenceの選定**
 
 ノード間の交渉が成立し電力融通を開始する際に、DC Grid上に電圧Referenceが存在しない場合には、Policyファイルに記載されたパラメータ(gridMaster.voltageRefereceSide)を元に電圧Referenceのノードを決定する。電圧Referenceを充電側にするか放電側にするか選択可能だが放電側を選択する場合には、使用する蓄電システム仕様や融通条件などの検証が必要である。
 
-**電圧Ramp Up**
----------------
+<a id="anchor7-2"></a>
+**7.2.電圧Ramp Up**
 
 Grid Masterは電圧ReferenceとなるノードのDC/DC ConverterのModeをWait ModeからCV Modeに変更し、Policyファイル内に記載されたターゲット電圧値(oprationGridVoltageV)になるまでDC Grid電圧をRamp Upさせる。ただし、電圧Ramp Up前にDC Grid電圧がPolicyファイルに規定された電圧( operationGridVoltageVRange.min+gridUvloMaskV+10V)以上である場合には、他に電圧源が存在する可能性があるためハードウェアエラーを発生させ電圧Ramp Upを停止させる。DC Grid電圧がPolicyファイルに規定された電圧領域(operationGridVoltageVRange.min±gridUvloMaskV)である場合には、DC/DC Converterの仕様で起動できない電圧領域であるため、電圧Reference ノードのDC/DC ConverterのModeをWait状態とする。DC Grid電圧がPolicyファイル内に規定された時間内(controller.dcdc.voltageReference.rampUp.first.timeoutMsec)にターゲット電圧値まで上がったら電圧Ramp upは完了するが、時間内にターゲット電圧に達しない場合には電圧Ramp Upを停止させる。
 
-**電圧Reference権限獲得動作**
------------------------------
+<a id="anchor7-3"></a>
+**7.3.電圧Reference権限獲得動作**
 
 電圧Ramp Up完了後、電圧Referenceの ノードはDC Gridの電圧をランダムに変化させる。これを電圧Reference権限獲得動作と呼ぶ。DC Grid電圧をランダムに変化させた際に、一度でもターゲット電圧に追従できない、もしくは異常電流が検知される場合には電圧Referenceの競合が発生したとして、該当するDC/DC Converterのターゲット電圧をPolicyファイルに規定されたDC Grid停止電圧( operationGridVoltageVRange.min+gridUvloMaskV)に設定後、待機状態にして、一定時間Waitした後、再度電圧Ramp up、電圧Reference権獲得動作を実施する。この一連の動作を設定回繰り返しても電圧Reference権獲得動作が終了しない場合には、電圧Referenceの競合が発生したとして、該当する電力融通を停止する。
 
-**電流補正機能**
-----------------
+<a id="anchor7-4"></a>
+**7.4.電流補正機能**
 
 電力融通の電流値は理想的には放電側と充電側は同じ値になるべきだが、各 ノードのDC/DC Converter搭載の電流計にはセンサ誤差があるため、例えば放電側のセンサが2Aと表示しても充電側のセンサでは1.9Aの表示になることがある。そこで各ノードの誤差を電圧Referenceが吸収してしまうのを防ぐためReference側ではない方のノードの電流を調整してReference側の電流を期待値に補正する。
 
-・図7-1の右図のようにReferenceがCV側(電圧Reference側)の場合はCC側の電流値を
+・図7-1の右図のようにReferenceがCV側(電圧Reference側)の場合はCC側の電流値を調整しCV側の電流値が期待された電力融通電流になるように補正を行う。
 
-調整しCV側の電流値が期待された電力融通電流になるように補正を行う。
-
-・図7-1の左図のようにReferenceがCC側の場合は自ら設定した値が期待値になるため
-
-特に補正は行わない。
+・図7-1の左図のようにReferenceがCC側の場合は自ら設定した値が期待値になるため特に補正は行わない。
 
 ・二つ目以降の電力融通の場合は二つ目の電力融通を立ち上げた後にReferenceではない方のCCの 電流を調整しCVの電流を電力融通立ち上げ前の電流に戻すように補正する。
 
 <img src="media/media/image17.png" style="width:5.90278in;height:2.57431in" />
 <p align="center">図7-1</p>
 
-**Constant Voltage(CV)移動**
-----------------------------
+<a id="anchor7-5"></a>
+**7.5.Constant Voltage(CV)移動**
 
 Constant Voltage(CV)の移動は以下のようにDroop制御によって行われる。
 
@@ -905,8 +902,8 @@ Constant Voltage(CV)の移動は以下のようにDroop制御によって行わ�
 <p align="center">図7-5</p>
 
 
-**電圧最適化**
---------------
+<a id="anchor7-6"></a>
+**7.6.電圧最適化**
 
 電力融通の効率最大化を目的としてDC/DC Converterを最大効率点で動作させるために以下の流れでDC Grid電圧の最適化を行う。(この機能はpolicy.json のgridVoltageOptimizationでON/OFF可能である。)
 
@@ -914,38 +911,36 @@ Constant Voltage(CV)の移動は以下のようにDroop制御によって行わ�
 
 2.  電力融通を実施する各ノードに対して、最適なDC Grid電圧を下記にて算出する。
 
-> Battery電圧(VBAT) x efficientBatteryGridvaltageRatio
+    Battery電圧(VBAT) x efficientBatteryGridvaltageRatio
 
-1.  全ノードの最適DC Grid電圧の平均値をターゲットのDC Grid電圧(VGRID)とする。
+3.  全ノードの最適DC Grid電圧の平均値をターゲットのDC Grid電圧(VGRID)とする。
 
-2.  DC Grid電圧の範囲を以下の式で求める。
+4.  DC Grid電圧の範囲を以下の式で求める。
+    Vmin = operationGridVoltageVRange.min + gridVoltageDropAllownaceV
+    Vmax = operationGridVoltageVRange.max – gridVoltageDropAllownaceV
+    (operationGridVoltageVRange.min/max, gridVoltageDropAllowanceVはpolicy.jsonに記載。)
 
-Vmin = operationGridVoltageVRange.min + gridVoltageDropAllownaceV
+5.  4.で算出されたVmin～Vmaxが330～370Vの範囲外である場合はその範囲に収まるようにDC Gridの電圧範囲を調整する。
 
-Vmax = operationGridVoltageVRange.max – gridVoltageDropAllownaceV
+6.  3.で算出されたVGRIDが(5)の電圧範囲に収まることを確認する。範囲に収まればVGRIDをDC Grid電圧に設定し、VGRID &lt; Vminの場合はVminを、 VGRID&gt; VmaxのVmaxをDC Grid電圧として設定する。
 
-> (operationGridVoltageVRange.min/max, gridVoltageDropAllowanceVはpolicy.jsonに記載。)
+7.  新たな電力融通を起きる際、電力融通が終了する際に上記計算を実施して、DC Grid電圧を調整する。
 
-1.  (4)で算出されたVmin～Vmaxが330～370Vの範囲外である場合はその範囲に収まるようにDC Gridの電圧範囲を調整する。
-
-2.  (3)で算出されたVGRIDが(5)の電圧範囲に収まることを確認する。範囲に収まればVGRIDをDC Grid電圧に設定し、VGRID &lt; Vminの場合はVminを、 VGRID&gt; VmaxのVmaxをDC Grid電圧として設定する。
-
-3.  新たな電力融通を起きる際、電力融通が終了する際に上記計算を実施して、DC Grid電圧を調整する。
-
-**Grid Master Data収集**
+<a id="anchor8"></a>
+**8.Grid Master Data収集**
 ========================
 
 Grid Masterは以下の情報をPolicyファイルで設定された間隔で全ノードから収集している。
-
 Grid Masterが収集した情報を不揮発性メモリに記録することはない。
 
 <table><thead><tr class="header"><th>apis</th><th>version</th><th>apis-main version</th></tr></thead><tbody><tr class="odd"><td></td><td>remaining_capacity_wh</td><td>Battery残容量(Wh)</td></tr><tr class="even"><td></td><td>deal_interlock_capacity</td><td>1融通 1スロットとした場合に、同時に融通可能なスロット数</td></tr><tr class="odd"><td></td><td>operation_mode.global</td><td><p>クラスタ全体のOperation Mode設定</p><p>autonomous : 通常の電力融通Mode</p><p>heteronomous : 既存電力融通継続</p><p>新電力融通生成無効</p><p>stop : 電力融通停止Mode</p><p>manual : 手動Mode (評価用)</p></td></tr><tr class="even"><td></td><td>operation_mode.local</td><td><p>自ノードのOperation Mode設定</p><p>空 : operation_mode.global</p><p>に従う</p><p>heteronomous : 既存電力融通継続</p><p>新電力融通生成無効</p><p>stop : 電力融通停止Mode</p></td></tr><tr class="odd"><td></td><td>operation_mode.effective</td><td><p>有効Operation Mode</p><p>globalとlocalのOperation Modeの組み合わせにて決定</p></td></tr><tr class="even"><td>oesunit</td><td>communityId</td><td>コミュニティID</td></tr><tr class="odd"><td></td><td>clusterId</td><td>クラスタID</td></tr><tr class="even"><td></td><td>id</td><td>ノードID</td></tr><tr class="odd"><td></td><td>display</td><td>ノード名称</td></tr><tr class="even"><td></td><td>sn</td><td>ノードシリアルNo.</td></tr><tr class="odd"><td></td><td>budo</td><td><p>旧システムでは自動融通がActiveになっていることを示すフラグだったが、</p><p>現行システムではoperation_mode.effective</p><p>がautonomousかそれ以外かを示すフラグとなっている。</p><p>autonomous : 1</p><p>それ以外 : 0</p></td></tr><tr class="even"><td></td><td>ip</td><td>IPv4</td></tr><tr class="odd"><td></td><td>Ipv6_ll</td><td>IPv6リンクローカルユニキャスト</td></tr><tr class="even"><td></td><td>Ipv6_g</td><td>IPv6グローバルユニキャスト</td></tr><tr class="odd"><td></td><td>mac</td><td>MAC address</td></tr><tr class="even"><td>battery</td><td>rsoc</td><td>相対残容量 (%)</td></tr><tr class="odd"><td></td><td>battery_operation_status</td><td>電力融通許可/不許可フラグ</td></tr><tr class="even"><td>time</td><td>apis-mainノードの時間</td><td></td></tr><tr class="odd"><td>dcdc</td><td>status.status</td><td><p>状態</p><p>・停止モード ：0x0000</p><p>・CVモード ：0x0014</p><p>・CCモード(放電)：0x0041</p><p>・CCモード(放電)：0x0002</p><p>APISからのMode指示はこちらの値を使用して制御される</p></td></tr><tr class="even"><td></td><td>status.alarm</td><td><p>Alarm番号</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="odd"><td></td><td>status.stateAlarm</td><td>Alarm情報</td></tr><tr class="even"><td></td><td>status.statusName</td><td><p>DC/DC Converter Status名称</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="odd"><td></td><td>status.runningState</td><td><p>DC/DC Converter動作 Status</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="even"><td></td><td>status.operationMode</td><td><p>Operation Mode</p><p>・停止モード ："Waiting"</p><p>・CVモード ："Grid Autonomy"</p><p>・CCモード(放電)："Heteronomy CV"</p><p>・CCモード(放電)："Heteronomy CV"</p></td></tr><tr class="odd"><td></td><td>meter.wg</td><td>DC Grid 電力 (W)</td></tr><tr class="even"><td></td><td>meter.vg</td><td>DC Grid電圧 (V)</td></tr><tr class="odd"><td></td><td>meter.ig</td><td>DC Grid電流 (A)</td></tr><tr class="even"><td></td><td>meter.wb</td><td>Battery電力 (W)</td></tr><tr class="odd"><td></td><td>meter.vb</td><td>Battery電圧 (V)</td></tr><tr class="even"><td></td><td>meter.ib</td><td>Battery電流 (A)</td></tr><tr class="odd"><td></td><td>meter.tmp</td><td>内部温度 (℃)</td></tr><tr class="even"><td></td><td>vdis.dvg</td><td>DC Grid目標電圧値 (V)</td></tr><tr class="odd"><td></td><td>vdis.drg</td><td>DC Grid Droop率 (%)</td></tr><tr class="even"><td></td><td>param.dig</td><td><p>DC Grid上限電流 (A)</p><p>電流は向きに関わらず、絶対値で指示される</p></td></tr><tr class="odd"><td></td><td>param.ogv</td><td><p>DC Grid過電圧閾値 (V)</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="even"><td></td><td>param.ugv</td><td><p>DC Grid低電圧閾値 (V)</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="odd"><td></td><td>param.cib</td><td><p>Battery上限電流 (A)</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="even"><td></td><td>param.obv</td><td><p>Battery過電圧閾値 (V)</p><p>制御には使われないため必須ではない。</p></td></tr><tr class="odd"><td></td><td>param.ubv</td><td><p>Battery低電圧閾値 (V)</p><p>制御には使われないため必須ではない。</p></td></tr></tbody></table>
 
-1.  **Log取得・保存機能**
-    =====================
+<a id="anchor9"></a>
+**9.Log取得・保存機能**
+=====================
 
-    1.  **apis-main動作Log**
-        --------------------
+<a id="anchor9-1"></a>
+**9.1.apis-main動作Log**
 
 Log出力にはJava標準APIのjava.util.loggingを使っており以下の7つのLevelに分類されている。apis-mainとしては”CONFIG”, “FINER”のLevelは使用しない。これらのapis-mainの動作Logはlogging.propertiesファイルに記載することでLogファイルの保存先、保存するLog Level、最大Logサイズ、最大保存Log数などの設定を行っている。
 
@@ -971,7 +966,7 @@ apis-main処理の”INFO”に対応する。
 
 4.CONFIG
 
-　　→設定に関する情報である。
+→設定に関する情報である。
 
 apis-mainとしてはこのLevelのLog出力はない。
 
@@ -981,24 +976,23 @@ apis-mainとしてはこのLevelのLog出力はない。
 
 6.FINER
 
-　　→特定の処理についての開始及び終了の情報。内部に発生した例外に関する情報である。
-
-　　　apis-mainとしてこのLevelのLog出力はない。
+→特定の処理についての開始及び終了の情報。内部に発生した例外に関する情報である。
+ apis-mainとしてこのLevelのLog出力はない。
 
 7.FINEST
 
 →トレース情報である。apis-main処理の”TRACE”に対応する。
 
-**apis-main動作Log出力先**
---------------------------
+<a id="anchor9-2"></a>
+**9.2.apis-main動作Log出力先**
 
 apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある。logging.propertiesの設定でそれぞれの出力の有無や前頁で述べた出力Levelの制限をかけることができる。UDPはCommunication Lineに出力されるため情報漏洩や通信のトラフィックを考慮して設定し、ファイルへの出力は不揮発性メモリの容量を考慮して設定する。
 
 <img src="media/media/image22.png" style="width:4.71779in;height:3.28205in" />
 <p align="center">図9-1</p>
 
-**電力融通Log**
----------------
+<a id="anchor9-3"></a>
+**9.3.電力融通Log**
 
 電力融通を行った両側のノードに同じ内容の情報が電力融通Logとして保存される。
 
@@ -1006,73 +1000,72 @@ apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある
 
 <table><thead><tr class="header"><th>unitId</th><th>ノード識別ID</th></tr></thead><tbody><tr class="odd"><td>negotiationId</td><td>電力融通交渉ID</td></tr><tr class="even"><td>requestUnitId</td><td>電力融通をRequestしたノードID</td></tr><tr class="odd"><td>acceptUnitId</td><td>電力融通をAcceptしたノードID</td></tr><tr class="even"><td>requestDateTime</td><td>電力融通をRequestした日時</td></tr><tr class="odd"><td>acceptDateTime</td><td>電力融通をAcceptした日時</td></tr><tr class="even"><td>requestPointPerWh</td><td>Request側が提示した1Wh当たりのポイント</td></tr><tr class="odd"><td>acceptPontPerWh</td><td>Accept側が提示した1Wh当たりのポイント</td></tr><tr class="even"><td>requestDealGridCurrentA</td><td>Request側が提示した融通の電流値</td></tr><tr class="odd"><td>acceptDealGridCurrentA</td><td>Accept側が提示した融通の電流値</td></tr><tr class="even"><td>type</td><td>電力融通Requestのタイプ(充電/放電)</td></tr><tr class="odd"><td>chargeUnitId</td><td>充電側のノードID</td></tr><tr class="even"><td>dischargeUnitId</td><td>放電側のノードID</td></tr><tr class="odd"><td>pointPerWh</td><td>実際の電力融通時の1Wh当たりのポイント</td></tr><tr class="even"><td>chargeUnitEfficientGridVoltageV</td><td>充電側ノードの効率が良いGrid電圧</td></tr><tr class="odd"><td>dischargeUnitEfficientGridVoltageV</td><td>放電側ノードの効率が良いGrid電圧</td></tr><tr class="even"><td>dealGridCurrentA</td><td>電力融通時電流値(A)</td></tr><tr class="odd"><td>requestAmountWh</td><td>Request側が提示した電力量</td></tr><tr class="even"><td>acceptAmountWh</td><td>Accept側が提示した電力量</td></tr><tr class="odd"><td>dealAmountWh</td><td>電力融通時電力量(Wh)</td></tr><tr class="even"><td>dealId</td><td>電力融通情報に付与されたID</td></tr><tr class="odd"><td>createDateTime</td><td>電力融通の電力融通情報が作られた日時</td></tr><tr class="even"><td><p>compensationTargetVoltage</p><p>ReferenceGridCurrentA</p></td><td>電圧Referenceを担っているノードの電流補正のターゲット値 (A)</td></tr><tr class="odd"><td>activateDateTime</td><td>Constant Voltageノード側の起動を開始した日時</td></tr><tr class="even"><td>rampUpDateTime</td><td>DC Gridの電圧Ramp Upが完了した日時</td></tr><tr class="odd"><td>warmUpDateTime</td><td>Constant Currentノード側を起動した日時</td></tr><tr class="even"><td><p>dischargeUnitCompensated</p><p>GridCurrentA</p></td><td>電流補正後の放電電流 (A)</td></tr><tr class="odd"><td><p>chargeUnitCompensated</p><p>GridCurrentA</p></td><td>電流補正後の充電電流 (A)</td></tr><tr class="even"><td>startDateTime</td><td>実際の電力融通を開始した日時</td></tr><tr class="odd"><td>cumulateDateTime</td><td>実際に電力融通した電力を積算した日時</td></tr><tr class="even"><td>cumulateAmountWh</td><td>実際に電力融通した総電力量 (Wh)</td></tr><tr class="odd"><td>stopDateTime</td><td>実際の電力融通を停止した日時</td></tr><tr class="even"><td>deactiveateDateTime</td><td>電力融通後の処理が完了した日時</td></tr></tbody></table>
 
-1.  **Error処理・保護機能**
-    =======================
+<a id="anchor10"></a>
+**10.Error処理・保護機能**
+=======================
 
-    1.  **apis-main Error処理**
-        -----------------------
+<a id="anchor10-1"></a>
+**10.1apis-main Error処理**
 
 apis-mainのError処理は大きく分けてHardware, Framework, Logic, Userの4つのカテゴリがある。それぞれのカテゴリの中にはクラスタ全体に影響があるGlobalと、不具合が発生したノードだけに影響があるLocalがあり、Globalの場合はGrid MasterがError処理を行い、Localの場合は各apis-mainがError処理を行う。
 
 1.  Hardware
 
-> DC/DC ConverterやBatteryなどのハードウェアに不具合が発生し、DC Grid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生したノードだけに影響がある場合には該当 ノードの電力融通を停止させる。DC Grid全体に影響を及ぼす場合はHARDWARE:GLOBAL:XXXX、不具合が発生したノードだけに影響がある場合はHARDWARE:LOCAL:XXXXと分類する。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
->
-> \[Hardware不具合具体例\]
+DC/DC ConverterやBatteryなどのハードウェアに不具合が発生し、DC Grid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生したノードだけに影響がある場合には該当 ノードの電力融通を停止させる。DC Grid全体に影響を及ぼす場合はHARDWARE:GLOBAL:XXXX、不具合が発生したノードだけに影響がある場合はHARDWARE:LOCAL:XXXXと分類する。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
+
+ \[Hardware不具合具体例\]
 
 -最初の電力融通でCV Modeを起動する際に既にDC Grid電圧が高い場合
 
-> HARDWARE:GLOBAL:ERROR : 全電力融通停止。
+ HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
 -CV Modeの電圧Ramp Up時間が長すぎてTimeoutする場合
 
-> HARDWARE:GLOBAL:ERROR : 全電力融通停止。
+ HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
 -電力融通中にDC Grid上の電流の充放電の合計がゼロでない場合 (どこかで漏れている)
 
-> HARDWARE:GLOBAL:ERROR : 全電力融通停止。
+ HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
 -電力融通中にDC Grid上の電流値が許容量を超えている場合
 
-> HARDWARE:GLOBAL:ERROR : 全電力融通停止。
+ HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
 -DC/DC ConverterやBatteryなどのハードウェアに不具合が発生した場合
 
-> 不具合によるため異常系処理のカテゴリは一意には決まらない。
+ 不具合によるため異常系処理のカテゴリは一意には決まらない。
 
 1.  Framework
 
-> クラスタを生成するフレームワークであるVert.x, Hazelcast上の問題や、ネットワーク, ファイル Systemに不具合がありGrid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生したノードだけに影響がある場合には該当ノードの電力融通を停止させる。Grid全体に影響を及ぼす場合はFRAMEWORK:GLOBAL:XXXX、不具合が発生した ノードだけに影響がある場合はFRAMEWORK:LOCAL:XXXXと分類する。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
->
-> \[Framework不具合具体例\]
->
-> -フレームワークであるVert.x, Hazelcast上の処理でErrorが発生した場合
->
-> 不具合によるため異常系処理のカテゴリは一意には決まらない。
->
-> -不揮発性メモリの容量不足でLogが残せない場合
->
-> FRAMEWORK:LOCAL:FATAL : 該当するapis-mainをShutdownする。
+クラスタを生成するフレームワークであるVert.x, Hazelcast上の問題や、ネットワーク, ファイル Systemに不具合がありGrid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生したノードだけに影響がある場合には該当ノードの電力融通を停止させる。Grid全体に影響を及ぼす場合はFRAMEWORK:GLOBAL:XXXX、不具合が発生した ノードだけに影響がある場合はFRAMEWORK:LOCAL:XXXXと分類する。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
 
-1.  Logic
+ \[Framework不具合具体例\]
 
-> 電力融通Requestを受けたが内容が無かったリ、設定されるべきパラメータが欠けているなどのErrorが発生し、Grid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生したノードだけに影響がある場合には該当ノードの電力融通を停止させる。Grid全体に影響を及ぼす場合はLOGIC:GLOBAL:XXXX、不具合が発生したノードだけに影響がある場合はLOGIC:LOCAL:XXXXとカテゴリ分けされる。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
->
-> \[Logic不具合具体例\]
->
-> -通信パケット内にあるはずのパラメータが存在しない場合、電力融通Requestメッセージの中身が空の場合、CV Modeなのに電力融通に参加していないなどLogic的な例外Errorが発生した場合など。不具合の影響がクラスタ全体に関わるか、該当するapis-mainのみに関わるかによって異なる。
+ -フレームワークであるVert.x, Hazelcast上の処理でErrorが発生した場合
+ 不具合によるため異常系処理のカテゴリは一意には決まらない。
+
+ -不揮発性メモリの容量不足でLogが残せない場合
+ FRAMEWORK:LOCAL:FATAL : 該当するapis-mainをShutdownする。
+
+2.  Logic
+
+電力融通Requestを受けたが内容が無かったリ、設定されるべきパラメータが欠けているなどのErrorが発生し、Grid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生したノードだけに影響がある場合には該当ノードの電力融通を停止させる。Grid全体に影響を及ぼす場合はLOGIC:GLOBAL:XXXX、不具合が発生したノードだけに影響がある場合はLOGIC:LOCAL:XXXXとカテゴリ分けされる。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
+
+ \[Logic不具合具体例\]
+
+-通信パケット内にあるはずのパラメータが存在しない場合、電力融通Requestメッセージの中身が空の場合、CV Modeなのに電力融通に参加していないなどLogic的な例外Errorが発生した場合など。不具合の影響がクラスタ全体に関わるか、該当するapis-mainのみに関わるかによって異なる。
 
 LOGIC:GLOBAL:ERROR : 全apis-main をResetする。
 
 LOGIC:LOCAL:ERROR : 該当するapis-main をResetする。
 
-1.  User
+3.  User
 
-> Config, Policy, Scenarioファイルの不備や設定値の不備があり、Grid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生した ノードだけに影響がある場合には該当 ノードの電力融通を停止させる。Grid全体に影響を及ぼす場合はUSER:GLOBAL:XXXX、不具合が発生した ノードだけに影響がある場合はUSER:LOCAL:XXXXと分類する。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
->
-> \[User不具合具体例\]
->
-> -同一IDのノードが見つかった場合
+Config, Policy, Scenarioファイルの不備や設定値の不備があり、Grid全体に影響を及ぼす場合には実行中の全電力融通を停止し、不具合が発生した ノードだけに影響がある場合には該当 ノードの電力融通を停止させる。Grid全体に影響を及ぼす場合はUSER:GLOBAL:XXXX、不具合が発生した ノードだけに影響がある場合はUSER:LOCAL:XXXXと分類する。不具合の状況によって実行中の電力融通を停止させるだけではなくapis-mainをShutdownさせることもあり、この場合をFATALと分類し、 Warningだけ残す場合はWARNと分類する。
+
+ \[User不具合具体例\]
+
+ -同一IDのノードが見つかった場合
 
 USER:LOCAL:FATAL : 該当するapis-main をShutdownする。
 
@@ -1110,11 +1103,13 @@ USER:LOCAL:FATAL : 該当するapis-main をShutdownする。
 |           |        | ERROR | 該当電力融通停止                              |
 |           |        | WARN  | Warning Log出力                               |
 
-1.  **その他の機能**
-    ================
+<a id="anchor11"></a>
+**11.その他の機能**
+================
 
-    1.  **トポロジー検出**
-        ------------------
+<a id="anchor11-1"></a>
+**11.1トポロジー検出**
+ 
 
 DC Gridに流れる電流を随時管理することにより、許容電流以上の電流を流せない仕組みがあり以下にその方法を示す。
 
@@ -1122,7 +1117,7 @@ DC Gridに流れる電流を随時管理することにより、許容電流以�
 
 2.  Grid Masterは電力融通発生時に(1)の計算式を使用して各配線の電流値を計算する。
 
-3.  (2)の電流値が配線の電流許容値を超える場合には新しい電力融通を開始しない。
+3.  2.の電流値が配線の電流許容値を超える場合には新しい電力融通を開始しない。
 
 4.  新しい電力融通が発生しなくてもSafety Check(12.安全確認機能で説明)として定期的に既存の電力融通電流が各配線の電流許容値を超えていない事を確認する。
 
@@ -1135,15 +1130,15 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 1.  Chargeノード視点の配線電流の計算
 
-> 現在電力融通を行っているChargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
+現在電力融通を行っているChargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
 
-1.  Dischargeノード視点の配線電流の計算
+2.  Dischargeノード視点の配線電流の計算
 
-> 現在電力融通を行っているDischargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
+現在電力融通を行っているDischargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
 
-1.  配線許容電流値との比較
+3.  配線許容電流値との比較
 
-> 1), 2)で計算した電流値をpolicy.jsonに保存してあるそれぞれの配線の許容電流値と比較し、一つでも許容値を超える配線が存在する場合には新しい電力融通を発生させない。
+ 1, 2で計算した電流値をpolicy.jsonに保存してあるそれぞれの配線の許容電流値と比較し、一つでも許容値を超える配線が存在する場合には新しい電力融通を発生させない。
 
 例として以下のDC Gridのトポロジーで計算方法について説明する。
 
@@ -1283,8 +1278,8 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 <img src="media/media/image32.png" style="width:5.90556in;height:1.55in" />
 
 
-**Gateway機能**
----------------
+<a id="anchor11-1"></a>
+**11.2Gateway機能**
 
 クラスタ間の電力融通を実現するGateway機能について説明する。Gateway機能はクラスタ間を繋ぐGatewayノードによって実現する。Gatewayノードは以下の図11-9のようにBattery　1台に対して複数のapis-mainとDevice DriverそしてDC/DC Converterを持つ構成となる。
 
@@ -1325,45 +1320,37 @@ Battery容量管理機能を起動しGateway機能を有効にする。
 
 排他ロックファイルを作成する場所と名前を指定する。
 
-1.  **安全確認機能**
-    ================
 
-    1.  **Global Safety Check**
-        -----------------------
+<a id="anchor12"></a>
+**12.安全確認機能**
+================
 
-> Grid MasterはPolicyファイルのgridMaster.dataCollectionPeriodMsecで規定された間隔で全ノードDataの収集処理を行う。その後収集されたDataを元に以下の確認を行う。
+<a id="anchor12-1"></a>
+**12.1Global Safety Check**
+
+ Grid MasterはPolicyファイルのgridMaster.dataCollectionPeriodMsecで規定された間隔で全ノードDataの収集処理を行う。その後収集されたDataを元に以下の確認を行う。
 
 ・DC Grid上の全電力融通電流の絶対値の合算値
-
-　 全電力融通電流の合算値がDC Gridの最大容量を超えていないことを確認する。　
-
-最大容量はPolicyファイルのsumOfDealGridCurrentMaxAで規定される。
+  全電力融通電流の合算値がDC Gridの最大容量を超えていないことを確認する。　
+  最大容量はPolicyファイルのsumOfDealGridCurrentMaxAで規定される。
 
 ・DC Gridのブランチ電流合計値
-
-DC Gridのトポロジーの各ブランチに流れる電流が最大容量を超えていないことの
-
-確認を行う。
-
-各ブランチの最大容量はPolicyファイルのgridTopologyBasedEvaluationの項目で
-
-規定されている。
+  DC Gridのトポロジーの各ブランチに流れる電流が最大容量を超えていないことの確認を行う。
+  各ブランチの最大容量はPolicyファイルのgridTopologyBasedEvaluationの項目で規定されている。
 
 ・DC Grid上の全電力融通電流の合算値
+　全電力融通電流の合算値指定値に対してPolicyファイルで規定されている範囲を超えていないことを確認する。　
+  範囲はPolicyファイルの±sumOfDealingUnitGridCurrentAllowancePerUnitA\*N (N : 電力融通に関わるノード数)で規定される。
 
-　 全電力融通電流の合算値指定値に対してPolicyファイルで規定されている範囲を超えていないことを確認する。　
+<a id="anchor12-2"></a>
+**12.2Local Safety Check**
 
-> 範囲はPolicyファイルの±sumOfDealingUnitGridCurrentAllowancePerUnitA\*N (N : 電力融通に関わるノード数)で規定される。
-
-**Local Safety Check**
-----------------------
-
-### **12.2.1.静的Local Safety Check**
+<a id="anchor12-2-1"></a>
+**12.2.1.静的Local Safety Check**
 
 　各ノードはhwConfigファイルのdataAcquisitionPeriodMsecで規定された間隔で自身Dataの収集処理を行いハードウェア性能に対する逸脱確認を行う。
 
 　
-
 ・DC/DC Converter温度
 
 　　DC/DC Converter温度がhwConfigファイルで規定されたスペックに収まっていることを確認する。温度の最小値はhwConfigファイルのsafety.range.DC/DC.meter. tpm.min で、最大値はsafety.range.DC/DC.meter.tpm.maxで規定されている。
@@ -1384,11 +1371,12 @@ DC Gridのトポロジーの各ブランチに流れる電流が最大容量を�
 
 　　DC/DC ConverterのBattery側の電流がhwConfigファイルで規定されたスペックに収まっていることを確認する。電流の最小値はhwConfigファイルのsafety.range.emu.　DC/DC.meter.ib.min で、最大値はsafety.range.emu.DC/DC.meter.ib.maxで規定されている。
 
-### **12.2.2. 動的Local Safety Check**
+<a id="anchor12-2-2"></a>
+**12.2.2. 動的Local Safety Check**
 
-> DC/DC ConverterやDC Gridの電圧、電流がPolicyファイルやhwConfigファイルで規定された誤差範囲に収まっていることや、最大許容電流を超えていないことなどDC/DC Converterの制御Modeに基づき正しく制御が行われていることを確認する。
->
-> 各ノードはhwConfigファイルのdataAcquisitionPeriodMsecで規定された間隔で自身Dataの収集処理を行う。その後収集されたDataを元に以下の確認を行う。
+DC/DC ConverterやDC Gridの電圧、電流がPolicyファイルやhwConfigファイルで規定された誤差範囲に収まっていることや、最大許容電流を超えていないことなどDC/DC Converterの制御Modeに基づき正しく制御が行われていることを確認する。
+
+各ノードはhwConfigファイルのdataAcquisitionPeriodMsecで規定された間隔で自身Dataの収集処理を行う。その後収集されたDataを元に以下の確認を行う。
 
 ・DC/DC Converter DC Grid側電流
 
@@ -1398,11 +1386,12 @@ DC Gridのトポロジーの各ブランチに流れる電流が最大容量を�
 
 　　DC/DC ConverterのDC Grid側の電流誤差がhwConfigファイルで規定された範囲に収まっていることを確認する。範囲はhwConfigファイルの±gridCurrent AllowanceAで規定されている。
 
-1.  **セキュリティ**
-    ================
+<a id="anchor13"></a>
+**13.セキュリティ**
+================
 
-    1.  **apis-main間通信セキュリティ**
-        -------------------------------
+<a id="anchor13-1"></a>
+**13.1apis-main間通信セキュリティ**
 
 apis-main間のやり取りはフレームワーク(Vertx, Hazelcast )がサポートするEvent Bus通信とHazelcast通信によって行われている。それぞれの通信ではセキュリティのため以下の方法で暗号化を行っている。
 
@@ -1416,19 +1405,21 @@ apis-main間のやり取りはフレームワーク(Vertx, Hazelcast )がサポ�
 
 　 -共通鍵暗号方式(AES 128bit)
 
-**Device Driver アクセス制限**
-------------------------------
+<a id="anchor13-2"></a>
+**13.2.Device Driver アクセス制限**
 
 Device DriverはWeb APIでアクセスを行うが、IP AddressとPortで制限をかけることにより他のノードからのアクセスは制限され自身内からのみアクセスを可能とする。
 
-**プライバシー**
+<a id="anchor14"></a>
+**14.プライバシー**
 ================
 
 GDPR等は、IP Addressとその他の情報との組み合わせで個人識別につながる場合には個人情報扱いとなり個人情報保護規制の対象になるため注意が必要である。
 
 Localネットワーク内のみで成立するSystem構成の場合はapis-mainで取得された情報は外部サーバに送信することはないため個人情報保護規制の対象にはならないが、外部のサーバに送信する場合には注意が必要である。
 
-**OSSライセンス**
+<a id="anchor15"></a>
+**15.OSSライセンス**
 =================
 
 以下にapis-mainが使用するソフトウェアとそのOSSライセンスの情報を記載する。Adopt OpenJDKはライブラリのリンクのみを行っているためClasspath Exceptionが適用されGPLv2であってもapis-mainのソースコードの公開を要求されない。その他のOSSソフトウェアもapis-mainのソースコードの公開を要求するライセンスはない。
@@ -1439,18 +1430,19 @@ Localネットワーク内のみで成立するSystem構成の場合はapis-main
 
 ※諸事情によりソフトウェアバージョンは変更される可能性があります。
 
-1.  **動作環境**
-    ============
+<a id="anchor16"></a>
+**16.動作環境**
+============
 
-    1.  **ハードウェア要求**
-        --------------------
+<a id="anchor16-1"></a>
+**16.1ハードウェア要求**
 
 以下にapis-mainのハードウェア要求を示す。
 
 <table><thead><tr class="header"><th>CPUプロセッサ</th><th><p>600～1000MHz, 64bit シングルコア, 32KB L1 cache以上</p><p>ARMv8推奨</p><p>(ARMv8以外のCPU採用の場合はapis-mainの動作確認を行う必要あり)</p></th></tr></thead><tbody><tr class="odd"><td>DRAM</td><td>DDR3 1.6Gbps 1GB 以上</td></tr><tr class="even"><td>内部ストレージ</td><td>8GB以上</td></tr><tr class="odd"><td>Ethernet</td><td>20Mbps 1ポート以上, IPv4 IPv6 サポート</td></tr></tbody></table>
 
-**OS要求**
-----------
+<a id="anchor16-2"></a>
+**16.2OS要求**
 
 以下にapis-main用のコンピュータのOS要求を示す。
 
