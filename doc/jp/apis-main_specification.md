@@ -801,8 +801,8 @@ java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.
 
 “java”の後の引き数の意味を以下に説明する。  
 
-  -XX:OnOutOfMemoryError="'kill -KILL %p'"  　
-   メモリ不足(OOM Error)発生時プロセスをKillするオプション  
+  -XX:OnOutOfMemoryError="'kill -KILL %p'"  
+   メモリ不足(OOM Error)発生時プロセスをKillするオプション    
 
   -Duser.timezone=Asia/Tokyo  
    Timezone設定  
