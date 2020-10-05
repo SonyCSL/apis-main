@@ -276,7 +276,6 @@ apis-mainは起動時にHazelcastと呼ばれるVert.xフレームワークが�
 apis-mainが起動するとMediator Service のGird Master Management機能が、ランダムなタイミングでクラスタ内にGrid Masterの存在を問い合わせる。起動直後等でクラスタ内にGrid Masterが存在しない場合には、設定ルールに従って、適切なGrid Masterを選定する。Grid Master選定には "voltageReference", "fixed", "anywhere"の3種類の選定方法がある。
 
 1.  voltageReference
-
 電力融通時に電圧Reference(CV Mode)となるノードがGrid Masterになる選定方法である。電圧Referenceが変わればそれに伴ってGrid Masterも移動する。
 電圧Referenceとなるノードは、電力融通開始時に決定されるためapis-main起動直後にはGrid Masterは決まらない。そのため起動時はGrid Masterの存在を問い合わせ、返信がなければ自らがGrid Masterになろうとする。(複数のGrid Masterの同時起動を防ぐため、自身のGrid Master Serviceを起動させる前にランダム時間待ち、その後再びGrid Masterの不在が確認された場合は自らGrid Master Serviceを起動させる。)
 
