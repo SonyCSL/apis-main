@@ -494,7 +494,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
   "status" : {
 
-"status" : "0x0000",　
+ "status" : "0x0000",　
 
       "alarmState" : "No alarm",
 
@@ -975,40 +975,36 @@ Log出力にはJava標準APIのjava.util.loggingを使っており以下の7つ�
 
 1.SEVERE
 
-→致命的な状況やErrorについての情報で、問題が発生し処理が継続不能な状況である。
-
-apis-main処理の”FATAL”, “ERROR”に対応する。
+  致命的な状況やErrorについての情報で、問題が発生し処理が継続不能な状況である。
+  apis-main処理の”FATAL”, “ERROR”に対応する。
 
 2.WARNING
 
-→警告についての情報で、問題が発生しているが処理は継続可能な状況である。
+  警告についての情報で、問題が発生しているが処理は継続可能な状況である。
+  apis-main処理の”WARN”の情報に対応する。
 
-apis-main処理の”WARN”の情報に対応する。
+3.INFO
 
-3\. INFO
-
-→正常系の情報で、特に動作として重要なイベントを行った場合に出力する。
-
-apis-main処理の”INFO”に対応する。
+  正常系の情報で、特に動作として重要なイベントを行った場合に出力する。
+  apis-main処理の”INFO”に対応する。
 
 4.CONFIG
 
-→設定に関する情報である。
-
-apis-mainとしてはこのLevelのLog出力はない。
+  設定に関する情報である。
+  apis-mainとしてはこのLevelのLog出力はない。
 
 5.FINE　
 
-→デバッグ情報である。apis-main処理の”DEBUG”に対応する。
+  デバッグ情報である。apis-main処理の”DEBUG”に対応する。
 
 6.FINER
 
-→特定の処理についての開始及び終了の情報。内部に発生した例外に関する情報である。
- apis-mainとしてこのLevelのLog出力はない。
+  特定の処理についての開始及び終了の情報。内部に発生した例外に関する情報である。
+  apis-mainとしてこのLevelのLog出力はない。
 
 7.FINEST
 
-→トレース情報である。apis-main処理の”TRACE”に対応する。
+  トレース情報である。apis-main処理の”TRACE”に対応する。
 
 <a id="anchor9-2"></a>
 **9.2.apis-main動作Log出力先**
@@ -1024,7 +1020,6 @@ apis-mainの動作LogはUDP、Console、ファイルの3つの出力先がある
 -----------------------
 
 電力融通を行った両側のノードに同じ内容の情報が電力融通Logとして保存される。
-
 保存される内容は以下の項目で、保存先はConfigファイルにて指定する。
 
 <table><thead><tr class="header"><th>unitId</th><th>ノード識別ID</th></tr></thead><tbody><tr class="odd"><td>negotiationId</td><td>電力融通交渉ID</td></tr><tr class="even"><td>requestUnitId</td><td>電力融通をRequestしたノードID</td></tr><tr class="odd"><td>acceptUnitId</td><td>電力融通をAcceptしたノードID</td></tr><tr class="even"><td>requestDateTime</td><td>電力融通をRequestした日時</td></tr><tr class="odd"><td>acceptDateTime</td><td>電力融通をAcceptした日時</td></tr><tr class="even"><td>requestPointPerWh</td><td>Request側が提示した1Wh当たりのポイント</td></tr><tr class="odd"><td>acceptPontPerWh</td><td>Accept側が提示した1Wh当たりのポイント</td></tr><tr class="even"><td>requestDealGridCurrentA</td><td>Request側が提示した融通の電流値</td></tr><tr class="odd"><td>acceptDealGridCurrentA</td><td>Accept側が提示した融通の電流値</td></tr><tr class="even"><td>type</td><td>電力融通Requestのタイプ(充電/放電)</td></tr><tr class="odd"><td>chargeUnitId</td><td>充電側のノードID</td></tr><tr class="even"><td>dischargeUnitId</td><td>放電側のノードID</td></tr><tr class="odd"><td>pointPerWh</td><td>実際の電力融通時の1Wh当たりのポイント</td></tr><tr class="even"><td>chargeUnitEfficientGridVoltageV</td><td>充電側ノードの効率が良いGrid電圧</td></tr><tr class="odd"><td>dischargeUnitEfficientGridVoltageV</td><td>放電側ノードの効率が良いGrid電圧</td></tr><tr class="even"><td>dealGridCurrentA</td><td>電力融通時電流値(A)</td></tr><tr class="odd"><td>requestAmountWh</td><td>Request側が提示した電力量</td></tr><tr class="even"><td>acceptAmountWh</td><td>Accept側が提示した電力量</td></tr><tr class="odd"><td>dealAmountWh</td><td>電力融通時電力量(Wh)</td></tr><tr class="even"><td>dealId</td><td>電力融通情報に付与されたID</td></tr><tr class="odd"><td>createDateTime</td><td>電力融通の電力融通情報が作られた日時</td></tr><tr class="even"><td><p>compensationTargetVoltage</p><p>ReferenceGridCurrentA</p></td><td>電圧Referenceを担っているノードの電流補正のターゲット値 (A)</td></tr><tr class="odd"><td>activateDateTime</td><td>Constant Voltageノード側の起動を開始した日時</td></tr><tr class="even"><td>rampUpDateTime</td><td>DC Gridの電圧Ramp Upが完了した日時</td></tr><tr class="odd"><td>warmUpDateTime</td><td>Constant Currentノード側を起動した日時</td></tr><tr class="even"><td><p>dischargeUnitCompensated</p><p>GridCurrentA</p></td><td>電流補正後の放電電流 (A)</td></tr><tr class="odd"><td><p>chargeUnitCompensated</p><p>GridCurrentA</p></td><td>電流補正後の充電電流 (A)</td></tr><tr class="even"><td>startDateTime</td><td>実際の電力融通を開始した日時</td></tr><tr class="odd"><td>cumulateDateTime</td><td>実際に電力融通した電力を積算した日時</td></tr><tr class="even"><td>cumulateAmountWh</td><td>実際に電力融通した総電力量 (Wh)</td></tr><tr class="odd"><td>stopDateTime</td><td>実際の電力融通を停止した日時</td></tr><tr class="even"><td>deactiveateDateTime</td><td>電力融通後の処理が完了した日時</td></tr></tbody></table>
@@ -1045,25 +1040,20 @@ DC/DC ConverterやBatteryなどのハードウェアに不具合が発生し、D
 
  \[Hardware不具合具体例\]
 
--最初の電力融通でCV Modeを起動する際に既にDC Grid電圧が高い場合
+  -最初の電力融通でCV Modeを起動する際に既にDC Grid電圧が高い場合
+   HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
- HARDWARE:GLOBAL:ERROR : 全電力融通停止。
+  -CV Modeの電圧Ramp Up時間が長すぎてTimeoutする場合
+   HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
--CV Modeの電圧Ramp Up時間が長すぎてTimeoutする場合
+  -電力融通中にDC Grid上の電流の充放電の合計がゼロでない場合 (どこかで漏れている)
+   HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
- HARDWARE:GLOBAL:ERROR : 全電力融通停止。
+  -電力融通中にDC Grid上の電流値が許容量を超えている場合
+   HARDWARE:GLOBAL:ERROR : 全電力融通停止。
 
--電力融通中にDC Grid上の電流の充放電の合計がゼロでない場合 (どこかで漏れている)
-
- HARDWARE:GLOBAL:ERROR : 全電力融通停止。
-
--電力融通中にDC Grid上の電流値が許容量を超えている場合
-
- HARDWARE:GLOBAL:ERROR : 全電力融通停止。
-
--DC/DC ConverterやBatteryなどのハードウェアに不具合が発生した場合
-
- 不具合によるため異常系処理のカテゴリは一意には決まらない。
+  -DC/DC ConverterやBatteryなどのハードウェアに不具合が発生した場合
+   不具合によるため異常系処理のカテゴリは一意には決まらない。
 
 1.  Framework
 
@@ -1071,11 +1061,11 @@ DC/DC ConverterやBatteryなどのハードウェアに不具合が発生し、D
 
  \[Framework不具合具体例\]
 
- -フレームワークであるVert.x, Hazelcast上の処理でErrorが発生した場合
- 不具合によるため異常系処理のカテゴリは一意には決まらない。
+  -フレームワークであるVert.x, Hazelcast上の処理でErrorが発生した場合
+   不具合によるため異常系処理のカテゴリは一意には決まらない。
 
- -不揮発性メモリの容量不足でLogが残せない場合
- FRAMEWORK:LOCAL:FATAL : 該当するapis-mainをShutdownする。
+  -不揮発性メモリの容量不足でLogが残せない場合
+   FRAMEWORK:LOCAL:FATAL : 該当するapis-mainをShutdownする。
 
 2.  Logic
 
@@ -1083,11 +1073,9 @@ DC/DC ConverterやBatteryなどのハードウェアに不具合が発生し、D
 
  \[Logic不具合具体例\]
 
--通信パケット内にあるはずのパラメータが存在しない場合、電力融通Requestメッセージの中身が空の場合、CV Modeなのに電力融通に参加していないなどLogic的な例外Errorが発生した場合など。不具合の影響がクラスタ全体に関わるか、該当するapis-mainのみに関わるかによって異なる。
-
-LOGIC:GLOBAL:ERROR : 全apis-main をResetする。
-
-LOGIC:LOCAL:ERROR : 該当するapis-main をResetする。
+  -通信パケット内にあるはずのパラメータが存在しない場合、電力融通Requestメッセージの中身が空の場合、CV Modeなのに電力融通に参加していないなどLogic的な例外Errorが発生した場合など。不具合の影響がクラスタ全体に関わるか、該当するapis-mainのみに関わるかによって異なる。
+   LOGIC:GLOBAL:ERROR : 全apis-main をResetする。
+   LOGIC:LOCAL:ERROR : 該当するapis-main をResetする。
 
 3.  User
 
@@ -1095,9 +1083,8 @@ Config, Policy, Scenarioファイルの不備や設定値の不備があり、Gr
 
  \[User不具合具体例\]
 
- -同一IDのノードが見つかった場合
-
-USER:LOCAL:FATAL : 該当するapis-main をShutdownする。
+  -同一IDのノードが見つかった場合
+   USER:LOCAL:FATAL : 該当するapis-main をShutdownする。
 
 ・apis-mainのError処理における電力融通停止はDCDC Converter視点では自身のModeをWaitに設定するという点では通常処理と同じ状態である。apis-main視点では通常処理の電力融通停止の場合はネゴシエーションによって決められた電力量の電力融通完了後DC/DC Converterを制御して電力融通を停止し、電力融通量等をLogとして記録するが、Error処理の場合は電力融通が未完了であっても強制的に電力融通を終了させ不具合の内容をLogとして記録する。異常系処理は不具合の内容によって対応が変わり、例えばapis-main Resetの場合はapis-mainをResetした後、再度電力融通に参加することができるが、apis-main Shutdownの場合はapis-main自身をShutdown させるためクラスタからも離脱し以後の電力融通には参加できない状態となる。(apis-main Shutdownはapis-mainアプリケーションのShutdownであり、OS のShutdownではない。)
 
@@ -1160,15 +1147,15 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 
 1.  Chargeノード視点の配線電流の計算
 
-現在電力融通を行っているChargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
+   現在電力融通を行っているChargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
 
 2.  Dischargeノード視点の配線電流の計算
 
-現在電力融通を行っているDischargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
+   現在電力融通を行っているDischargeノードの電流のみに焦点を当て、ある支流方向とその逆の支流方向それぞれに対して配線毎に電流値を合算して配線の電流として考えられる最大値を求める。
 
 3.  配線許容電流値との比較
 
- 1, 2で計算した電流値をpolicy.jsonに保存してあるそれぞれの配線の許容電流値と比較し、一つでも許容値を超える配線が存在する場合には新しい電力融通を発生させない。
+    1, 2で計算した電流値をpolicy.jsonに保存してあるそれぞれの配線の許容電流値と比較し、一つでも許容値を超える配線が存在する場合には新しい電力融通を発生させない。
 
 例として以下のDC Gridのトポロジーで計算方法について説明する。
 
@@ -1320,16 +1307,12 @@ apis-mainは各ノードが非同期で電力融通を行うため上記のよ�
 ハードウェアとソフトウェアの主な構成を以下に示す。
 
 ・ハードウェア構成
-
--Battery … 1台
-
--DC/DC Converter … 接続するクラスタ数と同じ台数
+  -Battery … 1台
+  -DC/DC Converter … 接続するクラスタ数と同じ台数
 
 ・ソフトウェア構成
-
--apis-main … 接続するクラスタ数と同じ台数
-
--Device Driver … 接続するクラスタ数と同じ台数
+  -apis-main … 接続するクラスタ数と同じ台数
+  -Device Driver … 接続するクラスタ数と同じ台数
 
 Gatewayノード内の複数のapis-mainはそれぞれ異なるクラスタに参加し互いに独立して動作を行う。そして複数のDC/DC Converterもそれぞれに対応するapis-mainの制御に従って独立して電力融通処理を実行するが、1つのBatteryを複数のapis-mainで共有しているためBatteryの最大電流容量を超えないように制御を行う必要がありそこが通常のノードと異なる点である。Batteryの最大電流容量を超えないようにファイルシステムベースの排他ロックを用いて同時に同方向の電力融通が行えないように制御を行っている。このファイルベースの排他ロック制御のため複数のapis-mainは同一のOS上で起動させる必要がある。
 
@@ -1337,9 +1320,7 @@ Gatewayノード内の複数のapis-mainはそれぞれ異なるクラスタに�
 
 Gatewayノード上のapis-mainが電力融通のために放電を行う場合には、最初に指定フォルダの放電用排他ロックファイルの存在を確認し、ファイルが存在する場合には放電を断念し、ファイルが存在しない場合には放電用排他ロックファイルを作成した後に放電を行う。充電の場合も同様にapis-mainが電力融通のために充電を行う場合には、最初に指定フォルダの充電用排他ロックファイルの存在を確認し、ファイルが存在する場合には充電を断念し、ファイルが存在しない場合には充電用排他ロックファイルを作成した後に放電を行う。
 
-apis-main上でGateway機能をEnableするためにはconfigファイルの以下の
-
-2箇所を設定する。
+apis-main上でGateway機能をEnableするためにはconfigファイルの以下の2箇所を設定する。
 
 \[configファイル\]
 
@@ -1433,13 +1414,13 @@ apis-main間のやり取りはフレームワーク(Vertx, Hazelcast )がサポ�
 
 \(1\) Event Bus通信
 
--SSL公開鍵暗号方式 (RSA)
+  -SSL公開鍵暗号方式 (RSA)
 
--SSL自己署名証明書
+  -SSL自己署名証明書
 
 \(2\) Hazelcast通信
 
-　 -共通鍵暗号方式(AES 128bit)
+　-共通鍵暗号方式(AES 128bit)
 
 <a id="anchor13-2"></a>
 **13.2.Device Driver アクセス制限**
