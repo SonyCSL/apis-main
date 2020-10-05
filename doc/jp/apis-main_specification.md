@@ -808,33 +808,26 @@ java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.
 
 “java”の後の引き数の意味を以下に説明する。
 
--XX:OnOutOfMemoryError="'kill -KILL %p'"　
+  -XX:OnOutOfMemoryError="'kill -KILL %p'"　
+   メモリ不足(OOM Error)発生時プロセスをKillするオプション。
 
--&gt; メモリ不足(OOM Error)発生時プロセスをKillするオプション。
+  -Duser.timezone=Asia/Tokyo
+   Timezone設定。
 
--Duser.timezone=Asia/Tokyo
+  -Djava.util.logging.config.file=./logging.properties
+   Log構成ファイルを指定するオプション。
 
-　-&gt; Timezone設定。
+  -jar ./apis-main-2.xx.x-a01-fat.jar
+   JARファイルの中にカプセル化されたプログラムの実行を指定するオプション。
 
--Djava.util.logging.config.file=./logging.properties
+  -conf ./config.json
+   構成ファイルを指定するオプション。
 
-　-&gt;Log構成ファイルを指定するオプション。
+  -cp ./
+   cluseter.xmlファイルの位置を指定するオプション。
 
--jar ./apis-main-2.xx.x-a01-fat.jar
-
--&gt;JARファイルの中にカプセル化されたプログラムの実行を指定するオプション。
-
--conf ./config.json
-
-　-&gt;構成ファイルを指定するオプション。
-
--cp ./
-
-　-&gt;cluseter.xmlファイルの位置を指定するオプション。
-
--cluster-host 192.168.0.1 &
-
--&gt;自身のIP Addressを指定するオプション。
+  -cluster-host 192.168.0.1 &
+   自身のIP Addressを指定するオプション。
 
 
 <a id="anchor6-8"></a>
