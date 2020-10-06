@@ -379,16 +379,12 @@ Grid Masterを移動する際はGrid Master Serviceを終了させた後、共�
 2. Localメモリ上のロック  
 2-1. 電力融通インタロック  
 Grid Masterが電力融通を行う両端のノードに対してかけるロックである。DC/DC Converterの最大電流量と１電力融通の電流量で電力融通数を決めている。  
-
 2-2. 電力融通インタロック用排他ロック  
 電力融通インタロックの取得/解放は、非同期で行われるが、整合性を取るために排他ロックで同期を取る。  
-
 2-3. データ取得排他ロック  
 apis-mainからDevice Driverに対してデータを取得する際にLocalにあるデータキャッシュの上書き競合を防ぐため、この排他ロックを使用してデータ取得用Commandと制御用Commandを制御する。              all/getと/dcdc/get/statusと/dcdc/setが排他制御されている。  
-
 2-4. GM処理ループ排他ロック  
 Grid MasterのMain loop実行中にGrid Masterの停止が発生しないようにGrid Masterの移動(起動及び停止)とGrid MasterのMain Loop処理を排他制御するために使用する。  
-
 2-5. 共有メモリ電力融通情報読み書き排他ロック  
 自ノード内の複数スレッドによる共有メモリへの同時書き込みを防ぐために使用する。  
 
