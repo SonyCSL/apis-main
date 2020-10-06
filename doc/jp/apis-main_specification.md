@@ -231,7 +231,7 @@ DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV Mod
 図3-1はソフトウェアアーキテクチャを示した図である。Linux OS上にJDK(Java Development Kit)、その上にイベントドリブンの負荷分散プラットフォームであるVert.xとインメモリ分散コンピューティングのHazelcastの2つのフレームワークを使用してapis-mainを動作させている。apis-mainとDevice Driver間はWeb API経由にて情報の受け渡しを行う。(動作確認済みOSSソフトウェアのVersionは15.OSSライセンス参照)
 
 <img src="media/media/image13.png" style="width:3.63333in;height:2.81838in" />
-<p align="center">図3-1</p>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;図3-1
                                   
 <a id="anchor3-2"></a>
 **3.2.apis-main内Service構成**
