@@ -320,23 +320,23 @@ apis-mainはループ処理として以下の内容を継続して行う。
 
 Grid Master はループ処理として以下の内容を継続して行う。
 
-1.Grid Masterを起動する前にHazelcastの共有メモリに自身のIDを登録して他のapis-mainがGrid Masterにならないようにロックをする。(Grid Masterを移動する際は共有メモリから登録したIDを削除する。)
+1. Grid Masterを起動する前にHazelcastの共有メモリに自身のIDを登録して他のapis-mainがGrid Masterにならないようにロックをする。(Grid Masterを移動する際は共有メモリから登録したIDを削除する。)
 
-2.クラスタ内にGrid Masterが重複していないことを確認するために、Event BusにHelloメッセージを送信する。重複が確認された場合はError処理を行う。
+2. クラスタ内にGrid Masterが重複していないことを確認するために、Event BusにHelloメッセージを送信する。重複が確認された場合はError処理を行う。
 
-3.各apis-mainからEvent Bus上に発行されるGlobal Error情報をキャッシュに保存する。
+3. 各apis-mainからEvent Bus上に発行されるGlobal Error情報をキャッシュに保存する。
 
-4.Global Error情報をキャッシュから取り出しError処理を行う。(10. Error処理・保護機能参照)
+4. Global Error情報をキャッシュから取り出しError処理を行う。(10. Error処理・保護機能参照)
 
-5.全apis-mainからDC/DC ConverterとBatteryの情報を取得する。(8. Grid Master Data収集参照)
+5. 全apis-mainからDC/DC ConverterとBatteryの情報を取得する。(8. Grid Master Data収集参照)
 
-6.クラスタ全体の全ノード数やDC Grid上の平均Battery残量等を算出する。
+6. クラスタ全体の全ノード数やDC Grid上の平均Battery残量等を算出する。
 
-7.Global Safety Checkを行う。(12.1 Global Safety Check参照)
+7. Global Safety Checkを行う。(12.1 Global Safety Check参照)
 
-8.Hazelcastの共有メモリに登録された電力融通取引情報に基づき順次電力融通を実施する。
+8. Hazelcastの共有メモリに登録された電力融通取引情報に基づき順次電力融通を実施する。
 
-9.Grid Masterの移動が発生した場合は適切なノードにGrid Masterを移動させる。
+9. Grid Masterの移動が発生した場合は適切なノードにGrid Masterを移動させる。
   (Grid Masterが移動する際に既存の融通情報など引き継ぐ情報はすべてHazelcastの共有メモリ上に存在するため旧新Grid Master間で通信し情報を引き継ぐ必要はなく、新Grid Masterは起動後、共有メモリ上のGrid Masterの情報を参照し動作を開始する。)
 
 <a id="anchor4-5"></a>
