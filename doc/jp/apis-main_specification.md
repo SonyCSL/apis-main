@@ -239,20 +239,16 @@ DC Gridを制御する上での注意点は図2-7のようにDC Grid上にCV Mod
 
 電力融通を実現するソフトウェアであるapis-mainと、BatteryやDC/DC Converterとのやり取りを行うDevice Driverで構成しており、apis-mainは以下の4つのServiceに分けられる。(図3-2参照)
 
-1.  User Service
-
+1.  User Service  
 Battery残容量毎のBattery充放電要求(“2.製品概要”では行動ルールとして説明)を記したファイルをScenarioファイルと呼び、そのScenarioファイルの内容と現在のBattery残容量を比較することで充放電に関する要求を判定する。充放電が必要と判定した場合はMediator Serviceに対して他のapis-mainとネゴシエーションを行うように要求する。
 
-2.  Mediator Service
-
+2.  Mediator Service  
 User Serviceの要求に基づき、他のapis-mainとネゴシエーションを行い、電力融通取引情報を作成する。必要に応じてGrid Masterを起動させる役割も担う。
 
-3.  Grid Master Service
-
+3.  Grid Master Service  
 自身もしくは他のapis-mainから成立した電力融通取引情報を受け取り、電力融通に必要なDC/DC Converterを制御して電力融通を行わせる。電力融通中は融通された電力量を監視し、電力融通取引情報で決められた電力融通量に到達後融通を止める。電力融通記録は電力融通を行った双方のapis-mainが動作するハードウェアの不揮発性メモリに保存される。
 
-4.  Controller Service
-
+4.  Controller Service  
 User Serviceの要求でDC/DC ConverterやBatteryの情報を取得する。
 また、自身もしくは他のapis-main上のGrid Master Serviceからの要求でDC/DC Converterを制御し電力融通を行わせる。
 
