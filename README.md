@@ -20,7 +20,7 @@ git clone
 mvn install
 cd ..
 mkdir apis-main
-d apis-main
+cd apis-main
 git cone
 mvn package
 
