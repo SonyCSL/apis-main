@@ -12,7 +12,7 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 ![キャプチャ](https://user-images.githubusercontent.com/71874910/94899039-87ea0600-04cd-11eb-96a0-afa5466b3742.PNG)
 
-## Getting Started
+## Installation
 ```bash
 
 $ mkdir apis-common_build
@@ -34,10 +34,11 @@ $ bash start.sh
 
 ```
 
-## Usage  
+## configuration
 There are many configuration files like config.json, hwConfig.json, scenario.json, policy.json and so on.  
 Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
+## Running
 
 ## Documentation
 &emsp;[apis-main_specificaton(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
