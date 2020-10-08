@@ -34,7 +34,11 @@ $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 ## Parameter Setting
 Set the following file parameters to suit your environment. 
 
-&emsp;config.json :  
+&emsp;config.json :
+&emsp;&emsp;&emsp;unitId      
+&emsp;&emsp;&emsp;unitName  
+&emsp;&emsp;&emsp;systemType  
+
 &emsp;policy.json :  
 &emsp;cluster.json:  
 &emsp;start.sh :  
