@@ -35,7 +35,8 @@ $ bash start.sh
 ```
 
 ## Usage
-Refer to the specification for various settings.
+There are many configuration files like config.json, hwConfig.json, scenario.json, policy.json and so on.
+Refer to the following apis-main_specification for various settings.
 
 
 ## Documentation
