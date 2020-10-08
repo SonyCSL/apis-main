@@ -29,10 +29,9 @@ $ cd ../../
 $ mkdir apis-main_exe
 $ cp ./apis-main_build/apis-main/target/apis-main-*-fat.jar ./apis-main_exe
 $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
-$ bash start.sh
 ```
 
-## configuration
+## Configuration
 There are many configuration files like config.json, hwConfig.json, scenario.json, policy.json and so on.  
 Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
