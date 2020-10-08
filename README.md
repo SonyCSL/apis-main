@@ -39,7 +39,7 @@ Set the following file parameters to suit your environment.
 &emsp;cluster.json:  
 &emsp;start.sh :  
 
-There are many configuration files like config.json, hwConfig.json, scenario.json, policy.json and so on.  
+There are many configuration files.  
 Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
 ## Running
