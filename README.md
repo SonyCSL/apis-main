@@ -32,7 +32,7 @@ $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 ```
 
 ## Parameter Setting
-Set the following file parameters in the apis-main_exe to suit your environment.   
+Set the following file parameters in the apis-main_exe at least to suit your environment.   
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
 
 &emsp;config.json   
