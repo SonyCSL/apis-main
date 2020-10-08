@@ -40,7 +40,11 @@ Set the following file parameters in the apis-main_exe to suit your environment.
 &emsp;&emsp;&emsp;systemType  
 
 &emsp;policy.json :  
+&emsp;&emsp;&emsp;memberUnitIds
+
 &emsp;cluster.json:  
+&emsp;&emsp;&emsp;<interface>
+
 &emsp;start.sh :  
 
 There are many configuration files.  
