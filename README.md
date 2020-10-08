@@ -14,7 +14,6 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 ## Installation
 ```bash
-
 $ mkdir apis-common_build
 $ cd apis-common_build
 $ git clone https://github.com/SonyCSL/apis-common.git
@@ -31,7 +30,6 @@ $ mkdir apis-main_exe
 $ cp ./apis-main_build/apis-main/target/apis-main-*-fat.jar ./apis-main_exe
 $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 $ bash start.sh
-
 ```
 
 ## configuration
@@ -39,6 +37,10 @@ There are many configuration files like config.json, hwConfig.json, scenario.jso
 Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
 ## Running
+```bash
+$ cd apis-main_exe
+$ bash start.sh
+```
 
 ## Documentation
 &emsp;[apis-main_specificaton(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
