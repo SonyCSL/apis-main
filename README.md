@@ -51,9 +51,9 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 <Example>  
   
 &emsp;config1.json :  
-&emsp;&emsp;&emsp;unitId &emsp;&emsp;&emsp;: E001  
-&emsp;&emsp;&emsp;unitName   &emsp;&emsp;: E001  
-&emsp;&emsp;&emsp;systemType  : dcdc_emulator  
+&emsp;&emsp;&emsp;unitId &emsp;&emsp;: E001  
+&emsp;&emsp;&emsp;unitName   &emsp;: E001  
+&emsp;&emsp;&emsp;systemType : dcdc_emulator  
   
 &emsp;config2.json :  
 &emsp;&emsp;&emsp;unitId : E002  
