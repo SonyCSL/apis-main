@@ -59,6 +59,7 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 ### 3 apis-mains Execution Example
 
 [Parameter Setting]  
+
 &emsp;config1.json :  
 &emsp;&emsp;&emsp;unitId     : E001  
 &emsp;&emsp;&emsp;unitName   : E001  
@@ -84,7 +85,7 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 
 [Running]  
 ```bash
-$ cd apis-main_exec
+$ cd apis-main_exe
 $ bash start1.sh
 $ bash start2.sh
 $ bash start3.sh
