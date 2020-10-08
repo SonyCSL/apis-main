@@ -19,12 +19,12 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 
 ## Documentation
-[Documentation(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
+&emsp;[Documentation(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
 
 
 ## License
-[Apache License Version 2.0](https://github.com/oes-github/apis-main/blob/master/LICENSE)
+&emsp;[Apache License Version 2.0](https://github.com/oes-github/apis-main/blob/master/LICENSE)
 
 
 ## Notice
-[Notice](https://github.com/oes-github/apis-main/blob/master/NOTICE.md)
+&emsp;[Notice](https://github.com/oes-github/apis-main/blob/master/NOTICE.md)
