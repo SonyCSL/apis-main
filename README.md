@@ -32,7 +32,7 @@ $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 ```
 
 ## Parameter Setting
-Set the following file parameters in the apis-main_exe to suit your environment. 
+Set the following file parameters in the apis-main_exe to suit your environment.   
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
 
 &emsp;config.json :  
@@ -64,27 +64,27 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 
 [Parameter Setting]  
 
-&emsp;config1.json :  
+&emsp;config1.json     
 &emsp;&emsp;&emsp;unitId     : E001  
 &emsp;&emsp;&emsp;unitName   : E001  
 
-&emsp;start1.sh :  
+&emsp;start1.sh  
 &emsp;&emsp;&emsp;java arguments "-conf ./config1.json"  
 <br />
 
-&emsp;config2.json :  
+&emsp;config2.json   
 &emsp;&emsp;&emsp;unitId : E002  
 &emsp;&emsp;&emsp;unitName   : E002  
 
-&emsp;start2.sh :  
+&emsp;start2.sh  
 &emsp;&emsp;&emsp;java arguments "-conf ./config2.json"  
 <br />
 
-&emsp;config3.json :  
+&emsp;config3.json    
 &emsp;&emsp;&emsp;unitId : E003  
 &emsp;&emsp;&emsp;unitName   : E003  
 
-&emsp;start3.sh :  
+&emsp;start3.sh  
 &emsp;&emsp;&emsp;java arguments "-conf ./config3.json"  
 
 [Running]  
