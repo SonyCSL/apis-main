@@ -49,9 +49,10 @@ Refer to "Chapter 6, About Configuration Files" in the following apis-main_speci
 In order to run multiple apis-mains on the same PC, multiple config.json and start.sh are needed.
 
 <Example>  
+  
 &emsp;config1.json :  
-&emsp;&emsp;&emsp;unitId : E001        
-&emsp;&emsp;&emsp;unitName   : E001  
+&emsp;&emsp;&emsp;unitId : E001  
+&emsp;&emsp;&emsp;unitName   : E001 
 &emsp;&emsp;&emsp;systemType  : emulator  
   
 &emsp;config2.json :  
