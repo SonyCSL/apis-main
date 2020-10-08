@@ -62,15 +62,19 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 &emsp;&emsp;&emsp;unitId     : E001  
 &emsp;&emsp;&emsp;unitName   : E001  
 
-&emsp;start1.sh :  
+&emsp;start1.sh :  java arguments "-conf ./config1.json" 
   
 &emsp;config2.json :  
 &emsp;&emsp;&emsp;unitId : E002  
 &emsp;&emsp;&emsp;unitName   : E002  
 
+&emsp;start2.sh :  java arguments "-conf ./config2.json" 
+
 &emsp;config3.json :  
 &emsp;&emsp;&emsp;unitId : E003  
 &emsp;&emsp;&emsp;unitName   : E003  
+
+&emsp;start3.sh :  java arguments "-conf ./config3.json" 
   
 <a id="anchor1"></a>
 ## Documentation
