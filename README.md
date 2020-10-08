@@ -35,19 +35,19 @@ $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 Set the following file parameters in the apis-main_exe to suit your environment.   
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
 
-&emsp;config.json :  
-&emsp;&emsp;&emsp;unitId      
-&emsp;&emsp;&emsp;unitName  
-&emsp;&emsp;&emsp;systemType  
+&emsp;config.json   
+&emsp;&emsp;&emsp;- unitId        
+&emsp;&emsp;&emsp;- unitName    
+&emsp;&emsp;&emsp;- systemType    
 
-&emsp;policy.json :  
-&emsp;&emsp;&emsp;memberUnitIds
+&emsp;policy.json    
+&emsp;&emsp;&emsp;- memberUnitIds  
 
-&emsp;cluster.xml:  
-&emsp;&emsp;&emsp; \<interface\>  
+&emsp;cluster.xml  
+&emsp;&emsp;&emsp;- \<interface\>  
 
-&emsp;start.sh :  
-&emsp;&emsp;&emsp; java arguments
+&emsp;start.sh  
+&emsp;&emsp;&emsp;- java arguments
 
 
 ## Running
