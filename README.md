@@ -36,7 +36,7 @@ $ bash start.sh
 
 ## Usage  
 There are many configuration files like config.json, hwConfig.json, scenario.json, policy.json and so on.  
-Refer to the following apis-main_specification for various settings.
+Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
 
 ## Documentation
