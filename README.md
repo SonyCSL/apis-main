@@ -31,7 +31,7 @@ $ cp ./apis-main_build/apis-main/target/apis-main-*-fat.jar ./apis-main_exe
 $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 ```
 
-## Configuration
+## Parameter Setting
 The following file parameters should be set as appropriate for your needs.  
 
 &emsp;config.json :  
