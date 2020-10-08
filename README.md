@@ -43,7 +43,7 @@ Set the following file parameters in the apis-main_exe to suit your environment.
 &emsp;&emsp;&emsp;memberUnitIds
 
 &emsp;cluster.json:  
-&emsp;&emsp;&emsp; interface  
+&emsp;&emsp;&emsp; /<interface/>  
 
 &emsp;start.sh :  
 &emsp;&emsp;&emsp; java arguments
