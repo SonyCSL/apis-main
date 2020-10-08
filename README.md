@@ -14,15 +14,16 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 ## Getting Started
 ```bash
-mkdir apis-common
-cd apis-common
-git clone 
-mvn install
-cd ..
-mkdir apis-main
-cd apis-main
-git cone
-mvn package
+
+$ mkdir apis-common
+$ cd apis-common
+$ git clone 
+$ mvn install
+$ cd ..
+$ mkdir apis-main
+$ cd apis-main
+$ git cone
+$ mvn package
 
 ```
 
