@@ -15,15 +15,20 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 ## Getting Started
 ```bash
 
-$ mkdir apis-common
-$ cd apis-common
+$ mkdir apis-common_build
+$ cd apis-common_build
 $ git clone https://github.com/SonyCSL/apis-common.git
 $ mvn install
 $ cd ..
-$ mkdir apis-main
-$ cd apis-main
+$ mkdir apis-main_build
+$ cd apis-main_build
 $ git cone https://github.com/SonyCSL/apis-main.git
 $ mvn package
+$ cd ..
+$ mkdir apis-main_exe
+$ cp ./apis-main_build/target/apis-main-*-fat.jar ./apis-main_exe
+$ cp ./apis-main_build/setting_files/* ./apis-main_exe
+$ bash start.sh
 
 ```
 
