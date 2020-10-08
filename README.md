@@ -17,12 +17,12 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 $ mkdir apis-common
 $ cd apis-common
-$ git clone 
+$ git clone https://github.com/SonyCSL/apis-common.git
 $ mvn install
 $ cd ..
 $ mkdir apis-main
 $ cd apis-main
-$ git cone
+$ git cone https://github.com/SonyCSL/apis-main.git
 $ mvn package
 
 ```
