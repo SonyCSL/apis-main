@@ -32,6 +32,13 @@ $ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
 ```
 
 ## Configuration
+The following file parameters should be set as appropriate for your needs.  
+
+&emsp;config.json :  
+&emsp;policy.json :  
+&emsp;cluster.json:  
+&emsp;start.sh :  
+
 There are many configuration files like config.json, hwConfig.json, scenario.json, policy.json and so on.  
 Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
