@@ -44,7 +44,7 @@ Set the following file parameters in the apis-main_exe to suit your environment.
 &emsp;start.sh :  
 
 There are many configuration files.  
-Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
+Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.[Documentation](#anchor1)
 
 ## Running
 
@@ -72,9 +72,6 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 &emsp;&emsp;&emsp;unitId : E003  
 &emsp;&emsp;&emsp;unitName   : E003  
   
-  
-
-
 
 ## Documentation
 &emsp;[apis-main_specificaton(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
