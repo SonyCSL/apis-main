@@ -61,6 +61,7 @@ $ bash start.sh
 In order to run multiple apis-mains on the same PC, multiple config.json and start.sh are needed.
 
 ### \<Example\>
+To run 3 apis-mains on the same PC.
 
 [Parameter Setting]  
 
