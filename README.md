@@ -50,19 +50,19 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 
 <Example>  
 &emsp;config1.json :  
-&emsp;&emsp;&emsp;unitId : E001      
-&emsp;&emsp;&emsp;unitName   : E001
-&emsp;&emsp;&emsp;systemType  : emulator
+&emsp;&emsp;&emsp;unitId : E001        
+&emsp;&emsp;&emsp;unitName   : E001  
+&emsp;&emsp;&emsp;systemType  : emulator  
   
 &emsp;config2.json :  
-&emsp;&emsp;&emsp;unitId : E002      
-&emsp;&emsp;&emsp;unitName   : E002
-&emsp;&emsp;&emsp;systemType  : emulator
+&emsp;&emsp;&emsp;unitId : E002  
+&emsp;&emsp;&emsp;unitName   : E002  
+&emsp;&emsp;&emsp;systemType  : emulator  
 
 &emsp;config3.json :  
-&emsp;&emsp;&emsp;unitId : E003      
-&emsp;&emsp;&emsp;unitName   : E003
-&emsp;&emsp;&emsp;systemType  : emulator
+&emsp;&emsp;&emsp;unitId : E003  
+&emsp;&emsp;&emsp;unitName   : E003  
+&emsp;&emsp;&emsp;systemType  : emulator  
   
   
 
