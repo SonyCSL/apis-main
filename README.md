@@ -56,7 +56,7 @@ $ bash start.sh
 ## Tips
 In order to run multiple apis-mains on the same PC, multiple config.json and start.sh are needed.
 
-[Example]
+[3 apis-mains Execution Example]
 
 &emsp;config1.json :  
 &emsp;&emsp;&emsp;unitId     : E001  
