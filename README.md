@@ -52,7 +52,7 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
   
 &emsp;config1.json :  
 &emsp;&emsp;&emsp;unitId : E001  
-&emsp;&emsp;&emsp;unitName   : E001 
+&emsp;&emsp;&emsp;unitName   : E001  
 &emsp;&emsp;&emsp;systemType  : emulator  
   
 &emsp;config2.json :  
