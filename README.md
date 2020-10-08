@@ -35,6 +35,7 @@ $ bash start.sh
 ```
 
 ## Usage
+各種設定に関しては[apis-main_specificaton(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)を参照のこと
 
 
 ## Documentation
