@@ -43,6 +43,9 @@ There are many configuration files.
 Refer to "Chapter 6, About Configuration Files" in the following apis-main_specification for more information.
 
 ## Running
+
+In order to run multiple apis-mains on the same PC, multiple config.json and start.sh are needed.
+
 ```bash
 $ cd apis-main_exe
 $ bash start.sh
