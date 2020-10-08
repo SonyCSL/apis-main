@@ -43,7 +43,7 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification]
 &emsp;policy.json :  
 &emsp;&emsp;&emsp;memberUnitIds
 
-&emsp;cluster.json:  
+&emsp;cluster.xml:  
 &emsp;&emsp;&emsp; \<interface\>  
 
 &emsp;start.sh :  
