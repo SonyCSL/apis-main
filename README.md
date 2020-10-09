@@ -63,7 +63,7 @@ In order to run multiple apis-mains on the same PC, multiple config.json and sta
 ### \<Example\>
 To run 3 apis-mains on the same PC.
 
-[Parameter Setting]  
+[Parameter Setting Example]  
 
 &emsp;config1.json     
 &emsp;&emsp;&emsp;- unitId     : E001  
