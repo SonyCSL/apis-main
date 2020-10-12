@@ -148,7 +148,7 @@
 | Vert.x           | 負荷分散プログラムのフレームワーク。Hazelcastライブラリを利用してEvent Busをクラスタ化しネットワーク上で負荷分散処理を行う。                                                 |
 | Event Bus        | Vert.xのプログラムの最小単位をVerticleと呼び。そのVerticle間でお互いに通信するための非同期インターフェースをEvent Busと呼ぶ                                                  |
 | 共有メモリ       | Hazelcastの機能でクラスタにある共有情報。クラスタに参加しているAPISは参照・編集・削除が可能である。                                                                          |
-| EZA2500          | 本文ではTDKラムダ製EZA-2500-32048SC0のカスタマイズ品を指す。                                                                                                                    |
+| EZA2500          | 本文ではTDKラムダ製EZA2500シリーズのカスタム品であるEZA-2500-32048SC0を指す。                                                                                                                    |
 | dcdc\_batt\_comm | Sony CSLが開発したEZA2500を制御しBattery情報を取得するDevice Driverである。                                                                                                  |
 |                  |                                                                                                                                                                              |
 
