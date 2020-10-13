@@ -70,7 +70,7 @@ To run 3 apis-mains on the same PC.
 &emsp;config1.json     
 &emsp;&emsp;&emsp;- unitId     : E001  
 &emsp;&emsp;&emsp;- unitName   : E001  
-&emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state/%s" 
+&emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state/%s"  
 &emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd'" 
 
 &emsp;start1.sh  
