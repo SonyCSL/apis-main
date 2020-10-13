@@ -36,18 +36,20 @@ Set the following file parameters in the apis-main_exe at least to suit your env
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
 
 &emsp;config.json   
-&emsp;&emsp;&emsp;- unitId        
-&emsp;&emsp;&emsp;- unitName    
-&emsp;&emsp;&emsp;- systemType    
+&emsp;&emsp;&emsp;- communityId   (default : oss_communityId)  
+&emsp;&emsp;&emsp;- clusterId     (default : oss_clusterId)  
+&emsp;&emsp;&emsp;- unitId        (default : E001)  
+&emsp;&emsp;&emsp;- unitName      (default : E001)  
+&emsp;&emsp;&emsp;- systemType    (default : dcdc_emulator)  
 
 &emsp;policy.json    
-&emsp;&emsp;&emsp;- memberUnitIds  
+&emsp;&emsp;&emsp;- memberUnitIds  (default : E001, E002, E003, E004)
 
 &emsp;cluster.xml  
-&emsp;&emsp;&emsp;- \<interface\>  
+&emsp;&emsp;&emsp;- \<interface\>  (default : 127.0.0.1)
 
 &emsp;start.sh  
-&emsp;&emsp;&emsp;- java arguments
+&emsp;&emsp;&emsp;- java arguments (default : 127.0.0.1) 
 
 
 ## Running
