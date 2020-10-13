@@ -5,9 +5,9 @@
 
 	"operationMode" : "stop",
 
-	"memberUnitIds" : ["E001", "E002", "E003", "E004", "E005", "E006", "E007", "E008", "E009", "E010", "E011", "E012", "E013", "E014", "E015", "E016", "E017", "E018", "E019", "E020", "E021", "E022", "E023", "E024", "E025", "E026", "E027", "E028", "E029", "E030", "E031", "E032", "E033", "E034", "E035"],
+	"memberUnitIds" : ["E001"],
 
-	"largeCapacityUnitIds" : ["E001", "E002", "E003", "E004", "E005"],
+	"largeCapacityUnitIds" : ["E001"],
 
 	"operationGridVoltageV" : 350,
 	"operationGridVoltageVRange" : {
@@ -72,10 +72,10 @@
 
 	"mediator" : {
 		"deal" : {
-			"gridCurrentA" : 2,
-			"amountMinWh" : 100,
-			"amountMaxWh" : 100,
-			"amountUnitWh" : 100
+			"gridCurrentA" : 1,
+			"amountMinWh" : 50,
+			"amountMaxWh" : 50,
+			"amountUnitWh" : 50
 		},
 		"negotiationTimeoutMsec" : 2000,
 		"dealLoggingPeriodMsec" : 5000

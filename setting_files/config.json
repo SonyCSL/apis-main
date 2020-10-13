@@ -3,8 +3,8 @@
 
 	"programId" : "apis-main",
 
-	"communityId" : "csl_bbb35",
-	"clusterId" : "csl_bbb35",
+	"communityId" : "oss_community",
+	"clusterId" : "oss_cluster",
 
 	"security" : {
 		"enabled" : true,
@@ -13,52 +13,52 @@
 	},
 
 	"unitId" : "E001",
-	"unitName" : "Emu001",
-	"serialNumber" : "32",
+	"unitName" : "E001",
+	"serialNumber" : "1",
 
 	"systemType" : "dcdc_emulator",
 
 	"hwConfigFile" : "./hwConfig.json",
 	"policyFile" : "./policy.json",
 	"scenarioFile" : "./scenario.json",
-	"stateFileFormat" : "../apis-state/%s",
-	"dealLogDirFormat" : "'../apis-dealLog/'uuuu'/'MM'/'dd",
-	"fileSystemExclusiveLockFileFormat" : "/tmp/.apis.%s.lock",
+	"stateFileFormat" : "{tmpdir}/apis/state/%s",
+	"dealLogDirFormat" : "'{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd",
+	"fileSystemExclusiveLockFileFormat" : "{tmpdir}/.apis.%s.lock",
 
 	"policyFileReadTimeoutMsec" : 60000,
 
 	"connection" : {
 		"emulator" : {
-			"host" : "133.138.5.1",
+			"host" : "localhost",
 			"port" : 4390
 		},
 		"dcdc_controller" : {
-			"host" : "0.0.0.0",
+			"host" : "localhost",
 			"port" : 4380
 		},
 		"emu_driver" : {
-			"host" : "0.0.0.0",
+			"host" : "localhost",
 			"port" : 8080
 		}
 	},
 
 	"controlCenter.encrypted" : {
-		"enabled" : true,
-		"account" : "BuSxUpkHIMqVkwmz21FgDA==",
-		"password" : "A9urdN3ta4gPP66iiYDvB5Pro9ZSGykQR2e7lfvCPHwstrfOVezBk492gqJlPTsX"
+		"enabled" : false,
+		"account" : "BZ0PZ0OwS3qLyhoxtQ5oKg==",
+		"password" : "HfUit4k84HYDFpWviVtEOwZvk3MNpOpKZnHdqfYymJfrUOBTXg2/QPYMeOAUBtjw"
 	},
 
 	"watchdog" : {
 		"enabled" : false,
 		"periodMsec" : 5000,
-		"host" : "0.0.0.0",
+		"host" : "localhost",
 		"port" : 12345,
 		"uri" : "/restart",
 		"requestTimeoutMsec" : 5000
 	},
 
 	"batteryCapacityManagement" : {
-		"enabled" : true
+		"enabled" : false
 	},
 
 	"#" : "end"

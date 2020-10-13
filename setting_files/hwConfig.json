@@ -4,7 +4,7 @@
 	"refreshingPeriodMsec" : 5000,
 
 	"batteryNominalCapacityWh" : 4800,
-	"gridCurrentCapacityA" : 7.3,
+	"gridCurrentCapacityA" : 2.3,
 	"gridCurrentAllowanceA" : 0.125,
 	"droopRatio" : 0.039,
 	"efficientBatteryGridVoltageRatio" : 6.5,
@@ -26,12 +26,12 @@
 						"max" : 58.4
 					},
 					"ig" : {
-						"min" : -7.35,
-						"max" : 7.35
+						"min" : -2.35,
+						"max" : 2.35
 					},
 					"ib" : {
-						"min" : -56,
-						"max" : 56
+						"min" : -20,
+						"max" : 20
 					}
 				}
 			}
