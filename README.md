@@ -14,21 +14,21 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 ## Installation
 ```bash
-$ mkdir apis-common_build
-$ cd apis-common_build
+$ git clone https://github.com/SonyCSL/apis-bom.git
+$ cd apis-bom
+$ mvn install
+$ cd ../
 $ git clone https://github.com/SonyCSL/apis-common.git
 $ cd apis-common
 $ mvn install
-$ cd ../../
-$ mkdir apis-main_build
-$ cd apis-main_build
+$ cd ../
 $ git cone https://github.com/SonyCSL/apis-main.git
 $ cd apis-main
 $ mvn package
-$ cd ../../
+$ cd ../
 $ mkdir apis-main_exe
-$ cp ./apis-main_build/apis-main/target/apis-main-*-fat.jar ./apis-main_exe
-$ cp ./apis-main_build/apis-main/setting_files/* ./apis-main_exe
+$ cp ./apis-main/target/apis-main-*-fat.jar ./apis-main_exe
+$ cp ./apis-main/setting_files/* ./apis-main_exe
 ```
 
 ## Parameter Setting
@@ -36,18 +36,20 @@ Set the following file parameters in the apis-main_exe at least to suit your env
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
 
 &emsp;config.json   
-&emsp;&emsp;&emsp;- unitId        
-&emsp;&emsp;&emsp;- unitName    
-&emsp;&emsp;&emsp;- systemType    
+&emsp;&emsp;&emsp;- communityId   &emsp;(default : oss_communityId)  
+&emsp;&emsp;&emsp;- clusterId     &emsp;(default : oss_clusterId)  
+&emsp;&emsp;&emsp;- unitId        &emsp;(default : E001)  
+&emsp;&emsp;&emsp;- unitName      &emsp;(default : E001)  
+&emsp;&emsp;&emsp;- systemType    &emsp;(default : dcdc_emulator)  
 
 &emsp;policy.json    
-&emsp;&emsp;&emsp;- memberUnitIds  
+&emsp;&emsp;&emsp;- memberUnitIds  &emsp;(default : E001, E002, E003, E004)
 
 &emsp;cluster.xml  
-&emsp;&emsp;&emsp;- \<interface\>  
+&emsp;&emsp;&emsp;- \<interface\>  &emsp;(default : 127.0.0.1)
 
 &emsp;start.sh  
-&emsp;&emsp;&emsp;- java arguments
+&emsp;&emsp;&emsp;- java arguments &emsp;(default : 127.0.0.1) 
 
 
 ## Running
