@@ -43,7 +43,7 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification]
 &emsp;&emsp;&emsp;- systemType    &emsp;(default : dcdc_emulator)  
 
 &emsp;policy.json    
-&emsp;&emsp;&emsp;- memberUnitIds  &emsp;(default : E001, E002, E003, E004)
+&emsp;&emsp;&emsp;- memberUnitIds  &emsp;(default : "E001", "E002", "E003", "E004")
 
 &emsp;cluster.xml  
 &emsp;&emsp;&emsp;- \<interface\>  &emsp;(default : 127.0.0.1)
@@ -70,6 +70,8 @@ To run 3 apis-mains on the same PC.
 &emsp;config1.json     
 &emsp;&emsp;&emsp;- unitId     : E001  
 &emsp;&emsp;&emsp;- unitName   : E001  
+&emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state/%s" 
+&emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd'" 
 
 &emsp;start1.sh  
 &emsp;&emsp;&emsp;- java arguments "-conf ./config1.json"  
@@ -78,6 +80,8 @@ To run 3 apis-mains on the same PC.
 &emsp;config2.json   
 &emsp;&emsp;&emsp;- unitId : E002  
 &emsp;&emsp;&emsp;- unitName   : E002  
+&emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state2/%s"  
+&emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog2/'uuuu'/'MM'/'dd'"  
 
 &emsp;start2.sh  
 &emsp;&emsp;&emsp;- java arguments "-conf ./config2.json"  
@@ -86,9 +90,21 @@ To run 3 apis-mains on the same PC.
 &emsp;config3.json    
 &emsp;&emsp;&emsp;- unitId : E003  
 &emsp;&emsp;&emsp;- unitName   : E003  
+&emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state3/%s"  
+&emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog3/'uuuu'/'MM'/'dd'"  
 
 &emsp;start3.sh  
 &emsp;&emsp;&emsp;- java arguments "-conf ./config3.json"  
+<br />
+
+&emsp;config4.json    
+&emsp;&emsp;&emsp;- unitId : E004  
+&emsp;&emsp;&emsp;- unitName   : E004  
+&emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state4/%s"  
+&emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog4/'uuuu'/'MM'/'dd'"  
+
+&emsp;start4.sh  
+&emsp;&emsp;&emsp;- java arguments "-conf ./config4.json" 
 
 All other files are used in common.
 
