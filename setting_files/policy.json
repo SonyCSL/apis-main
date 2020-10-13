@@ -5,7 +5,7 @@
 
 	"operationMode" : "stop",
 
-	"memberUnitIds" : ["E001"],
+	"memberUnitIds" : ["E001","E002","E003","E004"],
 
 	"largeCapacityUnitIds" : ["E001"],
 
