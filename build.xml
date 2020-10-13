@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<project>
+  <target name="md5">
+    <exec executable="groovy">
+      <arg line="generateVerifyInfo.groovy ${version} target/verify.info" />
+    </exec>
+  </target>
+</project>
