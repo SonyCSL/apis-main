@@ -1,6 +1,6 @@
 **apis-main仕様書**
 ====================
-**Rev 0.71**
+**Rev 0.72**
 
 **目次**
 ========
@@ -478,7 +478,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
   "status" : {
 
- "status" : "0x0000",　
+      "status" : "0x0000",　
 
       "alarmState" : "No alarm",
 
@@ -516,6 +516,24 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 {
 
+"meter" : {
+
+      "wg" : -2.44,
+
+      "tmp" : 29.59,
+
+      "vb" : 51.47,
+
+      "wb" : -12.21,
+
+      "vg" : 358.27,
+
+      "ib" : -0.24,
+
+      "ig" : 0
+
+},
+
 "param": {
 
 "dig": 7.8125,
@@ -534,9 +552,30 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 {
 
+"meter" : {
+
+      "wg" : -2.44,
+
+      "tmp" : 29.59,
+
+      "vb" : 51.47,
+
+      "wb" : -12.21,
+
+      "vg" : 358.27,
+
+      "ib" : -0.24,
+
+      "ig" : 0
+      
+  },
+
+
 "vdis": {
 
-"dvg": 299.98291015625,
+      "dvg": 299.98291015625,
+      
+      "drg" : 0
 
 },
 
@@ -554,27 +593,43 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 "status": {
 
-"status": "0x0002",
+    "status": "0x0002",
 
-"operationMode": "Heteronomy CV",
+    "alarmState" : "No alarm",　　
+
+    "operationMode": "Heteronomy CV",
 
 },
 
 "meter": {
 
-"vg": 380,
+      "wg" : -2.44,
+      
+      "tmp" : 29.59,
+      
+      "vb" : 51.47,
+      
+      "wb" : -12.21,
+      
+      "vg" : 358.27,
+      
+      "ib" : -0.24,
+      
+      "ig" : 0
 
 },
 
 "vdis": {
 
-"dvg": 380,
+     "dvg": 349.99,
+
+     "drg" : 0
 
 },
 
 "param": {
 
-"dig": 7.8125,
+"dig": 3,
 
 },
 
