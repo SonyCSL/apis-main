@@ -25,10 +25,6 @@ $ cd ../
 $ git cone https://github.com/SonyCSL/apis-main.git
 $ cd apis-main
 $ mvn package
-$ cd ../
-$ mkdir apis-main_exe
-$ cp ./apis-main/target/apis-main-*-fat.jar ./apis-main_exe
-$ cp ./apis-main/setting_files/* ./apis-main_exe
 ```
 
 ## Parameter Setting
@@ -55,7 +51,7 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification]
 ## Running
 
 ```bash
-$ cd apis-main_exe
+$ cd exe
 $ bash start.sh
 ```
 
