@@ -424,43 +424,43 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 "status" : {
 
-"status" : "0x0000",　　　　　　
+    "status" : "0x0000",　　　　　　
 
-"alarmState" : "No alarm",　　　
+    "alarmState" : "No alarm",　　　
 
-"operationMode" : "Waiting"　　
+    "operationMode" : "Waiting"　　
 
 },
 
-"meter" : {
+    "meter" : {
 
-"wg" : -2.44,
+    "wg" : -2.44,
 
-"tmp" : 29.59,
+    "tmp" : 29.59,
 
-"vb" : 51.47,
+    "vb" : 51.47,
 
-"wb" : -12.21,
+    "wb" : -12.21,
 
-"vg" : 358.27,
+    "vg" : 358.27,
 
-"ib" : -0.24,
+    "ib" : -0.24,
 
-"ig" : 0
+    "ig" : 0
 
 },
 
 "vdis" : {
 
-"dvg" : 349.99,
+    "dvg" : 349.99,
 
-"drg" : 0
+    "drg" : 0
 
 },
 
 "param" : {
 
-"dig" : 3,
+    "dig" : 3,
 
 }
 
@@ -536,7 +536,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 "param": {
 
-"dig": 7.8125,
+    "dig": 7.8125,
 
 },
 
@@ -629,7 +629,7 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 "param": {
 
-"dig": 3,
+     "dig": 3,
 
 },
 
@@ -645,9 +645,9 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 {
 
-"rsoc" : 70,
+    "rsoc" : 70,
 
-"battery\_operation\_status" : 3
+    "battery\_operation\_status" : 3
 
 }
 
@@ -667,43 +667,43 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 "status" : {
 
-"status" : "0x0000",
+    "status" : "0x0000",
 
-"alarmState" : "No alarm",
+    "alarmState" : "No alarm",
 
-"operationMode" : "Waiting"
+    "operationMode" : "Waiting"
 
 },
 
 "meter" : {
 
-"wg" : -2.44,
+    "wg" : -2.44,
 
-"tmp" : 29.59,
+    "tmp" : 29.59,
 
-"vb" : 51.47,
+    "vb" : 51.47,
 
-"wb" : -12.21,
+    "wb" : -12.21,
 
-"vg" : 358.27,
+    "vg" : 358.27,
 
-"ib" : -0.24,
+    "ib" : -0.24,
 
-"ig" : 0
+    "ig" : 0
 
 },
 
 "vdis" : {
 
-"dvg" : 349.99,
+    "dvg" : 349.99,
 
-"drg" : 0
+    "drg" : 0
 
 },
 
 "param" : {
 
-"dig" : 3,
+    "dig" : 3,
 
 },
 
@@ -711,9 +711,9 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 {
 
-"rsoc" : 70,
+    "rsoc" : 70,
 
-"battery\_operation\_status" : 3
+    "battery\_operation\_status" : 3
 
 }
 
