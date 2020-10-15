@@ -121,7 +121,7 @@ All other files are used in common.
 
 [Running]  
 ```bash
-$ cd apis-main_exe  
+$ cd exe  
 $ bash start1.sh  
 $ bash start2.sh  
 $ bash start3.sh  
