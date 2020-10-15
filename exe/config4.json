@@ -1,0 +1,65 @@
+{
+	"#" : "start vertx or fat jar with option '-conf path/to/config_file.json'",
+
+	"programId" : "apis-main",
+
+	"communityId" : "oss_community",
+	"clusterId" : "oss_cluster",
+
+	"security" : {
+		"enabled" : true,
+		"pemKeyFile" : "./key.pem",
+		"pemCertFile" : "./cert.pem"
+	},
+
+	"unitId" : "E004",
+	"unitName" : "E004",
+	"serialNumber" : "1",
+
+	"systemType" : "dcdc_emulator",
+
+	"hwConfigFile" : "./hwConfig.json",
+	"policyFile" : "./policy.json",
+	"scenarioFile" : "./scenario.json",
+	"stateFileFormat" : "{tmpdir}/apis/state4/%s",
+	"dealLogDirFormat" : "'{tmpdir}/apis/dealLog4/'uuuu'/'MM'/'dd",
+	"fileSystemExclusiveLockFileFormat" : "{tmpdir}/.apis.%s.lock",
+
+	"policyFileReadTimeoutMsec" : 60000,
+
+	"connection" : {
+		"emulator" : {
+			"host" : "localhost",
+			"port" : 4390
+		},
+		"dcdc_controller" : {
+			"host" : "localhost",
+			"port" : 4380
+		},
+		"emu_driver" : {
+			"host" : "localhost",
+			"port" : 8080
+		}
+	},
+
+	"controlCenter.encrypted" : {
+		"enabled" : false,
+		"account" : "BZ0PZ0OwS3qLyhoxtQ5oKg==",
+		"password" : "HfUit4k84HYDFpWviVtEOwZvk3MNpOpKZnHdqfYymJfrUOBTXg2/QPYMeOAUBtjw"
+	},
+
+	"watchdog" : {
+		"enabled" : false,
+		"periodMsec" : 5000,
+		"host" : "localhost",
+		"port" : 12345,
+		"uri" : "/restart",
+		"requestTimeoutMsec" : 5000
+	},
+
+	"batteryCapacityManagement" : {
+		"enabled" : false
+	},
+
+	"#" : "end"
+}
