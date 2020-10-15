@@ -42,7 +42,8 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification]
 &emsp;&emsp;&emsp;- memberUnitIds  &emsp;(default : "E001", "E002", "E003", "E004")
 
 &emsp;cluster.xml  
-&emsp;&emsp;&emsp;- \<interface\>  &emsp;(default : 127.0.0.1)
+&emsp;&emsp;&emsp;- \<member\>  &emsp;(default : 127.0.0.1)  
+&emsp;&emsp;&emsp;- \<interface\>  &emsp;(default : 127.0.0.1)  
 
 &emsp;start.sh  
 &emsp;&emsp;&emsp;- java arguments &emsp;(default : 127.0.0.1) 
