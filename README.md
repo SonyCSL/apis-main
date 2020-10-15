@@ -76,7 +76,8 @@ To run 4 apis-mains on the same PC.
 &emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd'" 
 
 &emsp;start.sh  
-&emsp;&emsp;&emsp;- java arguments "-conf ./config.json"  
+&emsp;&emsp;&emsp;-conf ./config.json
+&emsp;&emsp;&emsp;-cluster-host 127.0.0.1
 <br />
 
 \<Second Setting\>  
@@ -87,7 +88,8 @@ To run 4 apis-mains on the same PC.
 &emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog2/'uuuu'/'MM'/'dd'"  
 
 &emsp;start2.sh  
-&emsp;&emsp;&emsp;- java arguments "-conf ./config2.json"  
+&emsp;&emsp;&emsp;-conf ./config2.json
+&emsp;&emsp;&emsp;-cluster-host 127.0.0.1
 <br />
 
 <\Third Setting\>  
@@ -98,7 +100,8 @@ To run 4 apis-mains on the same PC.
 &emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog3/'uuuu'/'MM'/'dd'"  
 
 &emsp;start3.sh  
-&emsp;&emsp;&emsp;- java arguments "-conf ./config3.json"  
+&emsp;&emsp;&emsp;-conf ./config3.json
+&emsp;&emsp;&emsp;-cluster-host 127.0.0.1
 <br />
 
 \<Fourth Setting\>  
@@ -109,7 +112,8 @@ To run 4 apis-mains on the same PC.
 &emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog4/'uuuu'/'MM'/'dd'"  
 
 &emsp;start4.sh  
-&emsp;&emsp;&emsp;- java arguments "-conf ./config4.json" 
+&emsp;&emsp;&emsp;-conf ./config4.json
+&emsp;&emsp;&emsp;-cluster-host 127.0.0.1
 
 All other files are used in common.
 
