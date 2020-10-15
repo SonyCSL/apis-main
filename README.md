@@ -63,14 +63,14 @@ To run 4 apis-mains on the same PC.
 
 [Parameter Setting Example]  
 
-&emsp;config1.json     
+&emsp;config.json     
 &emsp;&emsp;&emsp;- unitId     : E001  
 &emsp;&emsp;&emsp;- unitName   : E001  
 &emsp;&emsp;&emsp;- stateFileFormat   : "{tmpdir}/apis/state/%s"  
 &emsp;&emsp;&emsp;- dealLogDirFormat   : "{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd'" 
 
-&emsp;start1.sh  
-&emsp;&emsp;&emsp;- java arguments "-conf ./config1.json"  
+&emsp;start.sh  
+&emsp;&emsp;&emsp;- java arguments "-conf ./config.json"  
 <br />
 
 &emsp;config2.json   
@@ -108,10 +108,11 @@ All other files are used in common.
 
 [Running]  
 ```bash
-$ cd apis-main_exe
-$ bash start1.sh
-$ bash start2.sh
-$ bash start3.sh
+$ cd apis-main_exe  
+$ bash start1.sh  
+$ bash start2.sh  
+$ bash start3.sh  
+$ bash start4.sh  
 ```
   
 <a id="anchor1"></a>
