@@ -49,7 +49,8 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification]
 &emsp;&emsp;&emsp;- \<interface\>  &emsp;(default : 127.0.0.1)  
 
 &emsp;start.sh  
-&emsp;&emsp;&emsp;- java arguments &emsp;(default : 127.0.0.1) 
+&emsp;&emsp;&emsp;-conf &emsp; (default : ./config.json) 
+&emsp;&emsp;&emsp;-cluster-host &emsp; (default : 127.0.0.1)
 
 
 ## Running
