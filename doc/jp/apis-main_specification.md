@@ -865,7 +865,7 @@ java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Djava.util.logg
   -cp ./  
    cluseter.xmlファイルの位置を指定するオプション  
 
-  -cluster-host 127.0.0.1 &  
+  -cluster-host 127.0.0.1   
    自身のIP Addressを指定するオプション  
 
 
