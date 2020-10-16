@@ -843,12 +843,12 @@ apis-mainを起動させるスクリプトファイル。OS起動時の自動実
 
 以下にstart.sh内でのapis-mainを起動させるコマンドを示す。
 
-java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-main-2.xx.x-a01-fat.jar -conf ./config.json -cp ./ -cluster -cluster-host 192.168.0.1 &
+java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-main-2.xx.x-a01-fat.jar -conf ./config.json -cp ./ -cluster -cluster-host 127.0.0.1 &
 
 “java”の後の引き数の意味を以下に説明する。  
 
-  -XX:OnOutOfMemoryError="'kill -KILL %p'"  
-   メモリ不足(OOM Error)発生時プロセスをKillするオプション    
+  -Djava.net.preferIPv4Stack=true  
+   IPv4アドレスにバインドして起動するオプション    
 
   -Duser.timezone=Asia/Tokyo  
    Timezone設定  
@@ -865,7 +865,7 @@ java -XX:OnOutOfMemoryError="'kill -KILL %p'" -Duser.timezone=Asia/Tokyo -Djava.
   -cp ./  
    cluseter.xmlファイルの位置を指定するオプション  
 
-  -cluster-host 192.168.0.1 &  
+  -cluster-host 127.0.0.1 &  
    自身のIP Addressを指定するオプション  
 
 
