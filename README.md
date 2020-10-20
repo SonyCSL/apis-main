@@ -13,7 +13,7 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 ![キャプチャ](https://user-images.githubusercontent.com/71874910/94899039-87ea0600-04cd-11eb-96a0-afa5466b3742.PNG)
 
 ## Installation
-How to install apis-main on its own.
+How to install apis-main on its own.  
 Maven and JDK shall be installed in advance.
 
 ```bash
