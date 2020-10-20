@@ -14,7 +14,7 @@ apis-mainは集中管理制御のように中央で制御を行うソフトウ�
 
 ## Installation
 Here is how to install apis-main on its own.  
-Maven and JDK shall be installed in advance.
+Maven and JDK must be installed in advance.
 
 ```bash
 $ git clone https://github.com/SonyCSL/apis-bom.git
