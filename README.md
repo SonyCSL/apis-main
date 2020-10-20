@@ -30,6 +30,13 @@ $ cd apis-main
 $ mvn package
 ```
 
+## Running
+
+```bash
+$ cd exe
+$ bash start.sh
+```
+
 ## Parameter Setting
 Set the following parameters in the exe folder as necessary.   
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
@@ -53,12 +60,6 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification]
 &emsp;&emsp;&emsp;-cluster-host &emsp; (default : 127.0.0.1)  
 
 
-## Running
-
-```bash
-$ cd exe
-$ bash start.sh
-```
 
 ## Tips
 In order to run multiple apis-mains on the same PC, multiple config.json and start.sh are needed.
