@@ -1,7 +1,7 @@
 echo "call kill.sh"
 
 get_pids() {
- ps -f -U 'whoami' | grep apis-main | grep java | while read _USER_ _PID_ _OTHERS_; do
+ ps -f -U `whoami` | grep apis-main | grep java | while read _USER_ _PID_ _OTHERS_; do
   echo $_PID_
  done
 }
