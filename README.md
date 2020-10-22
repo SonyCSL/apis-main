@@ -130,7 +130,7 @@ All other files are used in common.
 [Running]  
 ```bash
 $ cd exe  
-$ bash start1.sh  
+$ bash start.sh  
 $ bash start2.sh  
 $ bash start3.sh  
 $ bash start4.sh  
