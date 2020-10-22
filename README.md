@@ -37,6 +37,13 @@ $ cd exe
 $ bash start.sh
 ```
 
+## Stopping
+
+```bash
+$ cd exe
+$ bash stop.sh
+```
+
 ## Parameter Setting
 Set the following parameters in the exe folder as necessary.   
 Refer to "Chapter 6, About Configuration Files" in the [apis-main_specification](#anchor1) for more information.
