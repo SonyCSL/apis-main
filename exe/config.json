@@ -42,10 +42,10 @@
 		}
 	},
 
-	"controlCenter.encrypted" : {
+	"controlCenter" : {
 		"enabled" : false,
-		"account" : "BZ0PZ0OwS3qLyhoxtQ5oKg==",
-		"password" : "HfUit4k84HYDFpWviVtEOwZvk3MNpOpKZnHdqfYymJfrUOBTXg2/QPYMeOAUBtjw"
+		"account" : "E001",
+		"password" : "E001_pass"
 	},
 
 	"watchdog" : {
