@@ -1,0 +1,42 @@
+{
+	"#" : "place this file at the path defined by 'hwConfigFile' in config file",
+
+	"refreshingPeriodMsec" : 5000,
+
+	"batteryNominalCapacityWh" : 4800,
+	"gridCurrentCapacityA" : 2.3,
+	"gridCurrentAllowanceA" : 0.125,
+	"droopRatio" : 0.039,
+	"efficientBatteryGridVoltageRatio" : 6.5,
+
+	"safety" : {
+		"range" : {
+			"dcdc" : {
+				"meter" : {
+					"tmp" : {
+						"min" : 0,
+						"max" : 45
+					},
+					"vg" : {
+						"min" : -4,
+						"max" : 380
+					},
+					"vb" : {
+						"min" : 32,
+						"max" : 58.4
+					},
+					"ig" : {
+						"min" : -2.35,
+						"max" : 2.35
+					},
+					"ib" : {
+						"min" : -20,
+						"max" : 20
+					}
+				}
+			}
+		}
+	},
+
+	"#" : "end"
+}
