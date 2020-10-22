@@ -31,14 +31,14 @@ $ mvn package
 ```
 
 ## Running
-
+Here is how to run apis-main individually.  
 ```bash
 $ cd exe
 $ bash start.sh
 ```
 
 ## Stopping
-
+Here is how to stop apis-main individually.  
 ```bash
 $ cd exe
 $ bash stop.sh
