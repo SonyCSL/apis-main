@@ -1,0 +1,12 @@
+.DS_Store
+.*.swp
+target
+bin
+build
+.classpath
+.project
+.settings
+*.log
+*.log.lck
+*.err
+*.err.lck
