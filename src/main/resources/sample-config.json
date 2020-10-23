@@ -1,0 +1,169 @@
+{
+	// 起動時に引数 -conf path/to/this_file.json で指定する
+
+	// programId : プログラム識別文字列
+	//             ApisLoggerFormatter によりログの行頭に出力される.
+	//             ただし apis-main は ApisMainLoggerFormatter により programId の代わりに unitId が出力される
+	"programId" : "apis-main",
+
+	// communityId : コミュニティ識別文字列
+	//               clusterId および APIS バージョン文字列とともに暗号化のシードとして用いられる
+	"communityId" : "dev",
+	// clusterId : クラスタ識別文字列
+	//             communityId および APIS バージョン文字列とともに暗号化のシードとして用いられる
+	"clusterId" : "dev",
+
+	// security : EventBus メッセージ通信の SSL 化および Cluster Wide Map の暗号化設定
+	"security" : {
+		// enabled : 有効フラグ
+		//           EventBus メッセージ通信の SSL 化および Cluster Wide Map の暗号化を実施するか否か
+		//           デフォルト : false
+		"enabled" : true,
+		// pemKeyFile : 秘密鍵ファイルのパス
+		//              EventBus メッセージ通信の SSL 化に用いる
+		"pemKeyFile" : "./src/main/resources/sample-key.pem",
+		// pemCertFile : 証明書ファイルのパス
+		//               EventBus メッセージ通信の SSL 化に用いる
+		"pemCertFile" : "./src/main/resources/sample-cert.pem"
+	},
+
+	// unitId : ユニット識別文字列
+	"unitId" : "E001",
+	// unitName : ユニット名
+	"unitName" : "E001",
+	// serialNumber : ハードウェアのシリアル番号
+	"serialNumber" : "1",
+
+	// systemType : ハードウェアの種類
+	//              値は以下のいずれか
+	//              - dcdc_emulator : emulator
+	//              - dcdc_v1       : dcdc_controller & EMU-Driver
+	//              - dcdc_v2       : dcdc_batt_comm
+	//              必須
+	"systemType" : "dcdc_emulator",
+
+	// hwConfigFile : HWCONFIG ファイルのパス
+	//                必須
+	"hwConfigFile" : "./src/main/resources/sample-hwConfig.json",
+	// policyFile : POLICY ファイルのパス
+	//              必須
+	"policyFile" : "./src/main/resources/sample-policy.json",
+	// scenarioFile : SCENARIO ファイルのパス
+	//                必須
+	"scenarioFile" : "./src/main/resources/sample-scenario.json",
+	// stateFileFormat : ローカルな状態をファイルシステム上に記録しておくファイルのパスフォーマット
+	//                   以下の置換処理を実行する
+	//                   - {tmpdir} : 一時ファイル置き場 ( UNIX 系では /tmp など )
+	//                   - %s : 状態名
+	//                   デフォルト : {tmpdir}/apis/state/%s
+	"stateFileFormat" : "{tmpdir}/apis/state/%s",
+	// dealLogDirFormat : 融通ログをファイルシステム上に記録しておくパスフォーマット
+	//                    以下の置換処理を実行する
+	//                    - {tmpdir} : 一時ファイル置き場 ( UNIX 系では /tmp など )
+	//                    最後に java.time.format.DateTimeFormatter でフォーマット
+	//                    → この例では /tmp/apis/dealLog/2020/01/01 になる
+	//                    デフォルト : '{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd
+	"dealLogDirFormat" : "'{tmpdir}/apis/dealLog/'uuuu'/'MM'/'dd",
+	// fileSystemExclusiveLockFileFormat : ファイルシステムを用いたプロセス間排他制御で用いるロックファイルのパスフォーマット
+	//                                     以下の置換処理を実行する
+	//                                     - {tmpdir} : 一時ファイル置き場 ( UNIX 系では /tmp など )
+	//                                     - %s : ロック名
+	//                                     デフォルト : {tmpdir}/.apis.%s.lock
+	"fileSystemExclusiveLockFileFormat" : "{tmpdir}/.apis.%s.lock",
+
+	// policyFileReadTimeoutMsec : ファイルシステムから POLICY ファイルを読み込むタイムアウト時間
+	//                             型 : Long
+	//                             デフォルト : 60000L
+	"policyFileReadTimeoutMsec" : 60000,
+
+	// connection : データ取得のための接続情報
+	"connection" : {
+		// emulator : systemType が dcdc_emulator の場合の emulator 接続情報
+		"emulator" : {
+			// host : ホスト名
+			"host" : "0.0.0.0",
+			// port : ポート
+			//        型 : Integer
+			//        必須
+			"port" : 4390
+		},
+		// dcdc_controller : systemType が dcdc_v1 の場合の dcdc_controller 接続情報
+		//                   systemType が dcdc_v2 の場合の dcdc_batt_comm 接続情報
+		"dcdc_controller" : {
+			// host : ホスト名
+			"host" : "0.0.0.0",
+			// port : ポート
+			//        型 : Integer
+			//        必須
+			"port" : 4380
+		},
+		// emu_driver : systemType が dcdc_v1 の場合の EMU-Driver 接続情報
+		"emu_driver" : {
+			// host : ホスト名
+			"host" : "0.0.0.0",
+			// port : ポート
+			//        型 : Integer
+			//        必須
+			"port" : 8080
+		}
+	},
+
+	// controlCenter : Service Center 認証情報
+	"controlCenter" : {
+		// enabled : 有効フラグ
+		//           Service Center から POLICY と SCENARIO を取得するか否か
+		//           デフォルト : true
+		"enabled" : true,
+		// account : Service Center ログインアカウント
+		"account" : "E001",
+		// password : Service Center ログインパスワード : MD5 ハッシュ文字列
+		"password" : "c8312f1085b1f260a0db84dd290e49b1",
+		// *.encrypted : 暗号化された文字列
+		//               APIS 起動時に復号され * のキーで再登録される
+		//               注 : ここでは実際には復号されないように *.encrypted_ にしてあります
+		"account.encrypted_" : "DrNeF/Iizi+1idYysElxOg==",
+		"password.encrypted_" : "NoaEhETL/lcS2YlMHfG13dgVhLnrPil0MbT0GylesE6OF+MfJfBFfpDH1eqojKYK"
+	},
+	// *.encrypted : 暗号化されたエントリ
+	//               APIS 起動時に子孫要素 ( 文字列値のみ ) が再帰的に復号され * のキーで再登録される
+	//               注 : ここでは実際には復号されないように *.encrypted_ にしてあります
+	"controlCenter.encrypted_" : {
+		"enabled" : true,
+		"account" : "DrNeF/Iizi+1idYysElxOg==",
+		"password" : "NoaEhETL/lcS2YlMHfG13dgVhLnrPil0MbT0GylesE6OF+MfJfBFfpDH1eqojKYK"
+	},
+
+	// batteryCapacityManagement : バッテリ容量管理機能の設定
+	"batteryCapacityManagement" : {
+		// enabled : 有効フラグ
+		//           バッテリ容量管理機能を有効にするか否か
+		//           Gateway 運用など一つのバッテリを複数の apis-main で共有している場合に他の apis-main とバッテリ電流容量を協調管理する
+		//           現状は協調管理する apis-main が全て同一コンピュータ上にある必要がある ( ファイルシステムを用いて協調管理するため )
+		//           デフォルト : false
+		"enabled" : true
+	},
+
+	// watchdog : watchdog 設定
+	"watchdog" : {
+		// enabled : 有効フラグ
+		//           watchdog 機能を実行するか否か
+		"enabled" : false,
+		// periodMsec : 実行周期
+		//              型 : Long
+		//              デフォルト : 5000L
+		"periodMsec" : 5000,
+		// host : watchdog サービスのホスト名
+		"host" : "0.0.0.0",
+		// port : watchdog サービスのポート
+		//        型 : Integer
+		//        必須
+		"port" : 12345,
+		// uri : watchdog サービスの URI
+		"uri" : "/restart",
+		// requestTimeoutMsec : HTTP リクエストのタイムアウト時間
+		//                      型 : Long
+		//                      デフォルト : 5000L
+		"requestTimeoutMsec" : 5000
+	}
+
+}
