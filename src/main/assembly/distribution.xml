@@ -17,6 +17,20 @@
       <directory>${basedir}/src/main/resources</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
+        <include>stop.sh</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/src/main/resources</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>kill.sh</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/src/main/resources</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
         <include>stop-kill.sh</include>
       </includes>
     </fileSet>
