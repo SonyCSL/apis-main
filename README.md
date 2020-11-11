@@ -1,14 +1,7 @@
 # apis-main
 
 ## Introduction
-apis-mainはSony CSLが開発した自律分散制御の電力相互融通ソフトウェアである。    
-apis-mainは各ノード毎にインストールされ、定期的に自身のBattery残容量を取得し、バッテリ残容量に  
-よって決められた行動ルールに従ってapis-main間でネゴシエーションを  行って自動でノード間の  
-電力融通を実現するソフトウェアである。  
-apis-main間のネゴシエーションはイーサネットなどのコミュニケーションラインが用いられ電力融通は  
-DC Grid上で直流にて行われる。  
-apis-mainは集中管理制御のように中央で制御を行うソフトウェアは存在せず、すべて同一のソフトウェア  
-であるapis-mainのみで自律分散制御が行われる。  
+apis-main is the name of energy sharingoftware for autonomous distributed control of energy developed by Sony CSL. apis-main is installed in each node (battery system connected the DC grid via a bidirectional DC/DC converter). Via the Device Driver, the software periodically obtains the remaining capacity of the battery and automatically carries out energy sharing between nodes by carrying out negotiations with other apis-mains in accordance with behavior rulesets determined by each node’s remaining battery capacity. Negotiations between apis-mains use a communication line such as Ethernet, and the energy sharing takes place with direct current on the DC grid. apis-main does not rely on software that carries out centralized control of nodes. All nodes have the same software, apis-main, and autonomous distributed control is carried out with only apis-main in each node.  
 
 ![キャプチャ](https://user-images.githubusercontent.com/71874910/94899039-87ea0600-04cd-11eb-96a0-afa5466b3742.PNG)
 
