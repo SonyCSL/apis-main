@@ -5,8 +5,8 @@
 # **Contents**
 - [**apis-main Specification**](#apis-main-specification)
 - [**Contents**](#contents)
-- [**Terms and Abbreviations**](#terms-and-abbreviations)
-- [**Overview**](#overview)
+- [**1. Terms and Abbreviations**](#1-terms-and-abbreviations)
+- [**2. Overview**](#2-overview)
 - [**3. Software Composition**](#3-software-composition)
   - [**3.1. Software Architecture**](#31-software-architecture)
   - [**3.2. Services within apis-main**](#32-services-within-apis-main)
@@ -73,7 +73,7 @@
 
 <br>
 
-# **Terms and Abbreviations**
+# **1. Terms and Abbreviations**
 
 | **Term**         |**Description**|
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -89,7 +89,7 @@
 
 <br>
 
-# **Overview**
+# **2. Overview**
 
 apis-main is the name of energy sharing software for autonomous distributed control of energy developed by Sony CSL. apis-main is installed in each node (battery system connected the DC grid via a bidirectional DC/DC converter). Via the Device Driver, the software periodically obtains the remaining capacity of the battery and automatically carries out energy sharing between nodes by carrying out negotiations with other apis-mains in accordance with behavior rulesets determined by each node’s remaining battery capacity. (These behavior rulesets refer to sets of rules for making decisions such as whether to send a charge/discharge request to other apis-mains or accept a charge/discharge request from another apis-main on the basis of the remaining capacity of the node’s battery.) Negotiations between apis-mains use a communication line such as Ethernet, and the energy sharing takes place with direct current on the DC grid. apis-main does not rely on software that carries out centralized control of nodes. All nodes have the same software, apis-main, and autonomous distributed control is carried out with only apis-main in each node. (apis-main achieves control by launching an ad-hoc centralized management program called Grid Master. Grid Master can be launched by any apis-main based on predetermined rules.)
 
