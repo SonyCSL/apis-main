@@ -9,7 +9,7 @@
 - [**Overview**](#overview)
 - [**3. Software Composition**](#3-software-composition)
   - [**3.1. Software Architecture**](#31-software-architecture)
-  - [**Services within apis-main**](#services-within-apis-main)
+  - [**3.2. Services within apis-main**](#32-services-within-apis-main)
 - [**4. Detailed Description of Actions**](#4-detailed-description-of-actions)
   - [**4.1. Formation of Clusters**](#41-formation-of-clusters)
   - [**4.2. Grid Master Selection**](#42-grid-master-selection)
@@ -183,7 +183,7 @@ Fig. 3-1 shows the software architecture. The Java Development Kit (JDK) is inst
 
 </p>
 
-## **Services within apis-main**
+## **3.2. Services within apis-main**
 
 A node includes apis-main, the software that realizes energy sharing, and the Device Driver, which communicates with the battery and the DC/DC converter. apis-main is composed of the following four services (see Fig. 3-2).
 
