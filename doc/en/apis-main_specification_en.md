@@ -95,15 +95,15 @@ apis-main is the name of energy sharing software for autonomous distributed cont
 
 <br>
 
-![](media/media/image1.png)
-<p align="center">Fig. 2-1</p>
+![](media/media/image1.png)  
+Fig. 2-1
 
 <br>
 
 Fig. 2-2 shows an example of energy sharing between batteries. In the case of flow of power from Battery A to Battery B, energy sharing takes place by setting the mode of the bidirectional DC/DC converter in each node. The mode is set by the apis-main in each node via the Device Driver. For the discharge node, the mode is set to Constant Current Mode (CC Mode). For the charge node, the mode is set to Constant Voltage Mode (CV Mode).
 
-![](media/media/image2.png)
-<p align="center">Fig. 2-2</p>
+![](media/media/image2.png)  
+Fig. 2-2
 
 <br>
 
@@ -125,50 +125,50 @@ An example of the steps of negotiation between apis-mains is as follows. (See Fi
 
 8.  Energy sharing deal information is created from the request and chosen acceptance.
 
-![](media/media/image3.png)
-<p align="center">Fig. 2-3</p>
+![](media/media/image3.png)  
+Fig. 2-3
 
 <br>
 
 A single apis-main connected to the communication line and DC grid is shown in Fig. 2-4.
 
-![](media/media/image4.png)
-<p align="center">Fig. 2-4</p>
+![](media/media/image4.png)  
+Fig. 2-4
 
 <br>
 
 Next, the structure composed of multiple apis-mains are shown in Fig. 2-5.
 
-![](media/media/image5.png)
-<p align="center">Fig. 2-5</p>
+![](media/media/image5.png)  
+Fig. 2-5
 
 <br>
 
 As shown in Fig. 2-6, apis-mains can carry out multiple energy sharing in parallel.
 
-![](media/media/image6.png)
-<p align="center">Fig. 2-6</p>
+![](media/media/image6.png)  
+Fig. 2-6
 
 <br>
 
 As shown in Fig. 2-7, an important point of notice when controlling the DC grid is that voltage conflict can occur when there are two or more DC/DC converters in CV Mode on the DC grid.
 
-![](media/media/image7.png)
-<p align="center">Fig. 2-7</p>
+![](media/media/image7.png)  
+Fig. 2-7
 
 <br>
 
 Because of this, control energy sharing by setting one DC/DC converter to CV Mode and all other DC/DC converters to CC Mode on the DC grid, as shown in Fig. 2-8.
 
-![](media/media/image8.png)
-<p align="center">Fig. 2-8</p>
+![](media/media/image8.png)  
+Fig. 2-8
 
 <br>
 
 To carry out the above control, a service in apis-main called Grid Master controls the DC grid. Apis-mains Formation of Clusters when they start up by communicating via communication lines. They select one node in the cluster that will run Grid Master in accordance with predetermined rules. Grid Master controls all DC/DC converters in a cluster via Device Drivers to carry out energy sharing on the DC grid. All apis-mains can serve as Grid Master. Grid Master can be dynamically transferred in accordance with predetermined rules.
 
-![](media/media/image9.png)
-<p align="center">Fig. 2-9</p>
+![](media/media/image9.png)  
+Fig. 2-9
 
 <br>
 
@@ -178,8 +178,8 @@ To carry out the above control, a service in apis-main called Grid Master contro
 
 Fig. 3-1 shows the software architecture. The Java Development Kit (JDK) is installed on the Linux operating system. apis-main runs on two frameworks: event-driven load balancing platform Vert.x and in-memory distributed computing platform Hazelcast. Information is transferred between apis-main and the Device Driver via Web API. (For versions of verified open source software used, see 15. Open Source Software Licenses.)
 
-![](media/media/image10.png)
-<p align="center">Fig. 3-1</p>
+![](media/media/image10.png)  
+Fig. 3-1
 
 </p>
 
@@ -200,8 +200,8 @@ A node includes apis-main, the software that realizes energy sharing, and the De
    Gets DC/DC converter and battery information requested by User Service.
    Also, upon request from its own apis-main’s Grid Master Service or from another apis-main, carries out energy sharing by controlling the DC/DC converter.
 
-![](media/media/image11.png)
-<p align="center">Fig. 3-2</p>
+![](media/media/image11.png)  
+Fig. 3-2
 
 <br>
 
@@ -334,8 +334,8 @@ apis-main applies exclusive locks that restrict simultaneous access to maintain 
     This is an exclusive lock for achieving exclusive control between multiple processes in the same node.  
     It is used when starting multiple processes in the same node with the Gateway function (explained below). Exclusive control between processes (between apis-mains) is carried out by using the file system. (See 11.2 Gateway Function.)
 
-![](media/media/image12.png)
-<p align="center">Fig. 4-1</p>
+![](media/media/image12.png)  
+Fig. 4-1
 
 <br>
 
@@ -1120,8 +1120,8 @@ apis-main will carry out interchange only with node specified by pairUnitId.
 
 ![](media/media/image13.png)
 
-\* All deal points are 10 points.
-<p align="center">Fig. 6-1</p>
+\* All deal points are 10 points.  
+Fig. 6-1
 
 </p>
 
@@ -1501,8 +1501,8 @@ Although ideally the current of the energy sharing should be the same on the dis
 
   - In the case of the second or a subsequent energy sharing, after the second energy sharing has started, the current of the CV is compensated so that it returns to the current value before the start of the energy sharing by adjusting the current of the CC that is not the Reference.
 
-![](media/media/image14.png)
-<p align="center">Fig. 7-1</p>
+![](media/media/image14.png)  
+Fig. 7-1
 
 <br>
 
@@ -1511,20 +1511,20 @@ Although ideally the current of the energy sharing should be the same on the dis
 The transfer of constant voltage (CV) takes place as shown below with droop control.
 
 * Fig. 7-2 shows two energy sharing taking place.
-![](media/media/image15.png)
-<p align="center">Fig. 7-2</p>
+![](media/media/image15.png)  
+Fig. 7-2
 
 * Fig. 7-3 shows the completion of the energy sharing that has CV.
-![](media/media/image17.png)
-<p align="center">Fig. 7-3</p>
+![](media/media/image17.png)  
+Fig. 7-3
 
 * Fig. 7-4 shows apply droop setting to the old CV and also to the new CV and then starting up.
-![](media/media/image19.png)
-<p align="center">Fig. 7-4</p>
+![](media/media/image19.png)  
+Fig. 7-4
 
 * Fig. 7-5 shows that after the new CV is started, the DC/DC converter with the old CV is set to Wait mode and the droop rate of the new CV is set to 0.
-![](media/media/image19.png)
-<p align="center">Fig. 7-5</p>
+![](media/media/image19.png)  
+Fig. 7-5
 
 <br>
 
@@ -1805,8 +1805,8 @@ The standard Java API java.util.logging is used for log output. Logging is divid
 
 The apis-main action log has three output destinations: UDP, console, and file. Enabling/disabling each output and applying restrictions on the output level as explained in the previous section can be set in logging.properties. Because UDP is outputted on the communication line, set the log after taking into consideration security against data breaches and the amount of data traffic. Set file output after taking into consideration the amount of non-volatile memory available.
 
-![](media/media/image21.png)
-<p align="center">Fig. 9-1</p>
+![](media/media/image21.png)  
+Fig. 9-1
 
 <br>
 
@@ -2141,8 +2141,8 @@ The system for preventing the flow of current that exceeds the allowed current b
 
 4)  Even if a new energy sharing does not occur, periodic confirmation that the existing current of the energy sharing does not exceed each line’s allowed current is carried out as safety check (explained in 12. Safety Confirmation Functions).
 
-![](media/media/image23.png)
-<p align="center">Fig. 11-1</p>
+![](media/media/image23.png)  
+Fig. 11-1
 
 Because apis-mains carry out energy sharing asynchronously, the above problem may occur. Therefore, the following calculations and comparisons are made to ensure that the current does not exceed each line’s allowed current value.
 
@@ -2159,15 +2159,15 @@ Because apis-mains carry out energy sharing asynchronously, the above problem ma
 
 As an example, the currents in the DC grid topology below are calculated as follows.
 
-![](media/media/image24.png)
-<p align="center">Fig. 11-2</p>
+![](media/media/image24.png)  
+Fig. 11-2
 
 <br>
 
 Branch current A-1 is as follows.
 
-![](media/media/image25.png)
-<p align="center">Fig. 11-3</p>
+![](media/media/image25.png)  
+Fig. 11-3
 
 <br>
 
@@ -2184,8 +2184,8 @@ Branch current A-1’s energy sharing current formulas are as follows.
 
 Branch current A-2 is as follows.
 
-![](media/media/image27.png)
-<p align="center">Fig. 11-4</p>
+![](media/media/image27.png)  
+Fig. 11-4
 
 <br>
 
@@ -2203,8 +2203,8 @@ Branch current A-2’s energy sharing current formulas are as follows.
 <br>
 
 Branch current B-1 is as follows.
-![](media/media/image29.png)
-<p align="center">Fig. 11-5</p>
+![](media/media/image29.png)  
+Fig. 11-5
 
 <br>
 
@@ -2221,8 +2221,8 @@ Branch current B-1’s energy sharing current formulas are as follows.
 <br>
 
 Branch current B-2 is as follows.
-![](media/media/image31.png)
-<p align="center">Fig. 11-6</p>
+![](media/media/image31.png)  
+Fig. 11-6
 
 <br>
 
@@ -2242,8 +2242,8 @@ Branch current B-2’s energy sharing current formulas are as follows.
 
 Branch current C-1 is as follows.
 
-![](media/media/image33.png)
-<p align="center">Fig. 11-7</p>
+![](media/media/image33.png)  
+Fig. 11-7
 
 <br>
 
@@ -2260,8 +2260,8 @@ Branch current C-1’s energy sharing current formulas are as follows.
 
 Branch current C-2 is as follows.
 
-![](media/media/image35.png)
-<p align="center">Fig. 11-8<br>
+![](media/media/image35.png)  
+Fig. 11-8
 
 <br>
 
@@ -2289,8 +2289,8 @@ For these formulas, the current values of the charging and discharging nodes are
 
 This section explains the Gateway function which realizes the energy sharing between clusters. The Gateway function is achieved by Gateway nodes that connect clusters. As shown in Fig. 11-9 below, a Gateway node consists of multiple apis-mains, Device Drivers, and DC/DC converters for one battery.
 
-![](media/media/image38.png)
-<p align="center">Fig. 11-9</p>
+![](media/media/image38.png)  
+Fig. 11-9
 
 <br>
 
