@@ -187,22 +187,18 @@ Fig. 3-1 shows the software architecture. The Java Development Kit (JDK) is inst
 
 A node includes apis-main, the software that realizes energy sharing, and the Device Driver, which communicates with the battery and the DC/DC converter. apis-main is composed of the following four services (see Fig. 3-2).
 
-1)  User Service
+1)  User Service  
+   The file describing the battery charge/discharge requests for each remaining battery capacity (described as a behavior ruleset in “2. Overview”) is called a Scenario file. The User Service makes decisions on charging and discharging requests by comparing the Scenario file content with the current remaining battery capacity. If it determines that charging/discharging is necessary, it sends a request to the Mediator Service to carry out negotiations with other apis-mains.
 
-> The file describing the battery charge/discharge requests for each remaining battery capacity (described as a behavior ruleset in “2. Overview”) is called a Scenario file. The User Service makes decisions on charging and discharging requests by comparing the Scenario file content with the current remaining battery capacity. If it determines that charging/discharging is necessary, it sends a request to the Mediator Service to carry out negotiations with other apis-mains.
+2)  Mediator Service  
+   Based on the request from the User Service, it carries out negotiations with other apis-mains and create energy sharing deal information. It also activates Grid Master as necessary.
 
-2)  Mediator Service
+3)  Grid Master Service  
+   Carries out energy sharing by receiving energy sharing deal information created by its own apis-main or another apis-main and controlling the DC/DC converters necessary for energy sharing. During a energy sharing, the service monitors the amount of power being interchanged and stops the interchange after the power amount as determined by the energy sharing deal information is reached. Energy sharing records are stored in the non-volatile memory of the hardware of both apis-mains involved in the energy sharing.
 
-> Based on the request from the User Service, it carries out negotiations with other apis-mains and create energy sharing deal information. It also activates Grid Master as necessary.
-
-3)  Grid Master Service
-
-> Carries out energy sharing by receiving energy sharing deal information created by its own apis-main or another apis-main and controlling the DC/DC converters necessary for energy sharing. During a energy sharing, the service monitors the amount of power being interchanged and stops the interchange after the power amount as determined by the energy sharing deal information is reached. Energy sharing records are stored in the non-volatile memory of the hardware of both apis-mains involved in the energy sharing.
-
-4)  Controller Service
-
-> Gets DC/DC converter and battery information requested by User Service.
-> Also, upon request from its own apis-main’s Grid Master Service or from another apis-main, carries out energy sharing by controlling the DC/DC converter.
+4)  Controller Service  
+   Gets DC/DC converter and battery information requested by User Service.
+   Also, upon request from its own apis-main’s Grid Master Service or from another apis-main, carries out energy sharing by controlling the DC/DC converter.
 
 ![](media/media/image11.png)
 <p align="center">Fig. 3-2</p>
@@ -221,18 +217,15 @@ When an apis-main is started, its Mediator Service’s Gird Master Management fu
 
 <br>
 
-1)  voltageReference
+1)  voltageReference  
+   In this method, the node with the Voltage Reference (CV Mode) at the time of energy sharing is selected as the Grid Master. The Grid Master is also transferred to another node if the Voltage Reference is transferred.
+   Because the node that becomes the Voltage Reference is determined at the time energy sharing begins, Grid Master is not determined immediately after apis-mains start up. Because of this, the existence of Grid Master is inquired during apis-main startup. If there is no response, the inquiry node tries to become the Grid Master on its own. (To prevent multiple Grid Masters from simultaneously activating, a node waits for a random amount of time before trying to start its own Grid Master Service. Before starting, it again confirms whether or not Grid Master exists. If not, it starts its own Grid Master Service.)
 
-> In this method, the node with the Voltage Reference (CV Mode) at the time of energy sharing is selected as the Grid Master. The Grid Master is also transferred to another node if the Voltage Reference is transferred.
-> Because the node that becomes the Voltage Reference is determined at the time energy sharing begins, Grid Master is not determined immediately after apis-mains start up. Because of this, the existence of Grid Master is inquired during apis-main startup. If there is no response, the inquiry node tries to become the Grid Master on its own. (To prevent multiple Grid Masters from simultaneously activating, a node waits for a random amount of time before trying to start its own Grid Master Service. Before starting, it again confirms whether or not Grid Master exists. If not, it starts its own Grid Master Service.)
+1)  fixed  
+   This selection method chooses a fixed node as Grid Master. When selecting a fixed Grid Master, the apis-main of the node specified as fixed must be started first in the cluster.
 
-2)  fixed
-
-> This selection method chooses a fixed node as Grid Master. When selecting a fixed Grid Master, the apis-main of the node specified as fixed must be started first in the cluster.
-
-3)  anywhere
-
-> The node whose apis-main starts up first becomes the Grid Master. Afterwards, if a problem occurs and Grid Master becomes unavailable, the node that detects the unavailability or absence of Grid Master tries to become the new Grid Master.
+2)  anywhere  
+   The node whose apis-main starts up first becomes the Grid Master. Afterwards, if a problem occurs and Grid Master becomes unavailable, the node that detects the unavailability or absence of Grid Master tries to become the new Grid Master.
 
 <br>
 
@@ -299,52 +292,47 @@ Grid Master gathers all energy sharing deal information registered in shared mem
 
 <br>
 
-(1) Not activated
+1) Not activated  
+   Indicates status where energy sharing is not carried out and the DC grid’s voltage is not ramped up.
+   If energy sharing transaction information in shared memory has this status, Grid Master sends instruction to apis-main on the Voltage Reference side to set its DC/DC converter to CV Mode. When set to CV Mode, the DC/DC converter ramps up to the voltage specified by the DC grid. After ramp-up is complete, the status moves to (2) Activated. (See 7.2 Voltage Ramp-Up.)
 
-> Indicates status where energy sharing is not carried out and the DC grid’s voltage is not ramped up.
-> If energy sharing transaction information in shared memory has this status, Grid Master sends instruction to apis-main on the Voltage Reference side to set its DC/DC converter to CV Mode. When set to CV Mode, the DC/DC converter ramps up to the voltage specified by the DC grid. After ramp-up is complete, the status moves to (2) Activated. (See 7.2 Voltage Ramp-Up.)
+1) Activated  
+   Indicates the state where DC grid voltage ramp-up has completed and energy sharing can begin. If energy sharing is already taking place and DC grid voltage ramp up is complete, the new status of energy sharing deal information is Activated. If the status of energy sharing deal information in shared memory is Activated, Grid Master sets each of DC/DC converters of apis-mains carrying out the energy sharing to CC Mode, and the status changes to (3) Started.
 
-(2) Activated
+2) Started  
+   This status of energy sharing deal information in shared memory indicates that energy sharing has started. Grid Master confirms that the accumulation of power being interchanged in Grid Master’s own loop processing is reaching the target power amount. If the amount is reached, Grid Master instructs to the apis-main of the discharge node to set the mode of its DC/DC converter to Wait in order to stop the energy sharing. The status is changed to (4) Stopped.
 
-> Indicates the state where DC grid voltage ramp-up has completed and energy sharing can begin. If energy sharing is already taking place and DC grid voltage ramp up is complete, the new status of energy sharing deal information is Activated. If the status of energy sharing deal information in shared memory is Activated, Grid Master sets each of DC/DC converters of apis-mains carrying out the energy sharing to CC Mode, and the status changes to (3) Started.
+3) Stopped  
+   If energy sharing deal information registered in shared memory has this status, the accumulated amount of power already interchanged has reached the target amount, and the DC/DC converter on the discharging side is in Wait mode. The Grid Master instructs the charge node’s apis-main to set the mode of the DC/DC converter to Wait, and the status changes to (5) Deactivate. At that time, other energy sharing continue. If the energy sharing of a DC/DC converter that moved into CV Mode stops, the CV Mode is transferred. (See 7.5 Constant Voltage (CV) Transfer).
 
-(3) Started
-
-> This status of energy sharing deal information in shared memory indicates that energy sharing has started. Grid Master confirms that the accumulation of power being interchanged in Grid Master’s own loop processing is reaching the target power amount. If the amount is reached, Grid Master instructs to the apis-main of the discharge node to set the mode of its DC/DC converter to Wait in order to stop the energy sharing. The status is changed to (4) Stopped.
-
-(4) Stopped
-
-> If energy sharing deal information registered in shared memory has this status, the accumulated amount of power already interchanged has reached the target amount, and the DC/DC converter on the discharging side is in Wait mode. The Grid Master instructs the charge node’s apis-main to set the mode of the DC/DC converter to Wait, and the status changes to (5) Deactivate. At that time, other energy sharing continue. If the energy sharing of a DC/DC converter that moved into CV Mode stops, the CV Mode is transferred. (See 7.5 Constant Voltage (CV) Transfer).
-
-(5) Deactivate
-
-> This status of the energy sharing deal information in shared memory indicates that the energy sharing has already been completed. The results of energy sharing in both the discharge node and charge node are written as files, and the energy sharing information is removed from shared memory. (Saving the final energy sharing results is carried out at the end of the energy sharing process. The energy sharing information in both the discharge and charge nodes involved in the energy sharing is saved in files.)
+4) Deactivate  
+   This status of the energy sharing deal information in shared memory indicates that the energy sharing has already been completed. The results of energy sharing in both the discharge node and charge node are written as files, and the energy sharing information is removed from shared memory. (Saving the final energy sharing results is carried out at the end of the energy sharing process. The energy sharing information in both the discharge and charge nodes involved in the energy sharing is saved in files.)
 
 ## **4.6. Various Locking Processes**
 
 apis-main applies exclusive locks that restrict simultaneous access to maintain the data integrity of Hazelcast’s shared memory and local memory of each node. It also applies interlocks that restrict other actions when certain conditions are not met.
 
-1)  Shared memory lock
-> * Grid Master interlock  
-> Before the Grid Master service is started, a lock is applied by assigning an ID to the service in shared memory so that another node cannot start Grid Master Service.
-> When transferring Grid Master, the Grid Master service is terminated. The Grid Master interlock in shared memory is removed and a new lock is applied by assigning an ID to another node. Grid Master is then transferred.
+1)  Shared memory lock  
+   * Grid Master interlock  
+    Before the Grid Master service is started, a lock is applied by assigning an ID to the service in shared memory so that another node cannot start Grid Master Service.
+    When transferring Grid Master, the Grid Master service is terminated. The Grid Master interlock in shared memory is removed and a new lock is applied by assigning an ID to another node. Grid Master is then transferred.
 
-2)  Local memory locks
-> * Energy sharing interlock  
-> This lock is applied by Grid Master to both nodes carrying out the energy sharing. The number of energy sharing is determined by the maximum current of the DC/DC converter and the current per energy sharing.
-> * Exclusive lock for energy sharing interlock  
-> Acquiring/releasing the energy sharing interlock is done asynchronously. However, to ensure integrity, synchronization is achieved by using an exclusive lock.
-> * Get data exclusive lock  
-> To prevent conflicts when writing to the local data cache when getting data for the Device Driver by apis-main, this exclusive lock is used when apis-main issues the Get Data command and control commands. Exclusive locking is applied to all/get, /dcdc/get/status and /dcdc/set.
-> * Grid Master processing loop exclusive lock
-> Used to exclusively control Grid Master’s main loop processing so that Grid Master is not transferred (does not start or stop) and does not stop during its main loop processing.
-> * Shared memory energy sharing read & write exclusive lock
->   Used to prevent simultaneous writes to the shared memory by multiple threads within a node.
+2)  Local memory locks  
+   * Energy sharing interlock  
+    This lock is applied by Grid Master to both nodes carrying out the energy sharing. The number of energy sharing is determined by the maximum current of the DC/DC converter and the current per energy sharing.
+   * Exclusive lock for energy sharing interlock  
+    Acquiring/releasing the energy sharing interlock is done asynchronously. However, to ensure integrity, synchronization is achieved by using an exclusive lock.
+   * Get data exclusive lock  
+    To prevent conflicts when writing to the local data cache when getting data for the Device Driver by apis-main, this exclusive lock is used when apis-main issues the Get Data command and control commands. Exclusive locking is applied to all/get, /dcdc/get/status and /dcdc/set.
+   * Grid Master processing loop exclusive lock  
+    Used to exclusively control Grid Master’s main loop processing so that Grid Master is not transferred (does not start or stop) and does not stop during its main loop processing.
+   * Shared memory energy sharing read & write exclusive lock  
+    Used to prevent simultaneous writes to the shared memory by multiple threads within a node.
 
 3)  File system lock
-> * Interchange direction interlock  
-> This is an exclusive lock for achieving exclusive control between multiple processes in the same node.  
-> It is used when starting multiple processes in the same node with the Gateway function (explained below). Exclusive control between processes (between apis-mains) is carried out by using the file system. (See 11.2 Gateway Function.)
+   * Interchange direction interlock  
+    This is an exclusive lock for achieving exclusive control between multiple processes in the same node.  
+    It is used when starting multiple processes in the same node with the Gateway function (explained below). Exclusive control between processes (between apis-mains) is carried out by using the file system. (See 11.2 Gateway Function.)
 
 ![](media/media/image12.png)
 <p align="center">Fig. 4-1</p>
