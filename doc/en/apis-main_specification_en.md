@@ -1422,30 +1422,30 @@ Script file for starting up apis-main. It is automatically run when the operatin
 
 The command to start apis-main in start.sh is as follows:
 
-java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-main-2.xx.x-a01-fat.jar -conf ./config.json -cp ./ -cluster -cluster-host 192.168.0.1 &
+> java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-main-2.xx.x-a01-fat.jar -conf ./config.json -cp ./ -cluster -cluster-host 192.168.0.1 &
 
 The arguments after “java” are described here.
 
-\-Djava.net.preferIPv4Stack=true　  
-　-\> Option to bind IPv4 address.
+* Djava.net.preferIPv4Stack=true　  
+-> Option to bind IPv4 address.
 
-\-Duser.timezone=Asia/Tokyo  
-　-\> Timezone setting
+* Duser.timezone=Asia/Tokyo  
+-> Timezone setting
 
-\-Djava.util.logging.config.file=./logging.properties  
-　-\> Option for specifying the logging configuration file.
+* Djava.util.logging.config.file=./logging.properties  
+-> Option for specifying the logging configuration file.
 
-\-jar ./apis-main-2.xx.x-a01-fat.jar  
-　-\> Option for specifying the execution of program encapsulated in the JAR file.
+* jar ./apis-main-2.xx.x-a01-fat.jar  
+-> Option for specifying the execution of program encapsulated in the JAR file.
 
-\-conf ./config.json  
-　-\> Option for specifying the configuration file.
+* conf ./config.json  
+-> Option for specifying the configuration file.
 
-\-cp ./  
-　-\> Option for specifying the location of cluster.xml file.
+* cp ./  
+-> Option for specifying the location of cluster.xml file.
 
-\-cluster-host 192.168.0.1 &  
-　-\> Option for specifying apis-main’s own IP address.
+* cluster-host 192.168.0.1 &  
+-> Option for specifying apis-main’s own IP address.
 
 <br>
 
