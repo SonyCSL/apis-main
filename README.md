@@ -133,6 +133,8 @@ $ bash start4.sh
   
 <a id="anchor1"></a>
 ## Documentation
+
+&emsp;[apis-main_specificaton(EN)](https://github.com/SonyCSL/apis-main/blob/master/doc/en/apis-main_specification_en.md)
 &emsp;[apis-main_specificaton(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
 
 
