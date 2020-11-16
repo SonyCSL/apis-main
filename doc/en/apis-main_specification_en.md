@@ -398,51 +398,29 @@ Information is exchanged between apis-main and the Device Driver through the Web
 
 <Examples\>
 
-{
-
-"status" : {
-
-    "status" : "0x0000",　　　　　　
-
-    "alarmState" : "No alarm",　　　
-
-    "operationMode" : "Waiting"　　
-
-},
-
-"meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"vdis" : {
-
-    "dvg" : 349.99,
-
-    "drg" : 0
-
-},
-
-"param" : {
-
-    "dig" : 3,
-
-}
-
-}
+> {  
+&emsp;"status" : {  
+&emsp;&emsp;"status" : "0x0000",  
+&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;"operationMode" : "Waiting"  
+&emsp;},  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"vdis" : {  
+&emsp;&emsp;"dvg" : 349.99,  
+&emsp;&emsp;"drg" : 0  
+&emsp;},  
+&emsp;"param" : {   
+&emsp;&emsp;"dig" : 3,  
+&emsp;}  
+}  
 
 <br>
 
@@ -452,36 +430,21 @@ The following shows the parameters of expected return values from the Device Dri
 
 <Examples\>
 
-{
-
-"status" : {
-
-    "status" : "0x0000",　
-
-    "alarmState" : "No alarm",
-
-    "operationMode" : "Waiting"
-
-},
-
-"meter" : {
-
-          "wg" : -2.44,
-
-          "tmp" : 30.08,
-
-          "vb" : 51.45,
-
-          "wb" : -12.21,
-
-          "vg" : 358.29,
-
-          "ib" : -0.23,
-
-          "ig" : 0
-
-}
-
+> {  
+&emsp;"status" : {  
+&emsp;&emsp;"status" : "0x0000",　  
+&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;"operationMode" : "Waiting"  
+&emsp;},  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,    
+&emsp;&emsp;"tmp" : 30.08,  
+&emsp;&emsp;"vb" : 51.45,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.29,  
+&emsp;&emsp;"ib" : -0.23,  
+&emsp;&emsp;"ig" : 0  
+&emsp;}  
 }
 
 
@@ -491,32 +454,19 @@ The following shows the parameters of expected return values from the Device Dri
 
 \<Examples\>
 
-{
-
-"meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"param": {
-
-    "dig": 7.8125,
-
-},
-
+> {  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"param": {  
+&emsp;&emsp;"dig": 7.8125, 
+&emsp;},  
 }
 
 <br>
@@ -527,35 +477,21 @@ The following shows the parameters of expected return values from the Device Dri
 
 <Examples\>
 
-{
-
-"meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"vdis" : {
-
-    "dvg" : 349.99,
-
-    "drg" : 0
-
-},
-
-}
+> {  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"vdis" : {  
+&emsp;&emsp;"dvg" : 349.99  ,
+&emsp;&emsp;"drg" : 0  
+&emsp;},  
+}  
 
 <br>
 
@@ -565,51 +501,29 @@ The following shows the parameters of expected return values from the Device Dri
 
 <Examples\>
 
-{
-
-"status" : {
-
-    "status" : "0x0000",　　　　　　
-
-    "alarmState" : "No alarm",　　　
-
-    "operationMode" : "Waiting"　　
-
-},
-
-"meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"vdis" : {
-
-    "dvg" : 349.99,
-
-    "drg" : 0
-
-},
-
-"param" : {
-
-    "dig" : 3,
-
-}
-
-}
+> {  
+&emsp;"status" : {  
+&emsp;&emsp;"status" : "0x0000",  
+&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;operationMode" : "Waiting"  
+&emsp;},  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"vdis" : {  
+&emsp;&emsp;"dvg" : 349.99,  
+&emsp;&emsp;"drg" : 0  
+&emsp;},  
+&emsp;"param" : {  
+&emsp;&emsp;"dig" : 3,  
+&emsp;}  
+}  
 
 <br>
 
@@ -619,12 +533,9 @@ The following shows the parameters of expected return values from the Device Dri
 
 \<Examples\>
 
-{
-
-    "rsoc" : 70,
-
-    "battery\_operation\_status" : 3
-
+> {  
+"rsoc" : 70,  
+"battery\_operation\_status" : 3  
 }
 
 <br>
@@ -635,64 +546,35 @@ The following shows the parameters of expected return values from the Device Dri
 
 \<Examples\>
 
-{
-
-"dcdc" : {
-
-{
-
-"status" : {
-
-    "status" : "0x0000",
-
-    "alarmState" : "No alarm",
-
-    "operationMode" : "Waiting"
-
-},
-
-"meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"vdis" : {
-
-    "dvg" : 349.99,
-
-    "drg" : 0
-
-},
-
-"param" : {
-
-    "dig" : 3,
-
-},
-
-"battery" : {
-
-{
-
-    "rsoc" : 70,
-
-    "battery\_operation\_status" : 3
-
-}
-
+> {  
+&emsp;"dcdc" : {  
+&emsp;&emsp;{  
+&emsp;&emsp;"status" : {  
+&emsp;&emsp;&emsp;"status" : "0x0000",  
+&emsp;&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;&emsp;"operationMode" : "Waiting"  
+&emsp;&emsp;},  
+&emsp;&emsp;"meter" : {  
+&emsp;&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;&emsp;"ig" : 0  
+&emsp;&emsp;},  
+&emsp;&emsp;"vdis" : {  
+&emsp;&emsp;&emsp;"dvg" : 349.99,  
+&emsp;&emsp;&emsp;"drg" : 0  
+&emsp;&emsp;},  
+&emsp;&emsp;"param" : {  
+&emsp;&emsp;"dig" : 3,  
+&emsp;&emsp;},  
+&emsp;"battery" : {  
+&emsp;&emsp;{  
+&emsp;&emsp;"rsoc" : 70,  
+&emsp;&emsp;"battery\_operation\_status" : 3  
+&emsp;&emsp;}  
 }
 
 <br>
@@ -705,27 +587,24 @@ If “systemType” in “6.1 config.json” is set to “dcdc\_v2” (dcdc\_bat
 
 \<Examples\>
 
-{
-
-    "comm\_protocol\_version" : "1.0"
-
-    "dcdc\_batt\_comm\_version" : "1.0 "
-
+> {  
+&emsp;"comm\_protocol\_version" : "1.0"  
+&emsp;"dcdc\_batt\_comm\_version" : "1.0 "  
 }
 
 ・About version information
 
 The Device Driver returns the following two pieces of information when the command /version/get is received from apis-main.
 
-    "comm\_protocol\_version" : "1.0"
-
-    "dcdc\_batt\_comm\_version" : "1.0"
+> "comm\_protocol\_version" : "1.0"  
+"dcdc\_batt\_comm\_version" : "1.0"
 
 common\_protocol\_version indicates the version of the communication protocol. dcdc\_batt\_comm\_version indicates the version of the Device Driver.
 
 The period in the version number separates the major version number and the minor version number. For example, the version number format of “comm\_protocol\_version” is \[major version\].\[minor version\]  
 
-\<Example\>  “1.0”
+\<Example\>
+> “1.0”
 
 The aim is to create a versioning scheme that reflects the interface between apis-main and the Device Driver to allow operations without tightly linking each software’s version.
 
