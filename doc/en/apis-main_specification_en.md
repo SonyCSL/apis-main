@@ -1533,9 +1533,8 @@ Continue existing energy sharing</p>
 <p>0x03 Interchange permitted</p></td>
 </tr>
 <tr class="even">
-<td>time</td>
+<td colspan="2">time</td>
 <td>Time of apis-main node</td>
-<td></td>
 </tr>
 <tr class="odd">
 <td rowspan="21">dcdc</td>
