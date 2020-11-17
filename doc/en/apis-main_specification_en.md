@@ -2345,7 +2345,7 @@ The following table shows the software used by apis-main and information about t
 </tbody>
 </table>
 
-<p align="right">*The software versions are subject to change.</p>
+*The software versions are subject to change.
 
 <br>
 
