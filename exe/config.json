@@ -43,9 +43,9 @@
 	},
 
 	"controlCenter" : {
-		"enabled" : false,
-		"account" : "E001",
-		"password" : "E001_pass"
+		"enabled" : true,
+		"account" : "e001",
+		"password" : "e001"
 	},
 
 	"watchdog" : {
