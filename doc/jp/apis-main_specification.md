@@ -1402,7 +1402,7 @@ Localネットワーク内のみで成立するSystem構成の場合はapis-main
 
 ■apis-mainで使用されるソフトウェアとそのOSSライセンス情報
 
-<table><thead><tr class="header"><td>ソフトウェア</td><td>バージョン</td><td>ライセンス</td><td>コード改変</td></tr></thead><tbody><tr class="odd"><td>Adopt OpenJDK</td><td>11.0.4+11</td><td>GPLv2 with Classpath Exception</td><td>無</td></tr><tr class="even"><td>Vert.x</td><td>3.7.1</td><td><p>デュアルライセンス(以下選択)</p><p>Eclipse Public License2.0</p><p>Apache License2.0</p></td><td>無</td></tr><tr class="odd"><td>Hazelcast</td><td>3.6.3</td><td>Apache License2.0</td><td>無</td></tr><tr class="even"><td>Netty</td><td>4.1.8</td><td>Apache License2.0</td><td>無</td></tr><tr class="odd"><td>FasterXML/Jackson</td><td>2.7.4</td><td>Apache License2.0</td><td>無</td></tr><tr class="even"><td>ReactiveX/RxJava</td><td>1.3.0</td><td>Apache License2.0</td><td>無</td></tr></tbody></table>
+<table><thead><tr class="header"><th>ソフトウェア</th><th>バージョン</th><th>ライセンス</th><th>コード改変</th></tr></thead><tbody><tr class="odd"><td>Adopt OpenJDK</td><td>11.0.4+11</td><td>GPLv2 with Classpath Exception</td><td>無</td></tr><tr class="even"><td>Vert.x</td><td>3.7.1</td><td><p>デュアルライセンス(以下選択)</p><p>Eclipse Public License2.0</p><p>Apache License2.0</p></td><td>無</td></tr><tr class="odd"><td>Hazelcast</td><td>3.6.3</td><td>Apache License2.0</td><td>無</td></tr><tr class="even"><td>Netty</td><td>4.1.8</td><td>Apache License2.0</td><td>無</td></tr><tr class="odd"><td>FasterXML/Jackson</td><td>2.7.4</td><td>Apache License2.0</td><td>無</td></tr><tr class="even"><td>ReactiveX/RxJava</td><td>1.3.0</td><td>Apache License2.0</td><td>無</td></tr></tbody></table>
 
 ※諸事情によりソフトウェアバージョンは変更される可能性があります。
 
