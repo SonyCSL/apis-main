@@ -449,51 +449,31 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
+> {  
+&emsp;"status" : {  
+&emsp;&emsp;"status" : "0x0000",  
+&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;"operationMode" : "Waiting"  
+&emsp;},  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"vdis" : {  
+&emsp;&emsp;"dvg" : 349.99,  
+&emsp;&emsp;"drg" : 0  
+&emsp;},  
+&emsp;"param" : {   
+&emsp;&emsp;"dig" : 3,  
+&emsp;}  
+}  
 
-"status" : {
-
-    "status" : "0x0000",　　　　　　
-
-    "alarmState" : "No alarm",　　　
-
-    "operationMode" : "Waiting"　　
-
-},
-
-    "meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"vdis" : {
-
-    "dvg" : 349.99,
-
-    "drg" : 0
-
-},
-
-"param" : {
-
-    "dig" : 3,
-
-}
-
-}
+<br>
 
 <a id="anchor5-2-2"></a>
 **5.2.2.“/dcdc/get/status” で期待される戻り値**
@@ -503,37 +483,24 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
-
-  "status" : {
-
-      "status" : "0x0000",　
-
-      "alarmState" : "No alarm",
-
-      "operationMode" : "Waiting"
-
-  },
-
-  "meter" : {
-
-      "wg" : -2.44,
-
-      "tmp" : 30.08,
-
-      "vb" : 51.45,
-
-      "wb" : -12.21,
-
-      "vg" : 358.29,
-
-      "ib" : -0.23,
-
-      "ig" : 0
-
-  }
-
+> {  
+&emsp;"status" : {  
+&emsp;&emsp;"status" : "0x0000",　  
+&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;"operationMode" : "Waiting"  
+&emsp;},  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,    
+&emsp;&emsp;"tmp" : 30.08,  
+&emsp;&emsp;"vb" : 51.45,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.29,  
+&emsp;&emsp;"ib" : -0.23,  
+&emsp;&emsp;"ig" : 0  
+&emsp;}  
 }
+
+<br>
 
 <a id="anchor5-2-3"></a>
 **5.2.3.“/dcdc/set?dig=&lt;Grid電流&gt;” で期待される戻り値**
@@ -543,33 +510,22 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
-
-"meter" : {
-
-      "wg" : -2.44,
-
-      "tmp" : 29.59,
-
-      "vb" : 51.47,
-
-      "wb" : -12.21,
-
-      "vg" : 358.27,
-
-      "ib" : -0.24,
-
-      "ig" : 0
-
-},
-
-"param": {
-
-    "dig": 7.8125,
-
-},
-
+> {  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"param": {  
+&emsp;&emsp;"dig": 7.8125, 
+&emsp;},  
 }
+
+<br>
 
 <a id="anchor5-2-4"></a>
 **5.2.4“/dcdc/set?dvg=&lt;Grid電圧&gt;&drg=&lt;GridDroop率&gt;” で期待される戻り値**
@@ -579,36 +535,23 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
+> {  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"vdis" : {  
+&emsp;&emsp;"dvg" : 349.99  ,
+&emsp;&emsp;"drg" : 0  
+&emsp;},  
+}  
 
-"meter" : {
-
-      "wg" : -2.44,
-
-      "tmp" : 29.59,
-
-      "vb" : 51.47,
-
-      "wb" : -12.21,
-
-      "vg" : 358.27,
-
-      "ib" : -0.24,
-
-      "ig" : 0
-      
-  },
-
-
-"vdis": {
-
-      "dvg": 299.98291015625,
-      
-      "drg" : 0
-
-},
-
-}
+<br>
 
 <a id="anchor5-2-5"></a>
 **5.2.5.“/dcdc/set?mode=&lt;Mode&gt;&dvg=&lt;Grid電圧&gt;&dig=&lt;Grid電流&gt;&dig=&lt;GridDroop率&gt;” で期待される戻り値**
@@ -618,51 +561,31 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
+> {  
+&emsp;"status" : {  
+&emsp;&emsp;"status" : "0x0000",  
+&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;operationMode" : "Waiting"  
+&emsp;},  
+&emsp;"meter" : {  
+&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;"ig" : 0  
+&emsp;},  
+&emsp;"vdis" : {  
+&emsp;&emsp;"dvg" : 349.99,  
+&emsp;&emsp;"drg" : 0  
+&emsp;},  
+&emsp;"param" : {  
+&emsp;&emsp;"dig" : 3,  
+&emsp;}  
+}  
 
-"status": {
-
-    "status": "0x0002",
-
-    "alarmState" : "No alarm",　　
-
-    "operationMode": "Heteronomy CV",
-
-},
-
-"meter": {
-
-      "wg" : -2.44,
-      
-      "tmp" : 29.59,
-      
-      "vb" : 51.47,
-      
-      "wb" : -12.21,
-      
-      "vg" : 358.27,
-      
-      "ib" : -0.24,
-      
-      "ig" : 0
-
-},
-
-"vdis": {
-
-     "dvg": 349.99,
-
-     "drg" : 0
-
-},
-
-"param": {
-
-     "dig": 3,
-
-},
-
-}
+<br>
 
 <a id="anchor5-2-6"></a>
 **5.2.6.“/battery/get” で期待される戻り値**
@@ -672,13 +595,13 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
-
-    "rsoc" : 70,
-
-    "battery\_operation\_status" : 3
-
+> {  
+"rsoc" : 70,  
+"battery\_operation\_status" : 3  
 }
+
+<br>
+
 
 <a id="anchor5-2-7"></a>
 **5.2.7“/all/get” で期待される戻り値**
@@ -688,65 +611,38 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
-
-"dcdc" : {
-
-{
-
-"status" : {
-
-    "status" : "0x0000",
-
-    "alarmState" : "No alarm",
-
-    "operationMode" : "Waiting"
-
-},
-
-"meter" : {
-
-    "wg" : -2.44,
-
-    "tmp" : 29.59,
-
-    "vb" : 51.47,
-
-    "wb" : -12.21,
-
-    "vg" : 358.27,
-
-    "ib" : -0.24,
-
-    "ig" : 0
-
-},
-
-"vdis" : {
-
-    "dvg" : 349.99,
-
-    "drg" : 0
-
-},
-
-"param" : {
-
-    "dig" : 3,
-
-},
-
-"battery" : {
-
-{
-
-    "rsoc" : 70,
-
-    "battery\_operation\_status" : 3
-
+> {  
+&emsp;"dcdc" : {  
+&emsp;&emsp;{  
+&emsp;&emsp;"status" : {  
+&emsp;&emsp;&emsp;"status" : "0x0000",  
+&emsp;&emsp;&emsp;"alarmState" : "No alarm",  
+&emsp;&emsp;&emsp;"operationMode" : "Waiting"  
+&emsp;&emsp;},  
+&emsp;&emsp;"meter" : {  
+&emsp;&emsp;&emsp;"wg" : -2.44,  
+&emsp;&emsp;&emsp;"tmp" : 29.59,  
+&emsp;&emsp;&emsp;"vb" : 51.47,  
+&emsp;&emsp;&emsp;"wb" : -12.21,  
+&emsp;&emsp;&emsp;"vg" : 358.27,  
+&emsp;&emsp;&emsp;"ib" : -0.24,  
+&emsp;&emsp;&emsp;"ig" : 0  
+&emsp;&emsp;},  
+&emsp;&emsp;"vdis" : {  
+&emsp;&emsp;&emsp;"dvg" : 349.99,  
+&emsp;&emsp;&emsp;"drg" : 0  
+&emsp;&emsp;},  
+&emsp;&emsp;"param" : {  
+&emsp;&emsp;"dig" : 3,  
+&emsp;&emsp;},  
+&emsp;"battery" : {  
+&emsp;&emsp;{  
+&emsp;&emsp;"rsoc" : 70,  
+&emsp;&emsp;"battery\_operation\_status" : 3  
+&emsp;&emsp;}  
 }
 
-}
+<br>
 
 <a id="anchor5-2-8"></a>
 **5.2.8.“/version/get” で期待される戻り値**
@@ -758,21 +654,18 @@ apis-main とDevice DriverはWeb APIにて情報のやり取りを行う。以�
 
 &lt;例&gt;
 
-{
-
-"comm\_protocol\_version" : "1.0"
-
-"dcdc\_batt\_comm\_version" : "1.0 "
-
+> {  
+&emsp;"comm\_protocol\_version" : "1.0"  
+&emsp;"dcdc\_batt\_comm\_version" : "1.0 "  
 }
 
 ・Version情報について
 
 Device Driverはapis-mainから/version/get コマンドを受けると以下2つの情報を返す。
 
-"comm\_protocol\_version" : "1.0"
-
+> "comm\_protocol\_version" : "1.0"  
 "dcdc\_batt\_comm\_version" : "1.0"
+
 
 common\_protocol\_versionはapis-mainとの通信プロトコルのVersionを示しておりdcdc\_batt\_comm\_versionはDevice DriverのVersionを示している。
 
