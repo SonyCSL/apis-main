@@ -2405,15 +2405,13 @@ The recommended operating system specifications for apis-main are as follows.
 <td>To prevent the effects of copyleft licenses such as GPL, an operating system that has the open source software and apis-main in one execution file is prohibited (e.g. a real-time operating system).</td>
 </tr>
 <tr class="even">
-<td>Others</td>
+<td rowspan="3">Others</td>
 <td>Ability to automatically execute apis-main and other software when the operating system starts up.</td>
 </tr>
 <tr class="odd">
-<td></td>
 <td>Ability to carry out ssh login/scp file transfer.</td>
 </tr>
 <tr class="even">
-<td></td>
 <td>Ability to periodically rename/compress/delete logs, such as by using logrotage.</td>
 </tr>
 </tbody>
