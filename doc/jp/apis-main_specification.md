@@ -1059,30 +1059,124 @@ Config, Policy, Scenarioファイルの不備や設定値の不備があり、Gr
 
 分類毎にその後の処理が異なり、それぞれ以下の処理を行う。
 
-| HARDWARE  | GLOBAL | FATAL | 実行中の全電力融通停止 → 全apis-main Shutdown |
-|           |        | ERROR | 実行中の全電力融通停止 → 電力融通停止         |
-|           |        | WARN  | Warning Log出力                               |
-|           | LOCAL  | FATAL | 該当電力融通停止 → 該当apis-main Shutdown     |
-|           |        | ERROR | 該当電力融通停止 → 一定期間電力融通停止       |
-|           |        | WARN  | Warning Log出力                               |
-| FRAMEWORK | GLOBAL | FATAL | 実行中の全電力融通停止 → 全apis-main Shutdown |
-|           |        | ERROR | 実行中の全電力融通停止 → 全apis-main Reset    |
-|           |        | WARN  | Warning Log出力                               |
-|           | LOCAL  | FATAL | 該当電力融通停止 → 該当apis-main Shutdown     |
-|           |        | ERROR | 該当電力融通停止 → 該当apis-main Reset        |
-|           |        | WARN  | Warning Log出力                               |
-| LOGIC     | GLOBAL | FATAL | 全電力融通停止 → 全apis-main Shutdown         |
-|           |        | ERROR | 実行中の全電力融通停止 → 全apis-main Reset    |
-|           |        | WARN  | Warning Log出力                               |
-|           | LOCAL  | FATAL | 該当電力融通停止 → 該当apis-main Shutdown     |
-|           |        | ERROR | 該当電力融通停止 → 該当apis-main Reset        |
-|           |        | WARN  | Warning Log出力                               |
-| USER      | GLOBAL | FATAL | 全電力融通停止 → 全apis-main Shutdown         |
-|           |        | ERROR | 全電力融通停止                                |
-|           |        | WARN  | Warning Log出力                               |
-|           | LOCAL  | FATAL | 該当電力融通停止 → 該当apis-main Shutdown     |
-|           |        | ERROR | 該当電力融通停止                              |
-|           |        | WARN  | Warning Log出力                               |
+<table>
+<tbody>
+<tr class="odd">
+<td rowspan="6">HARDWARE</td>
+<td rowspan="3">GLOBAL</td>
+<td>FATAL</td>
+<td>実行中の全電力融通停止 → 全apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>実行中の全電力融通停止 → 電力融通停止</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+<tr class="even">
+<td rowspan="3">LOCAL</td>
+<td>FATAL</td>
+<td>該当電力融通停止 → 該当apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>該当電力融通停止 → 一定期間電力融通停止</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+
+<tr class="odd">
+<td rowspan="6">FRAMEWORK</td>
+<td rowspan="3">GLOBAL</td>
+<td>FATAL</td>
+<td>実行中の全電力融通停止 → 全apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>実行中の全電力融通停止 → 全apis-main Reset</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+<tr class="even">
+<td rowspan="3">LOCAL</td>
+<td>FATAL</td>
+<td>該当電力融通停止 → 該当apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>該当電力融通停止 → 該当apis-main Reset.</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+
+<tr class="odd">
+<td rowspan="6">LOGIC</td>
+<td rowspan="3">GLOBAL</td>
+<td>FATAL</td>
+<td>全電力融通停止 → 全apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>実行中の全電力融通停止 → 全apis-main Reset</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+<tr class="even">
+<td rowspan="3">LOCAL</td>
+<td>FATAL</td>
+<td>該当電力融通停止 → 該当apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>該当電力融通停止 → 該当apis-main Reset</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+
+<tr class="odd">
+<td rowspan="6">USER</td>
+<td rowspan="3">GLOBAL</td>
+<td>FATAL</td>
+<td>全電力融通停止 → 全apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>全電力融通停止</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+<tr class="even">
+<td rowspan="3">LOCAL</td>
+<td>FATAL</td>
+<td>該当電力融通停止 → 該当apis-main Shutdown</td>
+</tr>
+<tr class="even">
+<td>ERROR</td>
+<td>該当電力融通停止</td>
+</tr>
+<tr class="odd">
+<td>WARN</td>
+<td>Warning Log出力</td>
+</tr>
+</tbody>
+</table>
+
+<br>
+
 
 <a id="anchor11"></a>
 **11.その他の機能**
