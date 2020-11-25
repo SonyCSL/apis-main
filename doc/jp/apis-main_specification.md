@@ -1416,7 +1416,7 @@ Localネットワーク内のみで成立するSystem構成の場合はapis-main
 
 以下にapis-mainのハードウェア要求を示す。
 
-<table><thead><tr class="header"><td>CPUプロセッサ</td><td><p>600～1000MHz, 64bit シングルコア, 32KB L1 cache以上</p><p>ARMv8推奨</p><p>(ARMv8以外のCPU採用の場合はapis-mainの動作確認を行う必要あり)</p></td></tr></thead><tbody><tr class="odd"><td>DRAM</td><td>DDR3 1.6Gbps 1GB 以上</td></tr><tr class="even"><td>内部ストレージ</td><td>8GB以上</td></tr><tr class="odd"><td>Ethernet</td><td>20Mbps 1ポート以上, IPv4 IPv6 サポート</td></tr></tbody></table>
+<table><tbody><tr class="even"><td>CPUプロセッサ</td><td><p>600～1000MHz, 64bit シングルコア, 32KB L1 cache以上</p><p>ARMv8推奨</p><p>(ARMv8以外のCPU採用の場合はapis-mainの動作確認を行う必要あり)</p></td></tr><tr class="odd"><td>DRAM</td><td>DDR3 1.6Gbps 1GB 以上</td></tr><tr class="even"><td>内部ストレージ</td><td>8GB以上</td></tr><tr class="odd"><td>Ethernet</td><td>20Mbps 1ポート以上, IPv4 IPv6 サポート</td></tr></tbody></table>
 
 <a id="anchor16-2"></a>
 **16.2OS要求**
