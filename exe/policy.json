@@ -114,7 +114,7 @@
 			"driftAllowanceA" : 0.03
 		},
 		"gridVoltageOptimization" : {
-			"enabled" : true
+			"enabled" : false
 		},
 		"heloPeriodMsec" : 5000,
 		"dataCollectionPeriodMsec" : 5000,
