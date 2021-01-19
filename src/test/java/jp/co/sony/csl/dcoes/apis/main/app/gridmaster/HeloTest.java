@@ -8,12 +8,18 @@ import jp.co.sony.csl.dcoes.apis.main.test.AbstractApisTest;
 import org.junit.Test;
 
 /**
+ * GridMaster Helo test.
+ * @author OES Project
+ *          
  * GridMaster Helo のテスト.
  * @author OES Project
  */
 public class HeloTest extends AbstractApisTest {
 
 	/**
+	 * Supports deploy and undeploy operations.
+	 * @param context a testcontext object
+	 *          
 	 *  deploy と undeploy が行える.
 	 * @param context testcontext オブジェクト
 	 */	
@@ -25,11 +31,15 @@ public class HeloTest extends AbstractApisTest {
 	}
 
 	/**
+	 * When helo is sent to GridMaster, it sends back a unitId.
+	 * @param context a testcontext object
+	 *          
 	 *  GridMasterに helo を送ると unitId が返ってくる. 
 	 * @param context testcontext オブジェクト
 	 */
 	@Test
 	public void testHelo(TestContext context) {
+		// Fetch the unitId to be returned
 		// 返信されるunitIdを取得
 		String unitId = config.getString("unitId");
 		context.assertNotNull(unitId);
@@ -40,6 +50,7 @@ public class HeloTest extends AbstractApisTest {
 				if (r.succeeded()) {
 					context.assertNotNull(r.result().body());
 					context.assertEquals(unitId, String.valueOf(r.result().body()), "返信された値が、期待されたunitIdでない");
+					                 	// Test completed normally
 					async.complete();	// テスト正常終了
 				} else {
 					context.fail("送信に失敗");

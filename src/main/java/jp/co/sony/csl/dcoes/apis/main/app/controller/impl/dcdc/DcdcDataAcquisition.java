@@ -6,6 +6,14 @@ import io.vertx.core.json.JsonObject;
 import jp.co.sony.csl.dcoes.apis.main.app.controller.DataAcquisition;
 
 /**
+ * Data acquisition service object Verticle for the DCDC system.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle.
+ * The following types are available, depending on the type of system.
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.emulator.DcdcEmulatorDataAcquisition}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v1.DcdcV1DataAcquisition}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v2.DcdcV2DataAcquisition}
+ * @author OES Project
+ *          
  * DCDC システム向けデータ取得サービスの親玉 Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle から起動される.
  * システムの種類に応じて以下の種類がある.
@@ -29,6 +37,11 @@ public abstract class DcdcDataAcquisition extends DataAcquisition {
 	 */
 	@Override protected abstract void getDeviceStatus(Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * {@inheritDoc}
+	 * Merge the device control state specified by {@code value} with {@link #cache}.
+	 * - Merge {@code value} into {@link #cache}{@code .dcdc}
+	 * Returns the merged result {@link #cache} {@code .dcdc}.
+	 *          
 	 * {@inheritDoc}
 	 * {@code value} で指定したデバイス制御状態を {@link #cache} にマージする.
 	 * - {@code value} を {@link #cache}{@code .dcdc} にマージ

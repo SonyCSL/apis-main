@@ -23,6 +23,12 @@ import jp.co.sony.csl.dcoes.apis.main.error.handling.LocalUserErrorsHandling;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that handles errors.
+ * Launched from the {@link User} Verticle.
+ * Periodically check for errors.
+ * If an error exists, create and run a suitable response process according to its type, scope and severity.
+ * @author OES Project
+ *          
  * エラーに対応する Verticle.
  * {@link User} Verticle から起動される.
  * 定期的にエラーの有無を確認する.
@@ -33,6 +39,9 @@ public class ErrorHandling extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(ErrorHandling.class);
 
 	/**
+	 * Default duration of the error processing cycle [ms].
+	 * Value: {@value}.
+	 *          
 	 * エラー処理周期のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
@@ -42,6 +51,11 @@ public class ErrorHandling extends AbstractVerticle {
 	private boolean stopped_ = false;
 
 	/**
+	 * Called at startup.
+	 * Start a timer to perform periodic error checking.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 定期的にエラーをチェックし処理するタイマを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -54,6 +68,10 @@ public class ErrorHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * Set a flag to stop the timer.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * タイマを止めるためのフラグを立てる.
 	 * @throws Exception {@inheritDoc}
@@ -66,6 +84,9 @@ public class ErrorHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Set up an error handling timer.
+	 * The timeout duration is {@code POLICY.user.errorHandlingPeriodMsec} (default: {@link #DEFAULT_ERROR_HANDLING_PERIOD_MSEC}).
+	 *          
 	 * エラー処理タイマ設定.
 	 * 待ち時間は {@code POLICY.user.errorHandlingPeriodMsec} ( デフォルト値 {@link #DEFAULT_ERROR_HANDLING_PERIOD_MSEC} ).
 	 */
@@ -74,6 +95,9 @@ public class ErrorHandling extends AbstractVerticle {
 		setErrorHandlingTimer_(delay);
 	}
 	/**
+	 * Set up an error handling timer.
+	 * @param delay cycle duration [ms]
+	 *          
 	 * エラー処理タイマ設定.
 	 * @param delay 周期 [ms]
 	 */
@@ -81,6 +105,9 @@ public class ErrorHandling extends AbstractVerticle {
 		errorHandlingTimerId_ = vertx.setTimer(delay, this::errorHandlingTimerHandler_);
 	}
 	/**
+	 * Error handling timer processing.
+	 * @param timerId timer ID
+	 *          
 	 * エラー処理タイマ処理.
 	 * @param timerId タイマ ID
 	 */
@@ -90,9 +117,11 @@ public class ErrorHandling extends AbstractVerticle {
 			ErrorUtil.report(vertx, Error.Category.LOGIC, Error.Extent.LOCAL, Error.Level.WARN, "illegal timerId : " + timerId + ", errorHandlingTimerId_ : " + errorHandlingTimerId_);
 			return;
 		}
+		// Fetch the POLICY (because it might change during processing)
 		// POLICY を確保し ( 処理中に変更される可能性があるので )
 		JsonObject policy = PolicyKeeping.cache().jsonObject();
 		new HandleErrors_(policy).doLoop_(r -> {
+			// When the processing is finished, mark it as finished
 			// 処理が終わったら終わったマークをつける
 			ErrorCollection.errorHandled_();
 			setErrorHandlingTimer_();
@@ -102,6 +131,10 @@ public class ErrorHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Error handling class.
+	 * Loops through the error types.
+	 * @author OES Project
+	 *          
 	 * エラー処理クラス.
 	 * エラーの種類をループする.
 	 * @author OES Project
@@ -110,6 +143,9 @@ public class ErrorHandling extends AbstractVerticle {
 		private JsonObject policy_;
 		private List<Error.Category> categoriesForLoop_;
 		/**
+		 * Create an instance.
+		 * @param policy a POLICY object
+		 *          
 		 * インスタンス生成.
 		 * @param policy POLICY オブジェクト
 		 */
@@ -129,6 +165,12 @@ public class ErrorHandling extends AbstractVerticle {
 		}
 	}
 	/**
+	 * Error handling class.
+	 * Created by specifying the error type.
+	 * Loop through the error severity.
+	 * @author OES Project
+	 * TODO: Why not make HandleErrorsByCategory_ an inner class of HandleErrors_ as in gridmaster.ErrorHandling?
+	 *          
 	 * エラー処理クラス.
 	 * エラー種類を指定されて誕生する.
 	 * エラーの深刻さをループする.
@@ -155,10 +197,12 @@ public class ErrorHandling extends AbstractVerticle {
 					AbstractErrorsHandling handler = null;
 					switch (aLevel) {
 					case WARN:
+						// Warning level errors do nothing
 						// 警告レベルは何もしない
 						log.fatal("#### should never happen; category : " + category_ + ", level : " + aLevel);
 						break;
 					case ERROR:
+						// Failure level errors are handled by creating a processing object according to the type of error
 						// 障害レベルなら種類に応じて処理オブジェクトを作りお任せする
 						switch (category_) {
 						case HARDWARE:
@@ -180,6 +224,7 @@ public class ErrorHandling extends AbstractVerticle {
 						break;
 					case FATAL:
 					case UNKNOWN:
+						// Fatal level errors or errors whose level is unknown for some reason are handled by running the FATAL (shutdown) process regardless of the type of error
 						// 致命的レベルまたは何らかの理由で不明レベルなら種類にかかわらず FATAL な処理 ( シャットダウン ) を実行する
 						handler = new LocalAnyFatalsHandling(vertx, policy_, errors);
 						break;

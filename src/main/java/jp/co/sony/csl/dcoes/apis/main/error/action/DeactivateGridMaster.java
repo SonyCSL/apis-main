@@ -15,6 +15,10 @@ import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * An actual class for error handling.
+ * If GridMaster is running in this unit, stop it.
+ * @author OES Project
+ *          
  * エラー処理の実クラス.
  * 自ユニットに GridMaster が動いていたら止める.
  * @author OES Project
@@ -23,6 +27,11 @@ public class DeactivateGridMaster extends AbstractErrorAction {
 	private static final Logger log = LoggerFactory.getLogger(DeactivateGridMaster.class);
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object. To prevent changes from taking effect while running, a copy is passed at {@link jp.co.sony.csl.dcoes.apis.main.app.user.ErrorHandling} or {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.ErrorHandling}.
+	 * @param logMessages a list of log messages recorded in error handling
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト. 処理中に変更されても影響しないように {@link jp.co.sony.csl.dcoes.apis.main.app.user.ErrorHandling} あるいは {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.ErrorHandling} でコピーしたものが渡される.

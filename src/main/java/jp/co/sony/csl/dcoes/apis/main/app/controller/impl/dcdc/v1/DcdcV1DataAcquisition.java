@@ -15,6 +15,10 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.VertxConfig;
 import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDataAcquisition;
 
 /**
+ * Data acquisition service Verticle for the DCDC system's dcdc_controller & EMU-Driver.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle.
+ * @author OES Project
+ *          
  * DCDC システムの dcdc_controller ＆ EMU-Driver 環境向けデータ取得サービス Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle から起動される.
  * @author OES Project
@@ -28,6 +32,13 @@ public class DcdcV1DataAcquisition extends DcdcDataAcquisition {
 	private String emuDriverDataUri_;
 
 	/**
+	 * {@inheritDoc}
+	 * Fetch settings from CONFIG and perform initialization.
+	 * - CONFIG.connection.dcdc_controller.host: dcdc_controller connection host name [{@link String}]
+	 * - CONFIG.connection.dcdc_controller.port: dcdc_controller connection port number [{@link Integer}]
+	 * - CONFIG.connection.emu_driver.host: EMU-Driver connection host name [{@link String}]
+	 * - CONFIG.connection.emu_driver.port: EMU-Driver connection port number [{@link Integer}]
+	 *          
 	 * {@inheritDoc}
 	 * CONFIG から設定を取得し初期化する.
 	 * - CONFIG.connection.dcdc_controller.host : dcdc_controller 接続ホスト名 [{@link String}]
@@ -57,6 +68,14 @@ public class DcdcV1DataAcquisition extends DcdcDataAcquisition {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 * Data acquired from dcdc_controller and EMU-Driver is returned after performing the following processing.
+	 * - Data obtained from dcdc_controller is set in {@code dcdc}
+	 * - Data obtained from EMU-Driver is set in {@code emu}
+	 * - Set {@code emu.rsoc} to {@code battery.rsoc}
+	 * - Set {@code emu.battery_operation_status} to {@code battery.battery_operation_status}
+	 * - Set the current time in {@code time} as a text string in the standard format of the APIS program
+	 *          
 	 * {@inheritDoc}
 	 * dcdc_controller および EMU-Driver から取得したデータに対し以下の処理をして返す.
 	 * - dcdc_controller から取得したデータを {@code dcdc} にセットする

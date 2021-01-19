@@ -17,6 +17,12 @@ import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Battery capacity management Verticle.
+ * Launched from the {@link Controller} Verticle.
+ * When multiple apis-mains share a single battery, as in gateway operation or the like, perform coordinated management of battery current capacity with the other apis-mains.
+ * At present, all the apis-mains to be coordinated must exist on the same computer (because coordination management is implemented using the file system).
+ * @author OES Project
+ *          
  * バッテリ容量管理 Verticle.
  * {@link Controller} Verticle から起動される.
  * Gateway 運用など一つのバッテリを複数の apis-main で共有している場合に他の apis-main とバッテリ電流容量を協調管理する.
@@ -27,6 +33,11 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(BatteryCapacityManagement.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -63,6 +74,9 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -77,6 +91,21 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#batteryCapacityTesting()}
+	 * Scope: local
+	 * Function: Check the battery capacity and the present interchange status to determine if a new interchange is possible.
+	 * 　　   When multiple apis-mains share a single battery, as in gateway operation or the like, perform coordinated management of battery current capacity with the other apis-mains.
+	 * 　　   At present, all the apis-mains to be coordinated must exist on the same computer (because coordination management is implemented using the file system).
+	 * Message body: interchange direction [{@link String}]
+	 * 　　　　　　　　   - {@code "DISCHARGE"}: discharge
+	 * 　　　　　　　　   - {@code "CHARGE"}: charge
+	 * Message header: none
+	 * Response: {@link Boolean#TRUE} if possible, or if battery capacity management is disabled
+	 * 　　　　　   {@link Boolean#FALSE} if not possible
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#batteryCapacityTesting()}
 	 * 範囲 : ローカル
@@ -107,6 +136,13 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Check the battery capacity and the present interchange status to determine if a new interchange is possible.
+	 * At present, we only consider the interchange direction.
+	 * - To avoid having multiple apis-mains each running interchanges in the same direction, exclusion control is performed by creating a separate file for each direction.
+	 * Uses a {@link Message#reply(Object)} to send back results in response to a {@code message}.
+	 * @param direction a direction object
+	 * @param message the message requiring a reply
+	 *          
 	 * バッテリ容量と現在の融通状態を確認し新しい融通が可能か否か判定する.
 	 * 現状は融通の方向だけを見ている.
 	 * - 複数の apis-main がそれぞれ同一方向の融通を実行しないように方向ごとのファイルを作り排他制御している.
@@ -119,16 +155,20 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		FileSystemExclusiveLockUtil.check(vertx, lockName, resCheck -> {
 			if (resCheck.succeeded()) {
 				if (resCheck.result()) {
+					// Success if acquired
 					// 獲得済なら成功
 					message.reply(Boolean.TRUE);
 				} else {
+					// Try acquiring
 					// 獲得してみる
 					FileSystemExclusiveLockUtil.lock(vertx, lockName, true, resLock -> {
 						if (resLock.succeeded()) {
 							if (resLock.result()) {
+								// If the acquisition is successful
 								// 獲得成功なら
 								FileSystemExclusiveLockUtil.unlock(vertx, lockName, true, resUnlock -> {
 									if (resUnlock.succeeded()) {
+										// Successfully opened
 										// 開放して成功
 										message.reply(Boolean.TRUE);
 									} else {
@@ -136,6 +176,7 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 									}
 								});
 							} else {
+								// Fail if acquisition fails
 								// 獲得失敗なら失敗
 								if (log.isInfoEnabled()) log.info("battery over-capacity ; direction : " + direction);
 								message.reply(Boolean.FALSE);
@@ -152,6 +193,21 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#batteryCapacityManaging()}
+	 * Scope: local
+	 * Function: Acquire/release an interchange frame.
+	 * 　　   When multiple apis-mains share a single battery, as in gateway operation or the like, perform coordinated management of battery current capacity with the other apis-mains.
+	 * 　　   At present, all the apis-mains to be coordinated must exist on the same computer (because coordination management is implemented using the file system).
+	 * Message body: Interchange information [{@link JsonObject}]
+	 * Message header: {@code "command"}
+	 * 　　　　　　　　   - {@code "acquire"}: acquire an interchange frame
+	 * 　　　　　　　　   - {@code "release"}: release an interchange frame
+	 * Response: {@link Boolean#TRUE} if successful or if battery capacity management is disabled
+	 * 　　　　　   {@link Boolean#FALSE} if failed
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#batteryCapacityManaging()}
 	 * 範囲 : ローカル
@@ -194,6 +250,11 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Acquire an interchange frame.
+	 * Uses a {@link Message#reply(Object)} to send back results in response to a {@code message}.
+	 * @param direction a direction object
+	 * @param message the message requiring a reply
+	 *          
 	 * 融通枠を確保する.
 	 * {@code message} に対して {@link Message#reply(Object)} で結果を返す.
 	 * @param direction direction オブジェクト
@@ -212,6 +273,11 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		});
 	}
 	/**
+	 * Release an interchange frame.
+	 * Uses a {@link Message#reply(Object)} to send back results in response to a {@code message}.
+	 * @param direction a direction object
+	 * @param message the message requiring a reply
+	 *          
 	 * 融通枠を開放する.
 	 * {@code message} に対して {@link Message#reply(Object)} で結果を返す.
 	 * @param direction direction オブジェクト
@@ -228,6 +294,16 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#resetLocal()}
+	 * Scope: local
+	 * Function: reset this unit.
+	 * Message body: none
+	 * Message header: none
+	 * Response: this unit's ID [{@link String}].
+	 * 　　　　　Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#resetLocal()}
 	 * 範囲 : ローカル
@@ -244,6 +320,16 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#resetAll()}
+	 * Scope: global
+	 * Function: Reset all units and all programs that participate in a cluster.
+	 * Message body: none
+	 * Message header: none
+	 * Response: this unit's ID [{@link String}].
+	 * 　　　　　Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#resetAll()}
 	 * 範囲 : グローバル
@@ -260,6 +346,9 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Actual implementation of reset process.
+	 * @param message the message requiring a reply
+	 *          
 	 * リセット処理の実実装.
 	 * @param message : 返信対象メッセージ
 	 */
@@ -271,6 +360,10 @@ public class BatteryCapacityManagement extends AbstractVerticle {
 		}
 	}
 	/**
+	 * Reset battery capacity management.
+	 * Release the interchange locks in both directions.
+	 * @param message the message requiring a reply
+	 *          
 	 * バッテリ容量管理をリセットする.
 	 * 融通の両方向のロックを開放する.
 	 * @param message : 返信対象メッセージ

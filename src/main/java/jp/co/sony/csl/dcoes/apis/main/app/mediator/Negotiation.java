@@ -21,6 +21,12 @@ import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that performs interchange negotiation.
+ * 1. Broadcast a request issued by this unit to all other units and wait for them to return "accept" responses
+ * 2. Pass these responses to the User service to receive appropriate "accept" responses
+ * 3. Combine the original request with the selected response to create interchange information, and request that it is registered
+ * @author OES Project
+ *          
  * 融通交渉を実行する Verticle.
  * 1. 自ユニットから発せられたリクエストを全ユニットにブロードキャストしアクセプトが返ってくるのを待つ
  * 2. 返ってきたアクセプト群を User サービスに渡して適切なアクセプトを受け取る
@@ -31,6 +37,9 @@ public class Negotiation extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(Negotiation.class);
 
 	/**
+	 * Default time to wait for responses after issuing a request [ms].
+	 * Value: {@value}.
+	 *          
 	 * リクエストを発してからレスポンスを待つ時間のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
@@ -39,6 +48,9 @@ public class Negotiation extends AbstractVerticle {
 	private JsonObject request_;
 
 	/**
+	 * Create an instance.
+	 * @param request an interchange request
+	 *          
 	 * インスタンスを生成する.
 	 * @param request 融通リクエスト
 	 */
@@ -47,6 +59,13 @@ public class Negotiation extends AbstractVerticle {
 	}
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Publishes interchange requests and the addresses of launched services.
+	 * After waiting for a fixed period of time, processes the returned responses and undeploys itself.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * 起動したサービスのアドレスと融通リクエストを publish する.
@@ -66,6 +85,9 @@ public class Negotiation extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -80,15 +102,20 @@ public class Negotiation extends AbstractVerticle {
 	}
 
 	private void startAcceptService_(Handler<AsyncResult<Void>> completionHandler) {
+		// Use this unit's deploymentID as a disposable reply address
 		// 使い捨ての返信用アドレスとして自身の deploymentID を使う
 		String replyAddress = deploymentID();
 		List<JsonObject> accepts = new ArrayList<>();
+		// Open up an EventBus connection with a disposable address
 		// 使い捨てのアドレスで EventBus の口を開く
 		MessageConsumer<JsonObject> acceptConsumer = vertx.eventBus().<JsonObject>consumer(replyAddress);
+		// Register a receiver process
 		// 受信処理を登録する
 		acceptConsumer.handler(rep -> {
+			// When a message is received
 			// メッセージを受け取ったら
 			JsonObject anAccept = rep.body();
+			// Check the unit ID to see whether or not it is a member defined in POLICY
 			// ユニット ID を確認して POLICY で定義されているメンバかどうか確認する
 			String unitId = anAccept.getString("unitId");
 			boolean isMember = PolicyKeeping.isMember(unitId);
@@ -96,6 +123,7 @@ public class Negotiation extends AbstractVerticle {
 				ErrorUtil.report(vertx, Error.Category.LOGIC, Error.Extent.LOCAL, Error.Level.WARN, "accept received from illegal unit : " + unitId + " ; accept : " + anAccept);
 			} else {
 				accepts.add(anAccept);
+				// TODO: Why not quit immediately after collecting as many members as specified in gridmaster.DataCollection?
 				// TODO : gridmaster.DataCollection のようにメンバの数だけ集まったら即座に終了するのはどうでしょう
 			}
 		}).exceptionHandler(t -> {
@@ -109,23 +137,32 @@ public class Negotiation extends AbstractVerticle {
 				vertx.undeploy(deploymentID());
 			});
 		}).completionHandler(res -> {
+			// When finished opening the connection (eventBus address has finished propagating)
 			// 口を開け終わった ( EventBus アドレスの伝搬が終わった ) ら
 			if (res.succeeded()) {
 				if (log.isDebugEnabled()) log.debug("request : " + request_);
+				// Prepare a disposable address for the reply
 				// 返信用の使い捨てアドレスを仕込んで
 				DeliveryOptions options = new DeliveryOptions().addHeader("replyAddress", replyAddress);
+				// Publish an interchange request
 				// 融通リクエストを publish する
 				vertx.eventBus().publish(ServiceAddress.Mediator.externalRequest(), request_, options);
 				Long negotiationTimeoutMsec = PolicyKeeping.cache().getLong(DEFAULT_NEGOTIATION_TIMEOUT_MSEC, "mediator", "negotiationTimeoutMsec");
+				// Set a timeout
 				// タイムアウトを仕込む
+				// The timeout duration is {@code POLICY.mediator.negotiationTimeoutMsec} (default: {@link #DEFAULT_NEGOTIATION_TIMEOUT_MSEC}).
 				// 待ち時間は {@code POLICY.mediator.negotiationTimeoutMsec} ( デフォルト値 {@link #DEFAULT_NEGOTIATION_TIMEOUT_MSEC} ).
 				vertx.setTimer(negotiationTimeoutMsec, t -> {
+					// If a timeout occurs
 					// タイムアウトしたら
+					// Close the connection
 					// 開いた口を閉じる
 					acceptConsumer.unregister(resUnregister -> {
 						if (resUnregister.succeeded()) {
+							// Handle the "accept" responses
 							// アクセプト群を処理し
 							doTreatAccepts_(accepts, resTreat -> {
+								// Call undeploy() for this verticle when finished
 								// 終わったら自身を undeploy () する
 								vertx.undeploy(deploymentID());
 							});
@@ -135,6 +172,7 @@ public class Negotiation extends AbstractVerticle {
 						}
 					});
 				});
+				// This completes the start() method for this Verticle
 				// ここまででこの Verticle の start() が完了する
 				completionHandler.handle(Future.succeededFuture());
 			} else {
@@ -157,12 +195,16 @@ public class Negotiation extends AbstractVerticle {
 						Integer dealAmountMaxWh = PolicyKeeping.cache().getInteger("mediator", "deal", "amountMaxWh");
 						Integer dealAmountUnitWh = PolicyKeeping.cache().getInteger("mediator", "deal", "amountUnitWh");
 						if (requestAmountWh != null && acceptAmountWh != null && dealAmountMinWh != null && dealAmountMaxWh != null && dealAmountUnitWh != null) {
+							// Adopt the interchange power specified in the request or in the "accept" response, whichever is the smaller
 							// リクエストとアクセプトの融通電力量指定の小さい方を採用する
 							int dealAmountWh = (requestAmountWh < acceptAmountWh) ? requestAmountWh : acceptAmountWh;
+							// Limit to the maximum value of the interchange power in POLICY
 							// POLICY の融通電力最大値で制限する
 							dealAmountWh = (dealAmountMaxWh < dealAmountWh) ? dealAmountMaxWh : dealAmountWh;
+							// Quantize in the smallest unit of the interchange power in POLICY
 							// POLICY の融通電力量の最小単位で量子化する
 							dealAmountWh = (dealAmountWh / dealAmountUnitWh) * dealAmountUnitWh;
+							// Set to zero if less than the smallest unit of the interchange power in POLICY (interchange is not established)
 							// POLICY の融通電力最小値未満なら 0 にする ( 融通が成立しない )
 							dealAmountWh = (dealAmountWh < dealAmountMinWh) ? 0 : dealAmountWh;
 							if (0 < dealAmountWh) {
@@ -198,6 +240,7 @@ public class Negotiation extends AbstractVerticle {
 									} else {
 										ErrorUtil.report(vertx, Error.Category.LOGIC, Error.Extent.LOCAL, Error.Level.WARN, "unknown type : " + type);
 									}
+									// Set the interchange grid current to the value specified in the request or the value specified in the "accept" response, whichever is smaller
 									// リクエストの融通グリッド電流指定とアクセプトの融通グリッド電流指定の小さい方を融通グリッド電流値とする
 									Float dealGridCurrentA = (requestDealGridCurrentA < acceptDealGridCurrentA) ? requestDealGridCurrentA : acceptDealGridCurrentA;
 									deal.put("dealGridCurrentA", dealGridCurrentA);
@@ -206,6 +249,7 @@ public class Negotiation extends AbstractVerticle {
 									deal.put("dealAmountWh", dealAmountWh);
 									if (request_.getString("pairUnitId") != null) deal.put("requestPairUnitId", request_.getString("pairUnitId"));
 									if (accept.getString("pairUnitId") != null) deal.put("acceptPairUnitId", accept.getString("pairUnitId"));
+									// Request registration of an interchange
 									// 融通の登録を依頼する
 									vertx.eventBus().send(ServiceAddress.Mediator.dealCreation(), deal);
 								} else {

@@ -21,6 +21,9 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.LocalExclusiveLock;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 
 /**
+ * A tool for managing interchange information in shared memory.
+ * @author OES Project
+ *          
  * 融通情報を共有メモリ上に管理するツール.
  * @author OES Project
  */
@@ -29,6 +32,11 @@ public class DealUtil {
 
 	private static final LocalExclusiveLock exclusiveLock_ = new LocalExclusiveLock(DealUtil.class.getName());
 	/**
+	 * Acquire an exclusive lock.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * 排他ロックを獲得する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト
@@ -38,6 +46,9 @@ public class DealUtil {
 		exclusiveLock_.acquire(vertx, completionHandler);
 	}
 	/**
+	 * Reset an exclusive lock.
+	 * @param vertx a vertx object
+	 *          
 	 * 排他ロックをリセットする.
 	 * @param vertx vertx オブジェクト
 	 */
@@ -50,6 +61,12 @@ public class DealUtil {
 	private DealUtil() { }
 
 	/**
+	 * Store DEAL information in shared memory.
+	 * Global error if a DEAL with the same ID already exists.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param completionHandler the completion handler
+	 *          
 	 * DEAL 情報を共有メモリに格納する.
 	 * 同じ ID の DEAL がすでに存在していたらグローバルエラー.
 	 * @param vertx vertx オブジェクト
@@ -85,6 +102,11 @@ public class DealUtil {
 	}
 
 	/**
+	 * Get all DEAL objects stored in shared memory.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * 共有メモリに格納されている DEAL オブジェクトを全て取得する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト
@@ -101,6 +123,11 @@ public class DealUtil {
 	}
 
 	/**
+	 * Get the Master Deal from shared memory.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * 共有メモリから Master Deal を取得する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト
@@ -123,6 +150,12 @@ public class DealUtil {
 	}
 
 	/**
+	 * Get the DEAL object in which the unit specified by {@code unitId} participates from shared memory.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param unitId the unit ID
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code unitId} で指定したユニットが参加している DEAL オブジェクトを共有メモリから取得する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト
@@ -150,6 +183,13 @@ public class DealUtil {
 	}
 
 	/**
+	 * Get the DEAL object with the ID specified by {@code dealId} from shared memory.
+	 * Raise an error if it doesn't exist.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param dealId an interchange ID
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code dealId} で指定した ID を持つ DEAL オブジェクトを共有メモリから取得する.
 	 * 存在しなければエラーになる.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
@@ -161,6 +201,16 @@ public class DealUtil {
 		get(vertx, dealId, false, completionHandler);
 	}
 	/**
+	 * Get the DEAL object with the ID specified by {@code dealId} from shared memory.
+	 * If it doesn't exist, handle according to the state of {@code ignoreNotExists}.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param dealId an interchange ID
+	 * @param ignoreNotExists the action to take if an interchange with the specified {@code dealId} does not exist
+	 *        - true: Issue a warning and return {@code null}
+	 *        - false: Raise a global error
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code dealId} で指定した ID を持つ DEAL オブジェクトを共有メモリから取得する.
 	 * 存在しない場合は {@code ignoreNotExists} に応じて対応する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
@@ -203,6 +253,12 @@ public class DealUtil {
 	}
 
 	/**
+	 * Update shared memory with the contents of the DEAL object specified by {@code deal}.
+	 * Raise an error if it doesn't exist.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトの内容で共有メモリを更新する.
 	 * 存在しなければエラーになる.
 	 * @param vertx vertx オブジェクト
@@ -213,6 +269,15 @@ public class DealUtil {
 		update(vertx, deal, false, completionHandler);
 	}
 	/**
+	 * Update shared memory with the contents of the DEAL object specified by {@code deal}.
+	 * If it doesn't exist, handle according to the state of {@code ignoreNotExists}.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param ignoreNotExists the action to take if the specified DEAL does not exist
+	 *        - true: Issue a warning
+	 *        - false: Raise a global error
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトの内容で共有メモリを更新する.
 	 * 存在しない場合は {@code ignoreNotExists} に応じて対応する.
 	 * @param vertx vertx オブジェクト
@@ -251,6 +316,7 @@ public class DealUtil {
 											if (log.isInfoEnabled()) log.info("deal updated : " + dealId);
 											completionHandler.handle(Future.succeededFuture());
 										} else {
+											// Replacement failed because the old value has changed
 											// old の値が変わっていたので差し替え失敗
 											String msg = "DealUtil.update(); failed to replace with dealId : " + dealId;
 											ErrorExceptionUtil.logAndFail(Error.Category.LOGIC, Error.Extent.GLOBAL, Error.Level.ERROR, msg, completionHandler);
@@ -282,6 +348,13 @@ public class DealUtil {
 	}
 
 	/**
+	 * Delete the DEAL object specified by {@code dealId} from shared memory.
+	 * Raise an error if it doesn't exist.
+	 * The deleted DEAL object is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param dealId an interchange ID
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code dealId} で指定する DEAL オブジェクトを共有メモリから削除する.
 	 * 存在しなければエラーになる.
 	 * completionHandler の {@link AsyncResult#result()} で削除した DEAL オブジェクトを受け取る.
@@ -293,6 +366,16 @@ public class DealUtil {
 		remove(vertx, dealId, false, completionHandler);
 	}
 	/**
+	 * Delete the DEAL object specified by {@code dealId} from shared memory.
+	 * If it doesn't exist, handle according to the state of {@code ignoreNotExists}.
+	 * The deleted DEAL object is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param dealId an interchange ID
+	 * @param ignoreNotExists the action to take if an interchange with the specified {@code dealId} does not exist
+	 *        - true: Issue a warning and return {@code null}
+	 *        - false: Raise a global error
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code dealId} で指定する DEAL オブジェクトを共有メモリから削除する.
 	 * 存在しない場合は {@code ignoreNotExists} に応じて対応する.
 	 * completionHandler の {@link AsyncResult#result()} で削除した DEAL オブジェクトを受け取る.
@@ -350,6 +433,12 @@ public class DealUtil {
 	////
 
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "activated" state and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the activation date and time. Uses the standard APIS program format
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを activate 済みにし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -366,6 +455,12 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "rampUp" state (complete master-side activation), and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the rampUp date and time. Uses the standard APIS program format
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを rampUp 済み ( master 側起動完了 ) にし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -382,6 +477,12 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "warmUp" state (complete slave-side activation), and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the warmUp date and time. Uses the standard APIS program format
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを warmUp 済み ( slave 側起動完了 ) にし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -398,6 +499,12 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "started" state (start summing) and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the start date and time. Uses the standard APIS program format
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを start 済み ( 積算開始 ) にし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -421,6 +528,13 @@ public class DealUtil {
 	}
 	private static final int HOUR_IN_MILLISECOND_ = 60 * 60 * 1000;
 	/**
+	 * Add up the interchange power based on {@code dateTime} and {@code wb} for the DEAL object specified by {@code deal} and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the addition date and time Uses the standard APIS program format
+	 * @param wb the battery power [Wh]
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトに対し {@code dateTime} と {@code wb} で融通電力を積算し共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -457,6 +571,12 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "stopped" state and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the stop date and time. Uses the standard APIS program format
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを stop 済みにし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -481,6 +601,12 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "deactivated" state and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the deactivation date and time. Uses the standard APIS program format
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを deactivate 済みにし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -510,6 +636,13 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "reset" state and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the reset date and time. Uses the standard APIS program format
+	 * @param reason the reason for resetting
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを reset 済みにし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -533,6 +666,13 @@ public class DealUtil {
 		update(vertx, deal, completionHandler);
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "aborted" state and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the abortion date and time. Uses the standard APIS program format
+	 * @param reason the reason for abnormal termination
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを異常終了済みにし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -565,6 +705,13 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Put the DEAL object specified by {@code deal} into the "SCRAM" state and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param dateTime the SCRAM date and time. Uses the standard APIS program format
+	 * @param reason the reason for the SCRAM
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトを SCRAM 済みにし共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト
@@ -595,6 +742,12 @@ public class DealUtil {
 		}
 	}
 	/**
+	 * Set the Master Deal flag of the DEAL object specified by {@code deal} and update shared memory.
+	 * @param vertx a vertx object
+	 * @param deal a DEAL object
+	 * @param flag true if this object is to become the Master Deal, false otherwise
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@code deal} で指定する DEAL オブジェクトに対し Master Deal フラグを設定し共有メモリを更新する.
 	 * @param vertx vertx オブジェクト
 	 * @param deal DEAL オブジェクト

@@ -12,6 +12,10 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDataAcquisiti
 import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 
 /**
+ * Data acquisition service Verticle for the DCDC system emulator environment.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle.
+ * @author OES Project
+ *          
  * DCDC システムの emulator 環境向けデータ取得サービス Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle から起動される.
  * @author OES Project
@@ -27,6 +31,11 @@ public class DcdcEmulatorDataAcquisition extends DcdcDataAcquisition {
 	private String statusUri_;
 
 	/**
+	 * {@inheritDoc}
+	 * Fetch settings from CONFIG and perform initialization.
+	 * - CONFIG.connection.emulator.host: emulator connection host name [{@link String}]
+	 * - CONFIG.connection.emulator.port: emulator connection port number [{@link Integer}]
+	 *          
 	 * {@inheritDoc}
 	 * CONFIG から設定を取得し初期化する.
 	 * - CONFIG.connection.emulator.host : emulator 接続ホスト名 [{@link String}]
@@ -46,6 +55,11 @@ public class DcdcEmulatorDataAcquisition extends DcdcDataAcquisition {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 * Data obtained from the emulator is returned after performing the following conversion process.
+	 * - Set {@code emu.rsoc} to {@code battery.rsoc}
+	 * - Set {@code emu.battery_operation_status} to {@code battery.battery_operation_status}
+	 *          
 	 * {@inheritDoc}
 	 * emulator から取得したデータに対し以下のコンバート処理をして返す.
 	 * - {@code emu.rsoc} を {@code battery.rsoc} にセットする

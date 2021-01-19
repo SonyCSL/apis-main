@@ -8,12 +8,18 @@ import jp.co.sony.csl.dcoes.apis.main.util.Starter;
 import org.junit.Test;
 
 /**
+ * Starter test.
+ * @author OES Project
+ *          
  * Starter のテスト.
  * @author OES Project
  */
 public class StarterTest extends AbstractApisTest {
 
 	/**
+	 * Supports deploy and undeploy operations.
+	 * @param context a testcontext object
+	 *          
 	 *  deploy と undeploy が行える.
 	 * @param context testcontext オブジェクト
 	 */

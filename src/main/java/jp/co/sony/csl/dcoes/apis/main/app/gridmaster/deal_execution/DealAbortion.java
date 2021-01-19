@@ -15,6 +15,9 @@ import jp.co.sony.csl.dcoes.apis.main.app.mediator.util.DealUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 
 /**
+ * Abort an interchange.
+ * @author OES Project
+ *          
  * 融通を異常終了する.
  * @author OES Project
  */
@@ -24,6 +27,13 @@ public class DealAbortion extends AbstractStoppableDealExecution {
 	private String reason_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object. To prevent changes from taking effect while running, a copy is passed at startup to {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.DealExecution DealExecution}.
+	 * @param deal the DEAL object to be processed
+	 * @param otherDeals a list of other DEAL objects that exist at the same time
+	 * @param reason the reason for abnormal termination
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト. 処理中に変更されても影響しないように {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.DealExecution DealExecution} 開始時にコピーしたものが渡される.
@@ -36,6 +46,11 @@ public class DealAbortion extends AbstractStoppableDealExecution {
 		reason_ = reason;
 	}
 	/**
+	 * Create an instance.
+	 * Initialization is not required because the internal state of another {@link AbstractDealExecution} is inherited as-is.
+	 * @param other another abstractdealexecution object
+	 * @param reason the reason for abnormal termination
+	 *          
 	 * インスタンスを生成する.
 	 * 他の {@link AbstractDealExecution} の内部状態をそのまま受け継ぐため初期化不要.
 	 * @param other 他の abstractdealexecution オブジェクト
@@ -47,15 +62,19 @@ public class DealAbortion extends AbstractStoppableDealExecution {
 	}
 
 	@Override protected void doExecute(Handler<AsyncResult<Void>> completionHandler) {
+		// Stop the device that is not on the voltage reference side
 		// 電圧リファレンス側でない方のデバイスを停止し
 		stopDcdc_(resStopDcdc -> {
 			if (resStopDcdc.succeeded()) {
+				// Perform DEAL object's "stop" process
 				// DEAL オブジェクトを stop 処理し
 				stopDeal_(resStopDeal -> {
 					if (resStopDeal.succeeded()) {
+						// Perform DEAL object's "abort" process
 						// DEAL オブジェクトを abort 処理する
 						abortDeal_(resAbort -> {
 							if (resAbort.succeeded()) {
+								// Proceed to the "deactivate" process (deactivate the voltage reference side)
 								// deactivate ( 電圧リファレンス側を止める ) 処理に移行する
 								new DealDeactivation(this).execute(completionHandler);
 							} else {
@@ -73,6 +92,7 @@ public class DealAbortion extends AbstractStoppableDealExecution {
 	}
 
 	@Override protected void stopDeal_(Handler<AsyncResult<Void>> completionHandler) {
+		// Change the state of a DEAL object according to the present DEAL object
 		// 現状の DEAL オブジェクトに応じて DEAL オブジェクトの状態を変更する
 		if (Deal.isStarted(deal_)) {
 			if (!Deal.isStopped(deal_)) {

@@ -7,12 +7,18 @@ import jp.co.sony.csl.dcoes.apis.main.test.AbstractApisTest;
 import org.junit.Test;
 
 /**
+ * Controller test.
+ * @author OES Project
+ *          
  * Controller のテスト.
  * @author OES Project
  */
 public class ControllerTest extends AbstractApisTest {
 
 	/**
+	 * Supports deploy and undeploy operations.
+	 * @param context a testcontext object
+	 *          
 	 *  deployとundeployが行える.
 	 * @param context testcontext オブジェクト
 	 */	

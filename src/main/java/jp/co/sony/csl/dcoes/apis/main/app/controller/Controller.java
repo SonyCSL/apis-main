@@ -7,6 +7,15 @@ import io.vertx.core.logging.LoggerFactory;
 import jp.co.sony.csl.dcoes.apis.main.factory.Factory;
 
 /**
+ * Controller service object Verticle.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.Apis} Verticle.
+ * Launches the following Verticles.
+ * - {@link DataAcquisition}: Data acquisition Verticle. The actual class is generated according to the system type
+ * - {@link DataResponding}: Data response Verticle. The actual class is generated according to the system type
+ * - {@link DeviceControlling}: Device control Verticle. The actual class is generated according to the system type
+ * - {@link BatteryCapacityManagement}: Battery capacity management Verticle
+ * @author OES Project
+ *          
  * Controller サービスの親玉 Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.Apis} Verticle から起動される.
  * 以下の Verticle を起動する.
@@ -20,6 +29,15 @@ public class Controller extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(Controller.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the following Verticles.
+	 * - {@link DataAcquisition}: Data acquisition Verticle. The actual class is generated according to the system type
+	 * - {@link DataResponding}: Data response Verticle. The actual class is generated according to the system type
+	 * - {@link DeviceControlling}: Device control Verticle. The actual class is generated according to the system type
+	 * - {@link BatteryCapacityManagement}: Battery capacity management Verticle
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 以下の Verticle を起動する.
 	 * - {@link DataAcquisition} : データ取得 Verticle. システムの種類に応じた実クラスが生成される
@@ -62,6 +80,9 @@ public class Controller extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */

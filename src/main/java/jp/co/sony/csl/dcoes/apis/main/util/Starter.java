@@ -20,6 +20,11 @@ import jp.co.sony.csl.dcoes.apis.main.error.action.StopLocal;
 import jp.co.sony.csl.dcoes.apis.main.factory.Factory;
 
 /**
+ * The apis-main object Verticle.
+ * Specified by {@literal <Main-Verticle>} of the maven-shade-plugin in pom.xml.
+ * Launch the {@link Apis} Verticle.
+ * @author OES Project
+ *          
  * apis-main の親玉 Verticle.
  * pom.xml の maven-shade-plugin の {@literal <Main-Verticle>} で指定してある.
  * {@link Apis} Verticle を起動する.
@@ -31,6 +36,8 @@ public class Starter extends AbstractStarter {
 	private boolean shuttingDown_ = false;
 
 	/**
+	 * Called from {@link AbstractStarter#start(Future)} at startup.
+	 *          
 	 * 起動時に {@link AbstractStarter#start(Future)} から呼び出される.
 	 */
 	@Override protected void doStart(Handler<AsyncResult<Void>> completionHandler) {
@@ -56,6 +63,8 @@ public class Starter extends AbstractStarter {
 	}
 
 	/**
+	 * Called by the closeHook of Vert.x and by a shutdown message from EventBus.
+	 *          
 	 * Vert.x の closeHook および EventBus からのシャットダウンメッセージで呼び出される.
 	 */
 	@Override protected void doShutdown(Handler<AsyncResult<Void>> completionHandler) {
@@ -85,6 +94,17 @@ public class Starter extends AbstractStarter {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#shutdown(String)}
+	 * Scope: global
+	 * Function: Shut down.
+	 *           The actual processing calls {@link ServiceAddress#shutdownLocal()}.
+	 * Message body: none
+	 * Message header: none
+	 * Response: {@code "ok"}
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#shutdown(String)}
 	 * 範囲 : グローバル

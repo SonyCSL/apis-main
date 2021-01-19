@@ -11,6 +11,10 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDeviceControl
 import jp.co.sony.csl.dcoes.apis.main.app.controller.util.DDCon;
 
 /**
+ * Device control service Verticle for the DCDC system's dcdc_controller & EMU-Driver.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle.
+ * @author OES Project
+ *          
  * DCDC システムの dcdc_controller ＆ EMU-Driver 環境向けデバイス制御サービス Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle から起動される.
  * @author OES Project
@@ -20,6 +24,11 @@ public class DcdcV1DeviceControlling extends DcdcDeviceControlling {
 	private HttpClient client_;
 
 	/**
+	 * {@inheritDoc}
+	 * Fetch settings from CONFIG and perform initialization.
+	 * - CONFIG.connection.dcdc_controller.host: dcdc_controller connection host name [{@link String}]
+	 * - CONFIG.connection.dcdc_controller.port: dcdc_controller connection port number [{@link Integer}]
+	 *          
 	 * {@inheritDoc}
 	 * CONFIG から設定を取得し初期化する.
 	 * - CONFIG.connection.dcdc_controller.host : dcdc_controller 接続ホスト名 [{@link String}]
@@ -57,6 +66,13 @@ public class DcdcV1DeviceControlling extends DcdcDeviceControlling {
 	////
 
 	/**
+	 * Fetch the URI of the mode change API.
+	 * @param mode the mode to be changed
+	 * @param voltage voltage value
+	 * @param current current value
+	 * @param droopRatio droop ratio
+	 * @return URI
+	 *          
 	 * モード変更 API の URI を取得する.
 	 * @param mode 変更するモード
 	 * @param voltage 電圧値
@@ -68,6 +84,11 @@ public class DcdcV1DeviceControlling extends DcdcDeviceControlling {
 		return "/remote/set?mode=" + DDCon.codeFromMode(mode) + "&dvg=" + voltage + "&dig=" + current + "&drg=" + droopRatio;
 	}
 	/**
+	 * Fetch the URI of the voltage change API.
+	 * @param voltage voltage value
+	 * @param droopRatio droop ratio
+	 * @return URI
+	 *          
 	 * 電圧値変更 API の URI を取得する.
 	 * @param voltage 電圧値
 	 * @param droopRatio ドループ率
@@ -77,6 +98,10 @@ public class DcdcV1DeviceControlling extends DcdcDeviceControlling {
 		return "/remote/set/voltage?dvg=" + voltage + "&drg=" + droopRatio;
 	}
 	/**
+	 * Fetch the URI of the current change API.
+	 * @param current current value
+	 * @return URI
+	 *          
 	 * 電流値変更 API の URI を取得する.
 	 * @param current 電流値
 	 * @return URI

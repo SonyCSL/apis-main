@@ -23,6 +23,12 @@ import jp.co.sony.csl.dcoes.apis.main.error.handling.GlobalLogicErrorsHandling;
 import jp.co.sony.csl.dcoes.apis.main.error.handling.GlobalUserErrorsHandling;
 
 /**
+ * Handle errors.
+ * Called periodically from {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop}.
+ * Check for errors.
+ * If an error exists, create and run a suitable response process according to its type, scope and severity.
+ * @author OES Project
+ *          
  * エラーに対応する.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop} から定期的に呼ばれる.
  * エラーの有無を確認する.
@@ -35,15 +41,22 @@ public class ErrorHandling {
 	private ErrorHandling() { }
 
 	/**
+	 * Processing called from {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop}.
+	 * For local errors that have been received and saved, create and run a suitable error processing object for each type and scope.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop} から呼ばれる処理.
 	 * 受け取って保存してあるローカルエラーに対して種類と範囲ごとに対応するエラー処理オブジェクトを作成し実行する.
 	 * @param vertx vertx オブジェクト
 	 * @param completionHandler the completion handler
 	 */
 	public static void execute(Vertx vertx, Handler<AsyncResult<Void>> completionHandler) {
+		// Fetch the POLICY (because it might change during processing)
 		// POLICY を確保し ( 処理中に変更される可能性があるので )
 		JsonObject policy = PolicyKeeping.cache().jsonObject();
 		new HandleErrors_(vertx, policy).doLoop_(r -> {
+			// When the processing is finished, mark it as finished
 			// 処理が終わったら終わったマークをつける
 			ErrorCollection.errorHandled();
 			completionHandler.handle(r);
@@ -53,6 +66,10 @@ public class ErrorHandling {
 	////
 
 	/**
+	 * Error handling class.
+	 * Loops through the error types.
+	 * @author OES Project
+	 *          
 	 * エラー処理クラス.
 	 * エラーの種類をループする.
 	 * @author OES Project
@@ -62,6 +79,10 @@ public class ErrorHandling {
 		private JsonObject policy_;
 		private List<Error.Category> categoriesForLoop_;
 		/**
+		 * Create an instance.
+		 * @param vertx a vertx object
+		 * @param policy a POLICY object
+		 *          
 		 * インスタンス生成.
 		 * @param vertx vertx オブジェクト
 		 * @param policy POLICY オブジェクト
@@ -82,6 +103,11 @@ public class ErrorHandling {
 			}
 		}
 		/**
+		 * Error handling class.
+		 * Created by specifying the error type.
+		 * Loop through the error severity.
+		 * @author OES Project
+		 *          
 		 * エラー処理クラス.
 		 * エラー種類を指定されて誕生する.
 		 * エラーの深刻さをループする.
@@ -107,10 +133,12 @@ public class ErrorHandling {
 						AbstractErrorsHandling handler = null;
 						switch (aLevel) {
 						case WARN:
+							// Warning level errors do nothing
 							// 警告レベルは何もしない
 							log.fatal("#### should never happen; category : " + category_ + ", level : " + aLevel);
 							break;
 						case ERROR:
+							// Failure level errors are handled by creating a processing object according to the type of error
 							// 障害レベルなら種類に応じて処理オブジェクトを作りお任せする
 							switch (category_) {
 							case HARDWARE:
@@ -132,6 +160,7 @@ public class ErrorHandling {
 							break;
 						case FATAL:
 						case UNKNOWN:
+							// Fatal level errors or errors whose level is unknown for some reason are handled by running the FATAL (shutdown) process regardless of the type of error
 							// 致命的レベルまたは何らかの理由で不明レベルなら種類にかかわらず FATAL な処理 ( シャットダウン ) を実行する
 							handler = new GlobalAnyFatalsHandling(vertx_, policy_, errors);
 							break;

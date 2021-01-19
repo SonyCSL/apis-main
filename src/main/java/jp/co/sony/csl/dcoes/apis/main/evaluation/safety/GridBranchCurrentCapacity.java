@@ -17,6 +17,10 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Judge whether or not an interchange is possible based on grid currents, and perform safety checks.
+ * If {@code POLICY.safety.gridTopologyBasedEvaluation.enabled} is {@code true}, perform calculations taking topology into consideration.
+ * @author OES Project
+ *          
  * グリッド電流に基づく融通可否判定および安全性チェック処理.
  * {@code POLICY.safety.gridTopologyBasedEvaluation.enabled} が {@code true} ならトポロジを考慮した計算を実施する.
  * @author OES Project
@@ -28,6 +32,13 @@ public class GridBranchCurrentCapacity {
 	private GridBranchCurrentCapacity() { }
 
 	/**
+	 * Check the safety of the grid current capacity.
+	 * Raise a GLOBAL ERROR if exceeded capacity is detected.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object
+	 * @param unitData unit data of all units
+	 * @param completionHandler the completion handler
+	 *          
 	 * グリッド電流容量の安全性をチェックする.
 	 * 容量オーバーを検知したら GLOBAL:ERROR を発する.
 	 * @param vertx vertx オブジェクト
@@ -39,11 +50,19 @@ public class GridBranchCurrentCapacity {
 		if (JsonObjectUtil.getBoolean(policy, Boolean.FALSE, "safety", "gridTopologyBasedEvaluation", "enabled")) {
 			check_topologyBased_(vertx, policy, unitData, completionHandler);
 		} else {
+			// If not using topology functions (POLICY.safety.gridTopologyBasedEvaluation.enabled == false), do nothing
 			// トポロジ機能を使わない ( POLICY.safety.gridTopologyBasedEvaluation.enabled == false ) なら何もしない
 			completionHandler.handle(Future.succeededFuture());
 		}
 	}
 	/**
+	 * Perform current capacity checks that take the grid topology into consideration.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object
+	 * @param unitData unit data of all units
+	 * @param completionHandler the completion handler
+	 * TODO: Checks are ended if one deviation is found, but should check everything
+	 *          
 	 * グリッドのトポロジを考慮した電流容量チェックを実行する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト
@@ -58,12 +77,14 @@ public class GridBranchCurrentCapacity {
 			for (String aBranchId : branchIds) {
 				if (log.isInfoEnabled()) log.info(aBranchId);
 				Float capacity = JsonObjectUtil.getFloat(config, "branchCurrentCapacityA", aBranchId);
+				// Check only in the forward direction
 				// 順方向だけチェックする
 				List<String> forwardUnitIds = JsonObjectUtil.getStringList(config, "branchAssociation", aBranchId, "forwardUnitIds");
 				if (capacity != null && forwardUnitIds != null) {
 					if (log.isInfoEnabled()) log.info("  currentCapacityA : " + capacity);
 					float sum = 0F;
 					for (String aUnitId : forwardUnitIds) {
+						// Add the unit's ig
 						// ユニットの ig を加算する
 						Float ig = JsonObjectUtil.getFloat(unitData, aUnitId, "dcdc", "meter", "ig");
 						if (ig != null) {
@@ -88,6 +109,13 @@ public class GridBranchCurrentCapacity {
 	}
 
 	/**
+	 * Judge whether or not a new interchange is possible based on the grid current capacity.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object
+	 * @param deal a new DEAL object
+	 * @param otherDeals a list of other DEAL objects
+	 * @return {@code null} if possible, or the reason for failure otherwise
+	 *          
 	 * グリッド電流容量から新しい融通の可否を判定する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト
@@ -96,8 +124,10 @@ public class GridBranchCurrentCapacity {
 	 * @return 可なら {@code null}, 不可なら理由
 	 */
 	public static String checkNewDeal(Vertx vertx, JsonObject policy, JsonObject deal, List<JsonObject> otherDeals) {
+		// Start by making a list containing only interchanges that are operating
 		// まず動いている融通だけをリストし
 		List<JsonObject> activeDeals = activeDeals_(otherDeals);
+		// Check the effect of adding the new interchange. If the result is out, then this addition is impossible
 		// それに新しく始める融通を加えてチェックした結果アウトなら不可ということ
 		activeDeals.add(deal);
 		if (JsonObjectUtil.getBoolean(policy, Boolean.FALSE, "safety", "gridTopologyBasedEvaluation", "enabled")) {
@@ -107,6 +137,12 @@ public class GridBranchCurrentCapacity {
 		}
 	}
 	/**
+	 * Judge the possibility of adding a new interchange by taking the grid topology into consideration.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object
+	 * @param activeDeals a list of DEAL objects
+	 * @return {@code true} if possible
+	 *          
 	 * グリッドのトポロジを考慮した新規融通可否判定を実行する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト
@@ -124,6 +160,7 @@ public class GridBranchCurrentCapacity {
 				List<String> backwardUnitIds = JsonObjectUtil.getStringList(config, "branchAssociation", aBranchId, "backwardUnitIds");
 				if (capacity != null && forwardUnitIds != null && backwardUnitIds != null) {
 					if (log.isInfoEnabled()) log.info("  currentCapacityA : " + capacity);
+					// Check in the forward direction
 					// 順方向チェック
 					float forwardDischargeSum = 0F;
 					float forwardChargeSum = 0F;
@@ -131,6 +168,7 @@ public class GridBranchCurrentCapacity {
 						for (JsonObject aDeal : activeDeals) {
 							Float dealGridCurrentA = Deal.dealGridCurrentA(aDeal);
 							if (dealGridCurrentA != null) {
+								// Add the interchange currents separately for the discharge and charging sides
 								// 送電側と受電側とに分けて融通電流を加算する
 								if (Deal.isDischargeUnit(aDeal, aUnitId)) {
 									forwardDischargeSum += dealGridCurrentA;
@@ -151,6 +189,7 @@ public class GridBranchCurrentCapacity {
 					} else if (Math.abs(capacity) < Math.abs(forwardChargeSum)) {
 						return "branch : " + aBranchId + ", forward sum of charge dealGridCurrentA : " + forwardChargeSum + ", exceeds capacity : " + capacity;
 					}
+					// Check in the reverse direction
 					// 逆方向チェック
 					float backwardDischargeSum = 0F;
 					float backwardChargeSum = 0F;
@@ -158,6 +197,7 @@ public class GridBranchCurrentCapacity {
 						for (JsonObject aDeal : activeDeals) {
 							Float dealGridCurrentA = Deal.dealGridCurrentA(aDeal);
 							if (dealGridCurrentA != null) {
+								// Add the interchange currents separately for the discharge and charging sides
 								// 送電側と受電側とに分けて融通電流を加算する
 								if (Deal.isDischargeUnit(aDeal, aUnitId)) {
 									backwardDischargeSum += dealGridCurrentA;
@@ -192,6 +232,12 @@ public class GridBranchCurrentCapacity {
 		return null;
 	}
 	/**
+	 * Judge whether or not a new interchange is possible based only on the total value of the interchange currents.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object
+	 * @param activeDeals a list of DEAL objects
+	 * @return {@code true} if possible
+	 *          
 	 * 融通電流の合計値だけで新規融通可否判定を実行する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト

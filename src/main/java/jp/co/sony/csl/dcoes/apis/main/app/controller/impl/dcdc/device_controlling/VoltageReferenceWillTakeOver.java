@@ -14,6 +14,15 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.util.DDCon;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * The second of four processes that move a voltage reference.
+ * 1. {@link VoltageReferenceWillHandOver}: Prepare the move source node
+ * 2. {@link VoltageReferenceWillTakeOver}: Launch the move destination node ← You are here
+ * 3. {@link VoltageReferenceDidHandOver}: Stop the move source node
+ * 4. {@link VoltageReferenceDidTakeOver}: Clean up the destination node
+ * Send a command to change into voltage reference mode.
+ * (Specifying a droop ratio causes droop control to start.)
+ * @author OES Project
+ *          
  * 電圧リファレンスを移動する 4 つの処理のうち 2 番目の処理.
  * 1. {@link VoltageReferenceWillHandOver} : 移動元の準備
  * 2. {@link VoltageReferenceWillTakeOver} : 移動先の起動 ← これ
@@ -31,6 +40,12 @@ public class VoltageReferenceWillTakeOver extends AbstractDcdcDeviceControllingC
 	private Float droopRatio_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters.
+	 *        - gridVoltageV: grid voltage value [{@link Float}]. Optional. If {@code null}, use the existing vg value
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -41,6 +56,12 @@ public class VoltageReferenceWillTakeOver extends AbstractDcdcDeviceControllingC
 		this(vertx, controller, params, params.getFloat("gridVoltageV"));
 	}
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters
+	 * @param gridVoltageV grid voltage value If {@code null}, use the existing vg value
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -52,14 +73,17 @@ public class VoltageReferenceWillTakeOver extends AbstractDcdcDeviceControllingC
 		gridVoltageV_ = gridVoltageV;
 	}
 
+	// Start skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを開始する
 	@Override protected boolean startIgnoreDynamicSafetyCheck() { return true; }
 
+	// Do not stop skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを終了しない
 	@Override protected boolean stopIgnoreDynamicSafetyCheck() { return false; }
 
 	@Override protected void doExecute(Handler<AsyncResult<JsonObject>> completionHandler) {
 		if (gridVoltageV_ == null) {
+			// If the grid voltage is not specified, use the present measured value
 			// グリッド電圧の指定がなければ現状の測定値を使う
 			gridVoltageV_ = DataAcquisition.cache.getFloat("dcdc", "meter", "vg");
 			if (log.isInfoEnabled()) log.info("no gridVoltageV parameter given, use dcdc.meter.vg from this unit : " + gridVoltageV_);
@@ -77,6 +101,7 @@ public class VoltageReferenceWillTakeOver extends AbstractDcdcDeviceControllingC
 		}
 	}
 	private void execute__(Handler<AsyncResult<JsonObject>> completionHandler) {
+		// Specify a droop ratio to enter voltage reference mode
 		// ドループ率を指定して電圧リファレンスモードにする
 		controller_.setDcdcMode(DDCon.Mode.VOLTAGE_REFERENCE, gridVoltageV_, gridCurrentCapacityA_, droopRatio_, completionHandler);
 	}

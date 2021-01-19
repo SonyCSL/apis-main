@@ -19,6 +19,10 @@ import jp.co.sony.csl.dcoes.apis.main.evaluation.scenario.ScenarioEvaluation;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that monitors the status of this unit and issues requests when necessary.
+ * Launched from the {@link User} Verticle.
+ * @author OES Project
+ *          
  * 自ユニットの状態を監視し必要に応じてリクエストを発する Verticle.
  * {@link User} Verticle から起動される.
  * @author OES Project
@@ -27,6 +31,9 @@ public class HouseKeeping extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(HouseKeeping.class);
 
 	/**
+	 * Default duration of state monitoring cycle [ms].
+	 * Value: {@value}.
+	 *          
 	 * 状態監視周期のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
@@ -36,6 +43,11 @@ public class HouseKeeping extends AbstractVerticle {
 	private boolean stopped_ = false;
 
 	/**
+	 * Called at startup.
+	 * Periodically check the status of this unit and start a timer to issue requests when necessary.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 定期的に自ユニットの状態をチェックし必要に応じてリクエストを発するタイマを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -48,6 +60,10 @@ public class HouseKeeping extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * Set a flag to stop the timer.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * タイマを止めるためのフラグを立てる.
 	 * @throws Exception {@inheritDoc}
@@ -60,6 +76,9 @@ public class HouseKeeping extends AbstractVerticle {
 	////
 
 	/**
+	 * Set up a status monitoring timer.
+	 * The timeout duration is {@code POLICY.user.houseKeepingPeriodMsec} (default: {@link #DEFAULT_HOUSE_KEEPING_PERIOD_MSEC}).
+	 *          
 	 * 状態監視タイマ設定.
 	 * 待ち時間は {@code POLICY.user.houseKeepingPeriodMsec} ( デフォルト値 {@link #DEFAULT_HOUSE_KEEPING_PERIOD_MSEC} ).
 	 */
@@ -68,6 +87,9 @@ public class HouseKeeping extends AbstractVerticle {
 		setHouseKeepingTimer_(delay);
 	}
 	/**
+	 * Set up a status monitoring timer.
+	 * @param delay cycle duration [ms]
+	 *          
 	 * 状態監視タイマ設定.
 	 * @param delay 周期 [ms]
 	 */
@@ -75,6 +97,9 @@ public class HouseKeeping extends AbstractVerticle {
 		houseKeepingTimerId_ = vertx.setTimer(delay, this::houseKeepingTimerHandler_);
 	}
 	/**
+	 * Status monitoring timer processing.
+	 * @param timerId timer ID
+	 *          
 	 * 状態監視タイマ処理.
 	 * @param timerId タイマ ID
 	 */
@@ -85,6 +110,7 @@ public class HouseKeeping extends AbstractVerticle {
 			return;
 		}
 		if (!StateHandling.isInOperation()) {
+			// Pass through if not in steady operation
 			// 定常稼働状態でなければスルー
 			setHouseKeepingTimer_();
 		} else {
@@ -96,6 +122,7 @@ public class HouseKeeping extends AbstractVerticle {
 
 	private void doHouseKeeping_(Handler<AsyncResult<Void>> completionHandler) {
 		if (ErrorCollection.hasErrors()) {
+			// Do nothing if a local error is occurring
 			// ローカルエラー発生中なら何もしない
 			if (log.isInfoEnabled()) log.info("this unit has errors : " + ErrorCollection.cache.jsonObject());
 			completionHandler.handle(Future.succeededFuture());
@@ -104,6 +131,7 @@ public class HouseKeeping extends AbstractVerticle {
 				if (repGlobalErrors.succeeded()) {
 					Boolean hasGlobalErrors = repGlobalErrors.result().body();
 					if (hasGlobalErrors != null && hasGlobalErrors) {
+						// Do nothing if a global error is occurring
 						// グローバルエラー発生中なら何もしない
 						if (log.isInfoEnabled()) log.info("global error exists");
 						completionHandler.handle(Future.succeededFuture());
@@ -112,9 +140,11 @@ public class HouseKeeping extends AbstractVerticle {
 							if (resOperationMode.succeeded()) {
 								String operationMode = resOperationMode.result();
 								if ("autonomous".equals(operationMode)) {
+									// Interchange mode is autonomous
 									// 融通モードが autonomous
 									doHouseKeeping__(completionHandler);
 								} else {
+									// Do nothing if the interchange mode is anything other than autonomous
 									// 融通モードが autonomous 以外なら何もしない
 									if (log.isInfoEnabled()) log.info("operationMode is not autonomous : " + operationMode);
 									completionHandler.handle(Future.succeededFuture());
@@ -145,29 +175,36 @@ public class HouseKeeping extends AbstractVerticle {
 				Integer dealInterlockCapacity = JsonObjectUtil.getInteger(data, "apis", "deal_interlock_capacity");
 				JsonArray dealIds = JsonObjectUtil.getJsonArray(data, "apis", "deal_id_list");
 				if (dealInterlockCapacity != null && 0 < dealInterlockCapacity && (dealIds == null || dealIds.size() < dealInterlockCapacity)) {
+					// If the number of interchange interlocks is less than the possible number of interchanges
 					// 融通インタロック数が融通可能数未満なら
 					String dateTime = data.getString("time");
+					// Get the SCENARIO corresponding to the current time
 					// 現在時刻に対応する SCENARIO を取得して
 					vertx.eventBus().<JsonObject>send(ServiceAddress.User.scenario(), dateTime, repScenario -> {
 						if (repScenario.succeeded()) {
 							JsonObject scenario = repScenario.result().body();
+							// Evaluate the status (data) of this unit
 							// 自ユニットの状況 ( data ) を評価する
 							ScenarioEvaluation.checkStatus(vertx, scenario, data, resEvaluation -> {
 								if (resEvaluation.succeeded()) {
 									JsonObject request = resEvaluation.result();
 									if (request != null) {
+										// A request was nade as a result of the evaluation
 										// 評価の結果リクエストが作られたので
 										String direction = request.getString("type");
+										// Check the battery capacity
 										// バッテリ容量をチェックし
 										vertx.eventBus().<Boolean>send(ServiceAddress.Controller.batteryCapacityTesting(), direction, repBatteryCapacityTest -> {
 											if (repBatteryCapacityTest.succeeded()) {
 												if (repBatteryCapacityTest.result().body()) {
+													// If there is a desired grid voltage, set it in the request
 													// ご希望グリッド電圧があればリクエストに仕込み
 													Float efficientGridVoltageV = Misc.efficientGridVoltageV_(data);
 													if (efficientGridVoltageV != null) {
 														request.put("efficientGridVoltageV", efficientGridVoltageV);
 													}
 													request.put("dateTime", dateTime);
+													// Issue the request
 													// リクエストを発する
 													vertx.eventBus().send(ServiceAddress.Mediator.internalRequest(), request);
 												}
@@ -177,6 +214,7 @@ public class HouseKeeping extends AbstractVerticle {
 											}
 										});
 									} else {
+										// Do not request
 										// リクエストしません
 										completionHandler.handle(Future.succeededFuture());
 									}
@@ -193,6 +231,7 @@ public class HouseKeeping extends AbstractVerticle {
 						}
 					});
 				} else {
+					// No room for more simultaneous interchanges
 					// 同時融通数いっぱい
 					if (log.isInfoEnabled()) log.info("unit is busy; dealInterlockCapacity : " + dealInterlockCapacity + ", dealIds : " + dealIds);
 					completionHandler.handle(Future.succeededFuture());

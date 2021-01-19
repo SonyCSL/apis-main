@@ -12,6 +12,9 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.util.DDCon;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Put the device in voltage reference mode.
+ * @author OES Project
+ *          
  * デバイスを電圧リファレンスモードにする.
  * @author OES Project
  */
@@ -22,6 +25,11 @@ public class VOLTAGE_REFERENCE extends AbstractDcdcDeviceControllingCommand {
 	private Float gridCurrentCapacityA_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters. Not required
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -31,9 +39,11 @@ public class VOLTAGE_REFERENCE extends AbstractDcdcDeviceControllingCommand {
 		super(vertx, controller, params);
 	}
 
+	// Start skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを開始する
 	@Override protected boolean startIgnoreDynamicSafetyCheck() { return true; }
 
+	// Stop skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを終了する
 	@Override protected boolean stopIgnoreDynamicSafetyCheck() { return false; }
 

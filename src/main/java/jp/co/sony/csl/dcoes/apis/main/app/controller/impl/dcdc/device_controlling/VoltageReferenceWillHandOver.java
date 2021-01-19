@@ -11,6 +11,16 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDeviceControl
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * The first of four processes that move a voltage reference.
+ * 1. {@link VoltageReferenceWillHandOver}: Prepare the move source node ← You are here
+ * 2. {@link VoltageReferenceWillTakeOver}: Launch the move destination node
+ * 3. {@link VoltageReferenceDidHandOver}: Stop the move source node
+ * 4. {@link VoltageReferenceDidTakeOver}: Clean up the destination node
+ * Send a grid voltage setting command by specifying the droop ratio.
+ * This is done in order to start droop control.
+ * (Specifying a droop ratio causes droop control to start.)
+ * @author OES Project
+ *          
  * 電圧リファレンスを移動する 4 つの処理のうち 1 番目の処理.
  * 1. {@link VoltageReferenceWillHandOver} : 移動元の準備 ← これ
  * 2. {@link VoltageReferenceWillTakeOver} : 移動先の起動
@@ -28,6 +38,11 @@ public class VoltageReferenceWillHandOver extends AbstractDcdcDeviceControllingC
 	private Float droopRatio_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters. Not required
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -37,9 +52,11 @@ public class VoltageReferenceWillHandOver extends AbstractDcdcDeviceControllingC
 		super(vertx, controller, params);
 	}
 
+	// Start skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを開始する
 	@Override protected boolean startIgnoreDynamicSafetyCheck() { return true; }
 
+	// Do not stop skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを終了しない
 	@Override protected boolean stopIgnoreDynamicSafetyCheck() { return false; }
 
@@ -57,6 +74,7 @@ public class VoltageReferenceWillHandOver extends AbstractDcdcDeviceControllingC
 		}
 	}
 	private void execute__(Handler<AsyncResult<JsonObject>> completionHandler) {
+		// Specify the droop ratio while remaining in voltage reference mode
 		// 電圧リファレンスモードのままドループ率を指定する
 		controller_.setDcdcVoltage(operationGridVoltageV_, droopRatio_, completionHandler);
 	}

@@ -19,6 +19,12 @@ import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Data response service object Verticle.
+ * Launched from the {@link Controller} Verticle.
+ * The following types are available, depending on the type of system.
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDataResponding}
+ * @author OES Project
+ *          
  * データ応答サービスの親玉 Verticle.
  * {@link Controller} Verticle から起動される.
  * システムの種類に応じて以下の種類がある.
@@ -29,6 +35,11 @@ public abstract class DataResponding extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(DataResponding.class);
 
 	/**
+	 * Called at startup.
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -70,6 +81,9 @@ public abstract class DataResponding extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -80,6 +94,9 @@ public abstract class DataResponding extends AbstractVerticle {
 	////
 
 	/**
+	 * Fetch the cached device control state.
+	 * @return cached device control state
+	 *          
 	 * キャッシュ済みのデバイス制御状態を取得する.
 	 * @return キャッシュ済みのデバイス制御状態
 	 */
@@ -88,6 +105,21 @@ public abstract class DataResponding extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#unitData()}
+	 * Scope: local
+	 * Function: Acquire the unit data of this unit.
+	 * 　　   If urgent is specified in the header, return fresh data by querying the device directly instead of accessing the cache.
+	 * 　　   Otherwise, return the cached data that is refreshed periodically.
+	 * Message body: none
+	 * Message header:
+	 * 　　　　　　　　   - {@code "urgent"}: Urgent flag
+	 * 　　　　　　　　     - {@code "true"}: Return fresh data by querying the device directly
+	 * 　　　　　　　　     - {@code "false"}: Return cached data that is updated periodically
+	 * Response: unit data [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#unitData()}
 	 * 範囲 : ローカル
@@ -110,6 +142,23 @@ public abstract class DataResponding extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#unitData(String)}
+	 * Scope: global
+	 * Function: Get the unit data of the unit specified by ID.
+	 * 　　   If urgent is specified in the header, return fresh data by querying the device directly instead of accessing the cache.
+	 * 　　   Otherwise, return the cached data that is refreshed periodically.
+	 * 　　   A gridMasterUnitId must be specified in the header, and must match the GridMaster interlock value.
+	 * Message body: none
+	 * Message header:
+	 * 　　　　　　　　   - {@code "urgent"}: Urgent flag
+	 * 　　　　　　　　     - {@code "true"}: Return fresh data by querying the device directly
+	 * 　　　　　　　　     - {@code "false"}: Return cached data that is updated periodically
+	 * 　　　　　　　　   - {@code "gridMasterUnitId"}: GridMaster unit ID
+	 * Response: unit data [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#unitData(String)}
 	 * 範囲 : グローバル
@@ -129,6 +178,7 @@ public abstract class DataResponding extends AbstractVerticle {
 	 */
 	private void startExternalUnitDataService_(Handler<AsyncResult<Void>> completionHandler) {
 		vertx.eventBus().<Void>consumer(ServiceAddress.Controller.unitData(ApisConfig.unitId()), req -> {
+			// Check the GridMaster interlock
 			// GridMaster インタロックを確認する
 			checkGridMasterInterlock_(req, resCheckGridMasterInterlock -> {
 				if (resCheckGridMasterInterlock.succeeded()) {
@@ -141,6 +191,21 @@ public abstract class DataResponding extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#unitDeviceStatus()}
+	 * Scope: local
+	 * Function: Fetch this unit's device control state.
+	 * 　　   If urgent is specified in the header, return fresh data by querying the device directly instead of accessing the cache.
+	 * 　　   Otherwise, return the cached data that is refreshed periodically.
+	 * Message body: none
+	 * Message header:
+	 * 　　　　　　　　   - {@code "urgent"}: Urgent flag
+	 * 　　　　　　　　     - {@code "true"}: Return fresh data by querying the device directly
+	 * 　　　　　　　　     - {@code "false"}: Return cached data that is updated periodically
+	 * Response: device control state [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#unitDeviceStatus()}
 	 * 範囲 : ローカル
@@ -163,6 +228,23 @@ public abstract class DataResponding extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#unitDeviceStatus(String)}
+	 * Scope: global
+	 * Function: Get the device control state of a unit specified by ID.
+	 * 　　   If urgent is specified in the header, return fresh data by querying the device directly instead of accessing the cache.
+	 * 　　   Otherwise, return the cached data that is refreshed periodically.
+	 * 　　   A gridMasterUnitId must be specified in the header, and must match the GridMaster interlock value.
+	 * Message body: none
+	 * Message header:
+	 * 　　　　　　　　   - {@code "urgent"}: Urgent flag
+	 * 　　　　　　　　     - {@code "true"}: Return fresh data by querying the device directly
+	 * 　　　　　　　　     - {@code "false"}: Return cached data that is updated periodically
+	 * 　　　　　　　　   - {@code "gridMasterUnitId"}: GridMaster unit ID
+	 * Response: device control state [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#unitDeviceStatus(String)}
 	 * 範囲 : グローバル
@@ -182,6 +264,7 @@ public abstract class DataResponding extends AbstractVerticle {
 	 */
 	private void startExternalUnitDeviceStatusService_(Handler<AsyncResult<Void>> completionHandler) {
 		vertx.eventBus().<Void>consumer(ServiceAddress.Controller.unitDeviceStatus(ApisConfig.unitId()), req ->  {
+			// Check the GridMaster interlock
 			// GridMaster インタロックを確認する
 			checkGridMasterInterlock_(req, resCheckGridMasterInterlock -> {
 				if (resCheckGridMasterInterlock.succeeded()) {
@@ -194,6 +277,25 @@ public abstract class DataResponding extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#unitDatas()}
+	 * Scope: global
+	 * Function: Send the unit data of this unit to the specified address.
+	 * 　　   Used in GridMaster data collection processing.
+	 * 　　   If urgent is specified in the header, return fresh data by querying the device directly instead of accessing the cache.
+	 * 　　   Otherwise, return the cached data that is refreshed periodically.
+	 * 　　   A gridMasterUnitId must be specified in the header, and must match the GridMaster interlock value.
+	 * 　　   The replyAddress header field must specify the address to which data is sent back.
+	 * Message body: none
+	 * Message header:
+	 * 　　　　　　　　   - {@code "urgent"}: Urgent flag
+	 * 　　　　　　　　     - {@code "true"}: Return fresh data by querying the device directly
+	 * 　　　　　　　　     - {@code "false"}: Return cached data that is updated periodically
+	 * 　　　　　　　　   - {@code "gridMasterUnitId"}: GridMaster unit ID
+	 * 　　　　　　　　   - {@code "replyAddress"}: Address to which data is to be sent back
+	 * Response: none
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#unitDatas()}
 	 * 範囲 : グローバル
@@ -218,6 +320,7 @@ public abstract class DataResponding extends AbstractVerticle {
 			String replyAddress = req.headers().get("replyAddress");
 //			if (log.isInfoEnabled()) log.info("DataResponding:" + replyAddress + " received");
 			if (replyAddress != null) {
+				// Check the GridMaster interlock
 				// GridMaster インタロックを確認する
 				checkGridMasterInterlock_(req, resCheckGridMasterInterlock -> {
 					if (resCheckGridMasterInterlock.succeeded()) {
@@ -241,6 +344,13 @@ public abstract class DataResponding extends AbstractVerticle {
 	////
 
 	/**
+	 * Check the GridMaster interlock.
+	 * Before that, also check for inclusion in the cluster members listed in POLICY.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param <T> type of {@link Message#body()} of message object
+	 * @param req message object
+	 * @param completionHandler the completion handler
+	 *          
 	 * GridMaster インタロックを確認する.
 	 * POLICY に記載されたクラスタメンバに含まれているかも先に確認する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
@@ -288,6 +398,7 @@ public abstract class DataResponding extends AbstractVerticle {
 	private void getDeviceStatus_(Message<Void> message, Handler<AsyncResult<JsonObject>> completionHandler) {
 		String urgent = message.headers().get("urgent");
 		if (urgent != null && Boolean.valueOf(urgent)) {
+			// If urgent, fetch the data and return it
 			// urgent ならデータを取得して返す
 			DataAcquisition.acquireExclusiveLock(vertx, resExclusiveLock -> {
 				if (resExclusiveLock.succeeded()) {
@@ -301,6 +412,7 @@ public abstract class DataResponding extends AbstractVerticle {
 				}
 			});
 		} else {
+			// If not urgent, return cached data
 			// urgent でなければキャッシュされたデータを返す
 			completionHandler.handle(Future.succeededFuture(cachedDeviceStatus()));
 		}
@@ -331,6 +443,7 @@ public abstract class DataResponding extends AbstractVerticle {
 	private void getData_(Message<Void> message, Handler<AsyncResult<JsonObject>> completionHandler) {
 		String urgent = message.headers().get("urgent");
 		if (urgent != null && Boolean.valueOf(urgent)) {
+			// If urgent, fetch the data and return it
 			// urgent ならデータを取得して返す
 			DataAcquisition.acquireExclusiveLock(vertx, resExclusiveLock -> {
 				if (resExclusiveLock.succeeded()) {
@@ -344,6 +457,7 @@ public abstract class DataResponding extends AbstractVerticle {
 				}
 			});
 		} else {
+			// If not urgent, return cached data
 			// urgent でなければキャッシュされたデータを返す
 			completionHandler.handle(Future.succeededFuture(DataAcquisition.cache.jsonObject()));
 		}

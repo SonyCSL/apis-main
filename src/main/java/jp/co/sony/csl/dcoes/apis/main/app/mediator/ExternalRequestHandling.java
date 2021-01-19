@@ -16,6 +16,11 @@ import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that handles requests from other units.
+ * Launched from the {@link Mediator} Verticle.
+ * Relays to the User service.
+ * @author OES Project
+ *          
  * 他ユニットからのリクエストを処理する Verticle.
  * {@link Mediator} Verticle から起動される.
  * User サービスに中継する.
@@ -25,6 +30,11 @@ public class ExternalRequestHandling extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(ExternalRequestHandling.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -43,6 +53,9 @@ public class ExternalRequestHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -53,6 +66,18 @@ public class ExternalRequestHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#externalRequest()}
+	 * Scope: global
+	 * Function: Receive a request from another unit and send an "accept" response to the specified address.
+	 *           If it is not accepted, send nothing.
+	 *           The "accept" response is relayed to the User service.
+	 * Message body: request information [{@link JsonObject}]
+	 * Message header:
+	 * 　　　　　- {@code "replyAddress"}: the address to which the "accept" response should be returned
+	 * Response: none
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#externalRequest()}
 	 * 範囲 : グローバル
@@ -84,9 +109,11 @@ public class ExternalRequestHandling extends AbstractVerticle {
 											Integer dealAmountMinWh = PolicyKeeping.cache().getInteger(0, "mediator", "deal", "amountMinWh");
 											Integer amountWh = accept.getInteger("amountWh", 0);
 											if (dealAmountMinWh < amountWh) {
+												// Send back an "accept" response if the interchange power of the "accept" response from this unit (amountWh) is larger than the minimum value (POLICY.mediator.deal.amountMinWh)
 												// 自ユニットからのアクセプトの融通電力量 ( amountWh ) が最低値 ( POLICY.mediator.deal.amountMinWh ) より大きければアクセプトを返す
 												accept.put("dealGridCurrentA", PolicyKeeping.cache().getFloat(0F, "mediator", "deal", "gridCurrentA"));
 												accept.put("unitId", ApisConfig.unitId());
+												// Send an "accept" response to the reply address
 												// 返信用アドレスにアクセプトを送信する
 												vertx.eventBus().send(replyAddress, accept);
 												if (log.isDebugEnabled()) log.debug("accept sent back to " + requestUnitId + " : " + accept);

@@ -11,6 +11,11 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDeviceControl
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Gradually change the specified grid voltage of the device in steps of the prescribed size.
+ * At present, POLICY.gridVoltageStepV is not specified and is instead set internally to a default value of 350F, so stepwise control does not occur.
+ * Call {@link Checkpoint} when finished.
+ * @author OES Project
+ *          
  * デバイスのグリッド電圧指定を規定のステップで段階的に変化させる.
  * ただし現状は POLICY.gridVoltageStepV を指定しておらず内部的にデフォルトを 350F としているためステップ制御は発生しない.
  * 終了後 {@link Checkpoint} を呼ぶ.
@@ -23,6 +28,12 @@ public class GridVoltageStepping extends AbstractDcdcDeviceControllingCommand {
 	private Float gridVoltageStepV_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters.
+	 *        - gridVoltageV: target grid voltage value [{@link Float}]. Required
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -33,6 +44,12 @@ public class GridVoltageStepping extends AbstractDcdcDeviceControllingCommand {
 		this(vertx, controller, params, params.getFloat("gridVoltageV"));
 	}
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters
+	 * @param gridVoltageV target grid voltage value. Cannot be {@code null}
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -44,9 +61,11 @@ public class GridVoltageStepping extends AbstractDcdcDeviceControllingCommand {
 		gridVoltageV_ = gridVoltageV;
 	}
 
+	// Do not start skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを開始しない
 	@Override protected boolean startIgnoreDynamicSafetyCheck() { return false; }
 
+	// Do not stop skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを終了しない
 	@Override protected boolean stopIgnoreDynamicSafetyCheck() { return false; }
 
@@ -68,11 +87,14 @@ public class GridVoltageStepping extends AbstractDcdcDeviceControllingCommand {
 		if (oldValue != null) {
 			float diff = gridVoltageV_ - oldValue;
 			if (gridVoltageStepV_ < Math.abs(diff)) {
+				// The difference between the present specified value and the target value is larger than the step size, so change it step by step
 				// 現在の指定値と目標値との差がステップ値より大きいので段階的に指定する
 				float newValue = (oldValue < gridVoltageV_) ? oldValue + gridVoltageStepV_ : oldValue - gridVoltageStepV_;
+				// Calculate and specify the positive (or negative) step size for the present specified value
 				// 現在の指定値プラス ( またはマイナス ) ステップ値を算出し指定する
 				controller_.setDcdcVoltage(newValue, resSet -> {
 					if (resSet.succeeded()) {
+						// Repeat
 						// 繰り返す
 						execute__(completionHandler);
 					} else {
@@ -80,9 +102,11 @@ public class GridVoltageStepping extends AbstractDcdcDeviceControllingCommand {
 					}
 				});
 			} else {
+				// The difference between the present specified value and the target value is smaller than the step size, so specify it directly
 				// 現在の指定値と目標値との差がステップ値より小さいので目標値を直接指定する
 				controller_.setDcdcVoltage(gridVoltageV_, resSet -> {
 					if (resSet.succeeded()) {
+						// Proceed to the process that waits for the measured value to approach the specified value
 						// 測定値が指定値に近くのを待つ処理に移行する
 						new Checkpoint(vertx_, controller_, params_, gridVoltageV_, null).execute(completionHandler);
 					} else {

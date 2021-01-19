@@ -25,6 +25,9 @@ import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Local safety check processing.
+ * @author OES Project
+ *          
  * ローカル安全性チェック処理.
  * @author OES Project
  */
@@ -32,6 +35,8 @@ public class LocalSafetyEvaluation {
 	private static final Logger log = LoggerFactory.getLogger(LocalSafetyEvaluation.class);
 
 	/**
+	 * A cache for passing through just one error.
+	 *          
 	 * 一発だけのエラーはスルーするためのキャッシュ.
 	 */
 	public static final JsonObjectWrapper errors = new JsonObjectWrapper();
@@ -49,6 +54,12 @@ public class LocalSafetyEvaluation {
 	private LocalSafetyEvaluation() { }
 
 	/**
+	 * Check the local stability (in this unit).
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object
+	 * @param unitData the unit data of this unit
+	 * @param completionHandler the completion handler
+	 *          
 	 * ローカルな ( ユニット内の ) 安全性をチェックする.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト

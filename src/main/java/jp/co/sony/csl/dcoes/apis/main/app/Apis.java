@@ -10,6 +10,18 @@ import jp.co.sony.csl.dcoes.apis.main.app.user.User;
 import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 
 /**
+ * The APIS system object Verticle.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.util.Starter Apis} Verticle.
+ * Launches the following Verticles.
+ * - {@link Helo}: A Verticle that checks if there is a unit with the same ID in the cluster
+ * - {@link HwConfigKeeping}: A Verticle that manages HWCONFIG
+ * - {@link PolicyKeeping}: A Verticle that manages POLICY
+ * - {@link StateHandling}: A Verticle that manages various operating states
+ * - {@link Controller}: Controller service object Verticle
+ * - {@link Mediator}: Mediator service object Verticle
+ * - {@link User}: User service object Verticle
+ * @author OES Project
+ *          
  * APIS システムの親玉 Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.util.Starter} Verticle から起動される.
  * 以下の Verticle を起動する.
@@ -26,6 +38,19 @@ public class Apis extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(Apis.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the following Verticles.
+	 * - {@link Helo}: A Verticle that checks if there is a unit with the same ID in the cluster
+	 * - {@link HwConfigKeeping}: A Verticle that manages HWCONFIG
+	 * - {@link PolicyKeeping}: A Verticle that manages POLICY
+	 * - {@link StateHandling}: A Verticle that manages various operating states
+	 * - {@link Controller}: Controller service object Verticle
+	 * - {@link Mediator}: Mediator service object Verticle
+	 * - {@link User}: User service object Verticle
+	 * Changes the operating state to "running".
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 以下の Verticle を起動する.
 	 * - {@link Helo} : クラスタ内に同一 ID のユニットが存在しないかチェックする Verticle
@@ -92,6 +117,10 @@ public class Apis extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * Changes the operating state to "stopped".
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * 動作状態を停止中に変更する.
 	 * @throws Exception {@inheritDoc}

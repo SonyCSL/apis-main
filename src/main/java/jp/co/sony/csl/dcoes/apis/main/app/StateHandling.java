@@ -25,6 +25,10 @@ import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that manages various operating states.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.Apis} Verticle.
+ * @author OES Project
+ *          
  * 各種動作状態を管理する Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.Apis} Verticle から起動される.
  * @author OES Project
@@ -33,6 +37,9 @@ public class StateHandling extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(StateHandling.class);
 
 	/**
+	 * Default value for save path format.
+	 * Value: {@value}.
+	 *          
 	 * 保存パスのフォーマットのデフォルト値.
 	 * 値は {@value}.
 	 */
@@ -43,6 +50,12 @@ public class StateHandling extends AbstractVerticle {
 	private static boolean stopping_ = false;
 
 	/**
+	 * Called at startup.
+	 * Performs initialization processing.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 初期化処理を実行する.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
@@ -73,6 +86,9 @@ public class StateHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -83,6 +99,10 @@ public class StateHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Startup initialization.
+	 * Read various local status values from the file system.
+	 * @param completionHandler the completion handler
+	 *          
 	 * 起動時の初期化.
 	 * ローカルの各種ステータスをファイルシステムから読み込む.
 	 * @param completionHandler the completion handler
@@ -92,6 +112,7 @@ public class StateHandling extends AbstractVerticle {
 			if (res.succeeded()) {
 				String result = res.result();
 				if (result != null && !"heteronomous".equals(result) && !"stop".equals(result)) {
+					// Treated as null (unspecified) unless equal to "heteronomous" or "stop"
 					// "heteronomous" でも "stop" でもなければ null ( 無指定 ) として扱う
 					ErrorUtil.report(vertx, Error.Category.USER, Error.Extent.LOCAL, Error.Level.WARN, "local operationMode '" + result + "' not supported, default to null ( follow global )");
 					result = null;
@@ -105,6 +126,27 @@ public class StateHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#operationMode()}
+	 * Scope: global
+	 * Function: Set/get the global operation mode.
+	 *           The value is one of the following.
+	 *           - "autonomous"
+	 *           - "heteronomous"
+	 *           - "stop"
+	 *           - "manual"
+	 * Message body:
+	 *           set: The global interchange mode to be set [{@link String}]
+	 *           get: none
+	 * Message header: {@code "command"}
+	 *           - {@code "set"}: changes the global interchange mode
+	 *           - {@code "get"}: retrieves the global interchange mode
+	 * Response:
+	 *           set: This unit's ID [{@link String}]
+	 *           get: The current global interchange mode [{@link String}]
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#operationMode()}
 	 * 範囲 : グローバル
@@ -132,6 +174,7 @@ public class StateHandling extends AbstractVerticle {
 			if ("set".equals(command)) {
 				String value = req.body();
 				if (value != null && !"autonomous".equals(value) && !"heteronomous".equals(value) && !"stop".equals(value) && !"manual".equals(value)) {
+					// Treated as null (unspecified) unless equal to "autonomous", "heteronomous", "stop" or "manual"
 					// "autonomous" でも "heteronomous" でも "stop" でも "manual" でもなければ null ( 無指定 ) として扱う
 					ErrorUtil.report(vertx, Error.Category.USER, Error.Extent.LOCAL, Error.Level.WARN, "global operationMode '" + value + "' not supported, default to null ( follow policy )");
 					value = null;
@@ -146,6 +189,7 @@ public class StateHandling extends AbstractVerticle {
 					}
 				});
 			} else {
+				// Anything other than "set" is treated as "get"
 				// "set" 以外は "get" として扱う
 				globalOperationMode(vertx, r -> {
 					if (r.succeeded()) {
@@ -159,6 +203,26 @@ public class StateHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.User#operationMode(String)}
+	 * Scope: global
+	 * Function: Set/get this unit's local interchange mode.
+	 *           The value is one of the following.
+	 *           - {@code null}
+	 *           - "heteronomous"
+	 *           - "stop"
+	 * Message body:
+	 *           set: The local interchange mode to be set [{@link String}]
+	 *           get: none
+	 * Message header: {@code "command"}
+	 *           - {@code "set"}: changes the local interchange mode
+	 *           - {@code "get"}: retrieves the local interchange mode
+	 * Response:
+	 *           set: This unit's ID [{@link String}]
+	 *           get: The current local interchange mode [{@link String}]
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.User#operationMode(String)}
 	 * 範囲 : グローバル
@@ -185,12 +249,14 @@ public class StateHandling extends AbstractVerticle {
 			if ("set".equals(command)) {
 				String value = req.body();
 				if (value != null && !"heteronomous".equals(value) && !"stop".equals(value)) {
+					// Treated as null (unspecified) unless equal to "heteronomous" or "stop"
 					// "heteronomous" でも "stop" でもなければ null ( 無指定 ) として扱う
 					ErrorUtil.report(vertx, Error.Category.USER, Error.Extent.LOCAL, Error.Level.WARN, "local operationMode '" + value + "' not supported, default to null ( follow global )");
 					value = null;
 				}
 				String result = value;
 				operationMode_ = result;
+				// Write to the file system so that it will be retained after relaunching
 				// 再起動しても保持するようにファイルシステムに書いておく
 				writeToFile_(vertx, "operationMode", result, r -> {
 					if (r.succeeded()) {
@@ -215,6 +281,19 @@ public class StateHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Retrieve the global interchange mode.
+	 * The value is one of the following.
+	 * - "autonomous"
+	 * - "heteronomous"
+	 * - "stop"
+	 * - "manual"
+	 * Returns the correct value from shared memory, if present.
+	 * Returns the correct value from POLICY, if present.
+	 * If neither are present, {@code "stop"}.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * グローバル融通モードを取得する.
 	 * 値は以下のいずれか.
 	 * - "autonomous"
@@ -237,6 +316,7 @@ public class StateHandling extends AbstractVerticle {
 					result = null;
 				}
 				if (result == null) {
+					// Fall back to the POLICY setting if the value is strange
 					// おかしな値だったら POLICY の設定値に落ちる
 					result = PolicyKeeping.cache().getString("operationMode");
 					if (result != null && !"autonomous".equals(result) && !"heteronomous".equals(result) && !"stop".equals(result) && !"manual".equals(result)) {
@@ -245,6 +325,7 @@ public class StateHandling extends AbstractVerticle {
 					}
 				}
 				if (result == null) {
+					// If the value is still strange, fall back to "stop"
 					// それでもおかしな値だったら "stop" に落ちる
 					ErrorUtil.report(vertx, Error.Category.USER, Error.Extent.LOCAL, Error.Level.WARN, "global operationMode is null, default to 'stop'");
 					result = "stop";
@@ -257,6 +338,17 @@ public class StateHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Retrieve the local interchange mode.
+	 * The value is one of the following.
+	 * - {@code null}
+	 * - "heteronomous"
+	 * - "stop"
+	 * Returns the correct value from local memory, if present.
+	 * Otherwise returns {@code null}.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * ローカル融通モードを取得する.
 	 * 値は以下のいずれか.
 	 * - {@code null}
@@ -271,6 +363,7 @@ public class StateHandling extends AbstractVerticle {
 	public static void localOperationMode(Vertx vertx, Handler<AsyncResult<String>> completionHandler) {
 		String result = operationMode_;
 		if (result != null && !"heteronomous".equals(result) && !"stop".equals(result)) {
+			// Treated as null (unspecified) unless equal to "heteronomous" or "stop"
 			// "heteronomous" でも "stop" でもなければ null ( 無指定 ) として扱う
 			ErrorUtil.report(vertx, Error.Category.USER, Error.Extent.LOCAL, Error.Level.WARN, "local operationMode '" + result + "' not supported, default to null");
 			result = null;
@@ -279,6 +372,28 @@ public class StateHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Retrieve the global interchange mode, the local interchange mode, and an effective interchange mode that integrates both of these.
+	 * The conditions for calculating the effective interchange mode are as follows.
+	 * - global: {@code "autonomous"},     local: {@code null}             → effective: {@code "autonomous"}
+	 * - global: {@code "autonomous"},     local: {@code "heteronomous"}   → effective: {@code "heteronomous"}
+	 * - global: {@code "autonomous"},     local: {@code "stop"}           → effective: {@code "stop"}
+	 * - global: {@code "heteronomous"},   local: {@code null}             → effective: {@code "heteronomous"}
+	 * - global: {@code "heteronomous"},   local: {@code "heteronomous"}   → effective: {@code "heteronomous"}
+	 * - global: {@code "heteronomous"},   local: {@code "stop"}           → effective: {@code "stop"}
+	 * - global: {@code "stop"},           local: {@code null}             → effective: {@code "stop"}
+	 * - global: {@code "stop"},           local: {@code "heteronomous"}   → effective: {@code "stop"}
+	 * - global: {@code "stop"},           local: {@code "stop"}           → effective: {@code "stop"}
+	 * - global: {@code "manual"},         local: {@code null}             → effective: {@code "manual"}
+	 * - global: {@code "manual"},         local: {@code "heteronomous"}   → effective: {@code "manual"}
+	 * - global: {@code "manual"},         local: {@code "stop"}           → effective: {@code "manual"}
+	 * The results are provided in a {@link JsonObject} whose contents are as follows.
+	 * - global: Global interchange mode
+	 * - local: Local interchange mode
+	 * - effective: Effective interchange mode
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * グローバル融通モード, ローカル融通モード, およびそれらを総合した実効融通モードを取得する.
 	 * 実効融通モードの算出条件は以下のとおり.
 	 * - グローバル : {@code "autonomous"},   ローカル : {@code null}             → 実効 : {@code "autonomous"}
@@ -338,6 +453,12 @@ public class StateHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Retrieve the effective interchange mode.
+	 * Extract and return the {@code "effective"} element in the results returned by {@link #operationModes(Vertx, Handler)}.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * 実効融通モードを取得する.
 	 * {@link #operationModes(Vertx, Handler)} の結果から {@code "effective"} を取り出して返す.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
@@ -357,6 +478,8 @@ public class StateHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Changes the operating state to "started".
+	 *          
 	 * 動作状態を起動済みに変更する.
 	 */
 	public static void setStarted() {
@@ -364,6 +487,8 @@ public class StateHandling extends AbstractVerticle {
 		if (log.isInfoEnabled()) log.info("started");
 	}
 	/**
+	 * Changes the operating state to "stopped".
+	 *          
 	 * 動作状態を停止中に変更する.
 	 */
 	public static void setStopping() {
@@ -371,16 +496,25 @@ public class StateHandling extends AbstractVerticle {
 		stopping_ = true;
 	}
 	/**
+	 * Ascertains whether or not the operating state is "started".
+	 * @return {@code true} if started
+	 *          
 	 * 動作状態が起動済みか否かを取得する.
 	 * @return 起動済みなら {@code true}
 	 */
 	public static boolean isStarted() { return started_; }
 	/**
+	 * Ascertains whether or not the operating state is "stopped".
+	 * @return {@code true} if stopped
+	 *          
 	 * 動作状態が停止中か否かを取得する.
 	 * @return 停止中なら {@code true}
 	 */
 	public static boolean isStopping() { return stopping_; }
 	/**
+	 * Ascertains whether or not the operating state is "running".
+	 * @return {@code true} if running
+	 *          
 	 * 動作状態が稼働中か否かを取得する.
 	 * @return 稼働中なら {@code true}
 	 */
@@ -390,6 +524,12 @@ public class StateHandling extends AbstractVerticle {
 
 	private static final String MAP_NAME = StateHandling.class.getName();
 	/**
+	 * Writes a value to shared memory.
+	 * @param vertx a vertx object
+	 * @param key a key
+	 * @param value the value to be written
+	 * @param completionHandler the completion handler
+	 *          
 	 * 共有メモリに値を書き込む.
 	 * @param vertx vertx オブジェクト
 	 * @param key キー
@@ -423,6 +563,12 @@ public class StateHandling extends AbstractVerticle {
 		});
 	}
 	/**
+	 * Reads a value from shared memory.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param key a key
+	 * @param completionHandler the completion handler
+	 *          
 	 * 共有メモリから値を読み込む.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト
@@ -449,6 +595,12 @@ public class StateHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Writes a value to the file system.
+	 * @param vertx a vertx object
+	 * @param path the file path
+	 * @param value the value to be written
+	 * @param completionHandler the completion handler
+	 *          
 	 * ファイルシステムに値を書き込む.
 	 * @param vertx vertx オブジェクト
 	 * @param path ファイルのパス
@@ -470,6 +622,12 @@ public class StateHandling extends AbstractVerticle {
 		PATH_FORMAT_ = StringUtil.fixFilePath(s);
 	}
 	/**
+	 * Writes a value to the file system.
+	 * @param vertx a vertx object
+	 * @param key a key
+	 * @param value the value to be written
+	 * @param completionHandler the completion handler
+	 *          
 	 * ファイルシステムに値を書き込む.
 	 * @param vertx vertx オブジェクト
 	 * @param key キー
@@ -482,15 +640,18 @@ public class StateHandling extends AbstractVerticle {
 			vertx.fileSystem().exists(path, resExists -> {
 				if (resExists.succeeded()) {
 					if (resExists.result()) {
+						// write
 						// 書く
 						writeToFile__(vertx, path, value, completionHandler);
 					} else {
+						// If there is no file, create it first
 						// ファイルがなければまず作る
 						String dir = new File(path).getParent();
 						FileSystemUtil.ensureDirectory(vertx, dir, resEnsureDir -> {
 							if (resEnsureDir.succeeded()) {
 								vertx.fileSystem().createFile(path, resCreate -> {
 									if (resCreate.succeeded()) {
+										// write
 										// 書く
 										writeToFile__(vertx, path, value, completionHandler);
 									} else {
@@ -517,6 +678,7 @@ public class StateHandling extends AbstractVerticle {
 				}
 			});
 		} else {
+			// Delete the file if the value is null
 			// 値が null ならファイルを削除する
 			vertx.fileSystem().exists(path, resExists -> {
 				if (resExists.succeeded()) {
@@ -548,6 +710,12 @@ public class StateHandling extends AbstractVerticle {
 		}
 	}
 	/**
+	 * Retrieve a value from the file system.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param key a key
+	 * @param completionHandler the completion handler
+	 *          
 	 * ファイルシステムから値を取得する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト

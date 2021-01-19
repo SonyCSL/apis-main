@@ -11,6 +11,10 @@ import io.vertx.core.logging.LoggerFactory;
 import jp.co.sony.csl.dcoes.apis.common.ServiceAddress;
 
 /**
+ * An actual class for error handling.
+ * Reset this unit.
+ * @author OES Project
+ *          
  * エラー処理の実クラス.
  * 自ユニットをリセットする.
  * @author OES Project
@@ -19,6 +23,11 @@ public class ResetLocal extends AbstractErrorAction {
 	private static final Logger log = LoggerFactory.getLogger(ResetLocal.class);
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object. To prevent changes from taking effect while running, a copy is passed at {@link jp.co.sony.csl.dcoes.apis.main.app.user.ErrorHandling} or {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.ErrorHandling}.
+	 * @param logMessages a list of log messages recorded in error handling
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト. 処理中に変更されても影響しないように {@link jp.co.sony.csl.dcoes.apis.main.app.user.ErrorHandling} あるいは {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.ErrorHandling} でコピーしたものが渡される.

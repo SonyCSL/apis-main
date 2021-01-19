@@ -9,6 +9,10 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v1.DcdcV1DeviceCo
 import jp.co.sony.csl.dcoes.apis.main.factory.ControllerFactory;
 
 /**
+ * An implementation controller factory for DC system emulators.
+ * Connects to dcdc_controller and EMU-Driver.
+ * @author OES Project
+ *          
  * DC 系の実機用 Controller ファクトリ.
  * 接続先は dcdc_controller と EMU-Driver.
  * @author OES Project

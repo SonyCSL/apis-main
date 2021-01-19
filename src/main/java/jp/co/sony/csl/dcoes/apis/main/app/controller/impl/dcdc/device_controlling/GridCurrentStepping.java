@@ -11,6 +11,10 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDeviceControl
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Gradually change the specified grid current of the device in steps of the prescribed size.
+ * Call {@link Checkpoint} when finished.
+ * @author OES Project
+ *          
  * デバイスのグリッド電流指定を規定のステップで段階的に変化させる.
  * 終了後 {@link Checkpoint} を呼ぶ.
  * @author OES Project
@@ -22,6 +26,12 @@ public class GridCurrentStepping extends AbstractDcdcDeviceControllingCommand {
 	private Float gridCurrentStepA_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters.
+	 *        - gridCurrentA: the grid current value [{@link Float}]. Required
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -32,6 +42,12 @@ public class GridCurrentStepping extends AbstractDcdcDeviceControllingCommand {
 		this(vertx, controller, params, params.getFloat("gridCurrentA"));
 	}
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters
+	 * @param gridCurrentA grid current value. Cannot be {@code null}
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -43,9 +59,11 @@ public class GridCurrentStepping extends AbstractDcdcDeviceControllingCommand {
 		gridCurrentA_ = gridCurrentA;
 	}
 
+	// Do not start skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを開始しない
 	@Override protected boolean startIgnoreDynamicSafetyCheck() { return false; }
 
+	// Do not stop skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを終了しない
 	@Override protected boolean stopIgnoreDynamicSafetyCheck() { return false; }
 
@@ -67,11 +85,14 @@ public class GridCurrentStepping extends AbstractDcdcDeviceControllingCommand {
 		if (oldValue != null) {
 			float diff = gridCurrentA_ - oldValue;
 			if (gridCurrentStepA_ < Math.abs(diff)) {
+				// The difference between the present specified value and the target value is larger than the step size, so change it step by step
 				// 現在の指定値と目標値との差がステップ値より大きいので段階的に指定する
 				float newValue = (oldValue < gridCurrentA_) ? oldValue + gridCurrentStepA_ : oldValue - gridCurrentStepA_;
+				// Calculate and specify the positive (or negative) step size for the present specified value
 				// 現在の指定値プラス ( またはマイナス ) ステップ値を算出し指定する
 				controller_.setDcdcCurrent(newValue, resSet -> {
 					if (resSet.succeeded()) {
+						// Repeat
 						// 繰り返す
 						execute__(completionHandler);
 					} else {
@@ -79,9 +100,11 @@ public class GridCurrentStepping extends AbstractDcdcDeviceControllingCommand {
 					}
 				});
 			} else {
+				// The difference between the present specified value and the target value is smaller than the step size, so specify it directly
 				// 現在の指定値と目標値との差がステップ値より小さいので目標値を直接指定する
 				controller_.setDcdcCurrent(gridCurrentA_, resSet -> {
 					if (resSet.succeeded()) {
+						// Proceed to the process that waits for the measured value to approach the specified value
 						// 測定値が指定値に近くのを待つ処理に移行する
 						new Checkpoint(vertx_, controller_, params_, null, gridCurrentA_).execute(completionHandler);
 					} else {

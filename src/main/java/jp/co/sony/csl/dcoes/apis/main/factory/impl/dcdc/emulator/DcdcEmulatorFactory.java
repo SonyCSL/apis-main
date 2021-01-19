@@ -4,6 +4,10 @@ import jp.co.sony.csl.dcoes.apis.main.factory.ControllerFactory;
 import jp.co.sony.csl.dcoes.apis.main.factory.Factory;
 
 /**
+ * A factory for DC system emulator factories.
+ * Connects to an emulator.
+ * @author OES Project
+ *          
  * DC 系のエミュレータ用ファクトリのファクトリ.
  * 接続先は emulator.
  * @author OES Project

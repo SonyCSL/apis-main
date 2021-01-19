@@ -18,6 +18,10 @@ import jp.co.sony.csl.dcoes.apis.main.evaluation.scenario.ScenarioEvaluation;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that handles requests from other units.
+ * Launched from the {@link User} Verticle.
+ * @author OES Project
+ *          
  * 他ユニットからのリクエストを処理する Verticle.
  * {@link User} Verticle から起動される.
  * @author OES Project
@@ -26,6 +30,11 @@ public class MediatorRequestHandling extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(MediatorRequestHandling.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -43,6 +52,9 @@ public class MediatorRequestHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -53,6 +65,17 @@ public class MediatorRequestHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.User#mediatorRequest()}
+	 * Scope: local
+	 * Function: Handle requests from other units.
+	 * Message body: A request [{@link JsonObject}]
+	 * Message header: none
+	 * Response: "Accept" response information for the request [{@link JsonObject},
+	 *           or {@code null} if not accepted
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.User#mediatorRequest()}
 	 * 範囲 : ローカル
@@ -84,6 +107,7 @@ public class MediatorRequestHandling extends AbstractVerticle {
 
 	private void doHandleMediatorRequest_(JsonObject request, Handler<AsyncResult<JsonObject>> completionHandler) {
 		if (ErrorCollection.hasErrors()) {
+			// Do nothing if a local error is occurring
 			// ローカルエラー発生中なら何もしない
 			if (log.isInfoEnabled()) log.info("this unit has errors : " + ErrorCollection.cache.jsonObject());
 			completionHandler.handle(Future.succeededFuture());
@@ -92,6 +116,7 @@ public class MediatorRequestHandling extends AbstractVerticle {
 				if (repGlobalErrors.succeeded()) {
 					Boolean hasGlobalErrors = repGlobalErrors.result().body();
 					if (hasGlobalErrors != null && hasGlobalErrors) {
+						// Do nothing if a global error is occurring
 						// グローバルエラー発生中なら何もしない
 						if (log.isInfoEnabled()) log.info("global error exists");
 						completionHandler.handle(Future.succeededFuture());
@@ -100,9 +125,11 @@ public class MediatorRequestHandling extends AbstractVerticle {
 							if (resOperationMode.succeeded()) {
 								String operationMode = resOperationMode.result();
 								if ("autonomous".equals(operationMode)) {
+									// Interchange mode is autonomous
 									// 融通モードが autonomous
 									doHandleMediatorRequest__(request, completionHandler);
 								} else {
+									// Do nothing if the interchange mode is anything other than autonomous
 									// 融通モードが autonomous 以外なら何もしない
 									if (log.isInfoEnabled()) log.info("operationMode is not autonomous : " + operationMode);
 									completionHandler.handle(Future.succeededFuture());
@@ -133,32 +160,40 @@ public class MediatorRequestHandling extends AbstractVerticle {
 				Integer dealInterlockCapacity = JsonObjectUtil.getInteger(data, "apis", "deal_interlock_capacity");
 				JsonArray dealIds = JsonObjectUtil.getJsonArray(data, "apis", "deal_id_list");
 				if (dealInterlockCapacity != null && 0 < dealInterlockCapacity && (dealIds == null || dealIds.size() < dealInterlockCapacity)) {
+					// If the number of interchange interlocks is less than the possible number of interchanges
 					// 融通インタロック数が融通可能数未満なら
 					String dateTime = data.getString("time");
+					// Get the SCENARIO corresponding to the current time
 					// 現在時刻に対応する SCENARIO を取得して
 					vertx.eventBus().<JsonObject>send(ServiceAddress.User.scenario(), dateTime, repScenario -> {
 						if (repScenario.succeeded()) {
 							JsonObject scenario = repScenario.result().body();
+							// Evaluate the request
 							// リクエストを評価する
 							ScenarioEvaluation.treatRequest(vertx, scenario, data, request, resEvaluation -> {
 								if (resEvaluation.succeeded()) {
 									JsonObject accept = resEvaluation.result();
 									if (accept != null) {
+										// An "accept" response was created as a result of the evaluation, so
 										// 評価の結果アクセプトが作られたので
 										String direction = accept.getString("type");
+										// Check the battery capacity
 										// バッテリ容量をチェックし
 										vertx.eventBus().<Boolean>send(ServiceAddress.Controller.batteryCapacityTesting(), direction, repBatteryCapacityTest -> {
 											if (repBatteryCapacityTest.succeeded()) {
 												if (repBatteryCapacityTest.result().body()) {
+													// If there is a desired grid voltage, set it in the request
 													// ご希望グリッド電圧があればリクエストに仕込み
 													Float efficientGridVoltageV = Misc.efficientGridVoltageV_(data);
 													if (efficientGridVoltageV != null) {
 														accept.put("efficientGridVoltageV", efficientGridVoltageV);
 													}
 													accept.put("dateTime", dateTime);
+													// Return the "accept" response
 													// アクセプトを返す
 													completionHandler.handle(Future.succeededFuture(accept));
 												} else {
+													// Rejected due to battery capacity
 													// バッテリ容量的にダメだった
 													completionHandler.handle(Future.succeededFuture());
 												}
@@ -167,6 +202,7 @@ public class MediatorRequestHandling extends AbstractVerticle {
 											}
 										});
 									} else {
+										// Not accepted
 										// アクセプトしません
 										completionHandler.handle(Future.succeededFuture());
 									}
@@ -183,6 +219,7 @@ public class MediatorRequestHandling extends AbstractVerticle {
 						}
 					});
 				} else {
+					// No room for more simultaneous interchanges
 					// 同時融通数いっぱい
 					if (log.isInfoEnabled()) log.info("unit is busy; dealInterlockCapacity : " + dealInterlockCapacity + ", dealIds : " + dealIds);
 					completionHandler.handle(Future.succeededFuture());

@@ -15,6 +15,9 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 
 /**
+ * An actual class for SCENARIO evaluation.
+ * @author OES Project
+ *          
  * SCENARIO 評価の実クラス.
  * @author OES Project
  */
@@ -27,10 +30,13 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 	@Override public void checkStatus(Vertx vertx, JsonObject scenario, JsonObject unitData, Handler<AsyncResult<JsonObject>> completionHandler) {
 		String batteryStatus = batteryStatus(scenario, unitData);
 		if (batteryStatus != null) {
+			// Decide based on the SCENARIO subset whether or not to issue a request with the current battery status
 			// SCENARIO サブセットから現在のバッテリステータスでリクエストを出すかどうかを判断する
 			JsonObject availableRequest = JsonObjectUtil.getJsonObject(scenario, "request", batteryStatus);
 			if (availableRequest != null && !availableRequest.isEmpty()) {
+				// Decide whether the request to be issued is "charge" or "discharge"
 				// 出すべきリクエストは "charge" か "discharge" かを決める
+				// Also get the conditions at this time
 				// またその時の条件も取得する
 				String type = null;
 				JsonObject condition = null;
@@ -40,12 +46,14 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 					type = "discharge";
 				}
 				if (condition != null) {
+					// Issue the request
 					// リクエストを出す
 					Integer limitWh = condition.getInteger("limitWh");
 					if (limitWh != null) {
 						Integer remainingWh = JsonObjectUtil.getInteger(unitData, "apis", "remaining_capacity_wh");
 						if (log.isDebugEnabled()) log.debug("remainingWh : " + remainingWh);
 						if (remainingWh != null) {
+							// The requested amount is the difference between the current remaining battery capacity and limitWh
 							// 現在のバッテリ残量と limitWh との差分がリクエスト量になる
 							int requestingWh = ("charge".equals(type)) ? limitWh - remainingWh : remainingWh - limitWh;
 							if (0 < requestingWh) {
@@ -92,6 +100,7 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 	@Override public void treatRequest(Vertx vertx, JsonObject scenario, JsonObject unitData, JsonObject request, Handler<AsyncResult<JsonObject>> completionHandler) {
 		String requestPairUnitId = request.getString("pairUnitId");
 		if (requestPairUnitId == null || requestPairUnitId.equals(ApisConfig.unitId())) {
+			// If pairUnitId is not specified, or corresponds to this unit
 			// pairUnitId が指定されていないか自ユニットだったら
 			String requestType = request.getString("type");
 			if (requestType != null) {
@@ -99,18 +108,22 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 				if (type != null) {
 					String batteryStatus = batteryStatus(scenario, unitData);
 					if (batteryStatus != null) {
+						// Determine whether or not to return "accept" response based on the type of request and the present batter status from the SCENARIO subset
 						// SCENARIO サブセットから現在のバッテリステータスとリクエスト種類に対しアクセプトを返すかどうか判断する
 						JsonObject condition = JsonObjectUtil.getJsonObject(scenario, "accept", batteryStatus, type);
 						if (condition != null) {
+							// Return the "accept" response
 							// アクセプトを返す
 							String pairUnitId = condition.getString("pairUnitId");
 							if (pairUnitId == null || pairUnitId.equals(request.getString("unitId"))) {
+								// If pairUnitId is not specified in the accept conditions of the SCENARIO subset, or if this is a request unit
 								// SCENARIO サブセット中のアクセプト条件に pairUnitId が指定されていないかそれがリクエストユニットだったら
 								Integer limitWh = condition.getInteger("limitWh");
 								if (limitWh != null) {
 									Integer remainingWh = JsonObjectUtil.getInteger(unitData, "apis", "remaining_capacity_wh");
 									if (log.isDebugEnabled()) log.debug("remainingWh : " + remainingWh);
 									if (remainingWh != null) {
+										// The accepted amount is the difference between the present remaining battery capacity and limitWh
 										// 現在のバッテリ残量と limitWh との差分がアクセプト量になる
 										int acceptingWh = ("charge".equals(type)) ? limitWh - remainingWh : remainingWh - limitWh;
 										if (0 < acceptingWh) {
@@ -138,6 +151,7 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 									completionHandler.handle(Future.failedFuture("no accept." + batteryStatus + '.' + type + ".limitWh value in scenario"));
 								}
 							} else {
+								// If pairUnitId is specified in the accept conditions of the SCENARIO subset, but is not the request unit, do not send back an "accept" response
 								// SCENARIO サブセット中のアクセプト条件に pairUnitId が指定されていてそれがリクエストユニットでなければアクセプトは返さない
 								if (log.isDebugEnabled()) log.debug("pairUnitId in SCENARIO : " + pairUnitId + ", request unitId : " + request.getString("unitId"));
 								completionHandler.handle(Future.succeededFuture());
@@ -159,6 +173,7 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 				completionHandler.handle(Future.failedFuture("no type value in request"));
 			}
 		} else {
+			// If pairUnitId is specified and is not this unit, do not send back an "accept" response
 			// pairUnitId が指定されていて自ユニットでなければアクセプトは返さない
 			if (log.isDebugEnabled()) log.debug("pairUnitId in request : " + requestPairUnitId + ", not me");
 			completionHandler.handle(Future.succeededFuture());
@@ -171,6 +186,7 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 	@Override public void chooseAccept(Vertx vertx, JsonObject scenario, JsonObject unitData, JsonObject request, List<JsonObject> accepts, Handler<AsyncResult<JsonObject>> completionHandler) {
 		String requestPairUnitId = request.getString("pairUnitId");
 		if (requestPairUnitId != null) {
+			// If this unit has specified a pairUnitId for the request, remove the "accept" responses from other units
 			// 自分がリクエストに pairUnitId を指定していたらそれ以外のユニットからのアクセプトは取り除く
 			List<JsonObject> filteredAccepts = new ArrayList<>(1);
 			for (JsonObject anAccept : accepts) {
@@ -180,6 +196,7 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 			}
 			accepts = filteredAccepts;
 		}
+		// Ignore the pairUnitId specified by the accepting side
 		// アクセプト側が指定する pairUnitId は無視する
 		String acceptSelectionStrategy = JsonObjectUtil.getString(scenario, "acceptSelection", "strategy");
 		if (!"amount".equals(acceptSelectionStrategy) && !"pointAndAmount".equals(acceptSelectionStrategy)) {
@@ -187,7 +204,9 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 			acceptSelectionStrategy = "amount";
 		}
 		if ("amount".equals(acceptSelectionStrategy)) {
+			// If the accept selection strategy (SCENARIO.acceptSelection.strategy) is "amount"
 			// アクセプト選択方針 ( SCENARIO.acceptSelection.strategy ) が "amount" なら
+			// Select the "accept" response with the largest interchange power
 			// アクセプト中の融通電力量が最も大きいものを選択する
 			JsonObject accept = null;
 			int maxAmountWh = 0;
@@ -204,12 +223,16 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 			}
 			completionHandler.handle(Future.succeededFuture(accept));
 		} else if ("pointAndAmount".equals(acceptSelectionStrategy)) {
+			// If the accept selection strategy (SCENARIO.acceptSelection.strategy) is "pointAndAmount"
 			// アクセプト選択方針 ( SCENARIO.acceptSelection.strategy ) が "pointAndAmount" なら
 			String requestType = request.getString("type");
 			Float requestPointPerWh = request.getFloat("pointPerWh");
 			if ("charge".equals(requestType)) {
+				// If the request type is "charge"
 				// リクエストの種類が "charge" だったら
+				// Select the "accept" response where the number of points is minimal and is less than the requested points (or, if equal, the one with the largest interchange power)
 				// アクセプト中のポイントがリクエストのポイント以下かつ最も小さい ( 同じなら融通電力量が最も大きい ) ものを選択する
+				// → We want to pay less than the decided price, and of these, we want to buy from the place that is the cheapest
 				// → 決めた値段より安く買いたい, そしてその中でも一番安いところから買いたい
 				JsonObject accept = null;
 				float minPointPerWh = -1;
@@ -240,8 +263,11 @@ public class SimpleScenarioEvaluationImpl extends AbstractScenarioEvaluationImpl
 				}
 				completionHandler.handle(Future.succeededFuture(accept));
 			} else if ("discharge".equals(requestType)) {
+				// If the request type is "discharge"
 				// リクエストの種類が "discharge" だったら
+				// Select the "accept" response where the number of points is maximal and is more than the requested points (or, if equal, the one with the largest interchange power)
 				// アクセプト中のポイントがリクエストのポイント以上かつ最も大きい ( 同じなら融通電力量が最も大きい ) ものを選択する
+				// → We want to sell for more than the decided price, and of these, we want to sell to the place that offers the most
 				// → 決めた値段より高く売りたい, そしてその中でも一番高いところに売りたい
 				JsonObject accept = null;
 				float maxPointPerWh = -1;

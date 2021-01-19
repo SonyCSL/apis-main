@@ -17,6 +17,14 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.DcdcDeviceControl
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Perform operations to acquire voltage reference privilege.
+ * Set the grid voltage to a random value within the specified range and check that it is reflected.
+ * Repeat the specified number of times.
+ * Fails if the measured grid voltage does not follow the specified value.
+ * If successful, return to the original grid voltage and finish.
+ * To set the grid voltage, call {@link GridVoltageStepping}.
+ * @author OES Project
+ *          
  * 電圧リファレンス権限獲得動作を実行する.
  * 決められた範囲でランダムにグリッド電圧を設定し反映を確認する.
  * 規定回数繰り返す.
@@ -33,6 +41,11 @@ public class VoltageReferenceAuthorization extends AbstractDcdcDeviceControlling
 	private List<Float> gridVoltageVList_;
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param controller an object that actually sends commands to the device
+	 * @param params control parameters. Not required
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param controller 実際にデバイスに命令を送信するオブジェクト
@@ -42,9 +55,11 @@ public class VoltageReferenceAuthorization extends AbstractDcdcDeviceControlling
 		super(vertx, controller, params);
 	}
 
+	// Start skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを開始する
 	@Override protected boolean startIgnoreDynamicSafetyCheck() { return true; }
 
+	// Stop skipping dynamic safety checks in this process
 	// この処理により動的安全性チェックのスキップを終了する
 	@Override protected boolean stopIgnoreDynamicSafetyCheck() { return true; }
 
@@ -62,10 +77,15 @@ public class VoltageReferenceAuthorization extends AbstractDcdcDeviceControlling
 				float max = maxOperationGridVoltageV - gridVoltageSeparationV;
 				gridVoltageVList_ = new ArrayList<>();
 				for (float target = min; target <= max; target += gridVoltageSeparationV) {
+					// Number of trials: POLICY.controller.dcdc.voltageReference.authorization.numberOfTrials
 					// 実行回数 : POLICY.controller.dcdc.voltageReference.authorization.numberOfTrials
+					// Lower limit: POLICY.operationGridVoltageVRange.min + ( 3 * POLICY.gridVoltageSeparationV )
 					// 下限値 : POLICY.operationGridVoltageVRange.min + ( 3 * POLICY.gridVoltageSeparationV )
+					// Upper limit: POLICY.operationGridVoltageVRange.max - POLICY.gridVoltageSeparationV
 					// 上限値 : POLICY.operationGridVoltageVRange.max - POLICY.gridVoltageSeparationV
+					// Step: POLICY.gridVoltageSeparationV
 					// ステップ : POLICY.gridVoltageSeparationV
+					// However, a value that matches dcdc.vdis.dvg is excluded.
 					// ただし dcdc.vdis.dvg と一致する値は除く
 					if (target == operationGridVoltageV_) continue;
 					gridVoltageVList_.add(target);
@@ -86,13 +106,16 @@ public class VoltageReferenceAuthorization extends AbstractDcdcDeviceControlling
 		if (idx == gridVoltageVList_.size()) --idx;
 		Float targetGridVoltageV = gridVoltageVList_.get(idx);
 		if (log.isDebugEnabled()) log.debug("target grid voltage : " + targetGridVoltageV);
+		// Perform voltage step processing
 		// 電圧ステップ処理を実行する
 		new GridVoltageStepping(vertx_, controller_, params_, targetGridVoltageV).execute(res -> {
 			if (res.succeeded()) {
 				if (--numberOfTrials_ <= 0) {
+					// Successfully performed the required number of trials → return to original voltage
 					// 実行回数に達したので成功 → 元の電圧に戻す
 					new GridVoltageStepping(vertx_, controller_, params_, operationGridVoltageV_).execute(completionHandler);
 				} else {
+					// Repeat if required number of trials not yet reached
 					// 実行回数に達していないので繰り返す
 					execute__(completionHandler);
 				}

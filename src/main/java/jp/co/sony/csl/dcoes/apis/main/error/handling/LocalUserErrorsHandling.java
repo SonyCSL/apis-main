@@ -9,6 +9,15 @@ import jp.co.sony.csl.dcoes.apis.main.error.action.AskAndWaitForStopDeals;
 import jp.co.sony.csl.dcoes.apis.main.error.action.StopLocal;
 
 /**
+ * An actual class for error handling.
+ * - Scope: {@link jp.co.sony.csl.dcoes.apis.common.Error.Extent#LOCAL}
+ * - Type: {@link jp.co.sony.csl.dcoes.apis.common.Error.Category#USER}
+ * - Severity: {@link jp.co.sony.csl.dcoes.apis.common.Error.Level#ERROR}
+ * - Processing details:
+ *   1. Request stoppage of interchange
+ *   2. Stop devices
+ * @author OES Project
+ *          
  * エラー対応の実クラス.
  * - 範囲 : {@link jp.co.sony.csl.dcoes.apis.common.Error.Extent#LOCAL}
  * - 種類 : {@link jp.co.sony.csl.dcoes.apis.common.Error.Category#USER}
@@ -21,6 +30,11 @@ import jp.co.sony.csl.dcoes.apis.main.error.action.StopLocal;
 public class LocalUserErrorsHandling extends AbstractErrorsHandling {
 
 	/**
+	 * Create an instance.
+	 * @param vertx a vertx object
+	 * @param policy a POLICY object. To prevent changes from taking effect while running, a copy is passed at {@link jp.co.sony.csl.dcoes.apis.main.app.user.ErrorHandling} or {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.ErrorHandling}.
+	 * @param errors a list of errors to be handled
+	 *          
 	 * インスタンスを生成する.
 	 * @param vertx vertx オブジェクト
 	 * @param policy POLICY オブジェクト. 処理中に変更されても影響しないように {@link jp.co.sony.csl.dcoes.apis.main.app.user.ErrorHandling} あるいは {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.main_loop.ErrorHandling} でコピーしたものが渡される.
@@ -31,6 +45,10 @@ public class LocalUserErrorsHandling extends AbstractErrorsHandling {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 * 1. Request stoppage of interchange
+	 * 2. Stop devices
+	 *          
 	 * {@inheritDoc}
 	 * 1. 融通停止依頼
 	 * 2. デバイス停止

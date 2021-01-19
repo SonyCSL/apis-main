@@ -4,6 +4,10 @@ import jp.co.sony.csl.dcoes.apis.main.factory.ControllerFactory;
 import jp.co.sony.csl.dcoes.apis.main.factory.Factory;
 
 /**
+ * A factory for DC system implementation factories.
+ * Connects to dcdc_batt_comm.
+ * @author OES Project
+ *          
  * DC 系の実機用ファクトリのファクトリ.
  * 接続先は dcdc_batt_comm.
  * @author OES Project

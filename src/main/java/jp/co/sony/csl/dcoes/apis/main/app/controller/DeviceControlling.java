@@ -21,6 +21,14 @@ import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Device control service object Verticle.
+ * Launched from the {@link Controller} Verticle.
+ * The following types are available, depending on the type of system.
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.emulator.DcdcEmulatorDeviceControlling}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v1.DcdcV1DeviceControlling}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v2.DcdcV2DeviceControlling}
+ * @author OES Project
+ *          
  * デバイス制御サービスの親玉 Verticle.
  * {@link Controller} Verticle から起動される.
  * システムの種類に応じて以下の種類がある.
@@ -33,11 +41,17 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(DeviceControlling.class);
 
 	/**
+	 * Default HTTP request timeout duration [ms].
+	 * Value: {@value}.
+	 *          
 	 * HTTP リクエストのタイムアウト時間のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
 	private static final Long DEFAULT_REQUEST_TIMEOUT_MSEC = 5000L;
 	/**
+	 * Default HTTP request retry count.
+	 * Value: {@value}.
+	 *          
 	 * HTTP リクエストのリトライ回数のデフォルト値.
 	 * 値は {@value}.
 	 */
@@ -45,12 +59,19 @@ public abstract class DeviceControlling extends AbstractVerticle {
 
 	private static boolean ignoreDynamicSafetyCheck_ = false;
 	/**
+	 * Find out whether or not dynamic safety checks should be skipped.
+	 * TODO: Shouldn't this be "skip" instead of "ignore"?
+	 * @return True if dynamic safety checks are skipped
+	 *          
 	 * 動的安全性チェックの実行をスキップするか否かを取得する.
 	 * TODO : ignore じゃなくて skip ではないだろうか...
 	 * @return 動的安全性チェックをスキップするなら true
 	 */
 	public static boolean ignoreDynamicSafetyCheck() { return ignoreDynamicSafetyCheck_; }
 	/**
+	 * Specifies whether or not to skip the dynamic safety checks.
+	 * @param value skip if true; don't skip if false
+	 *          
 	 * 動的安全性チェックの実行をスキップするか否かを指定する.
 	 * @param value true ならスキップ, false なら実行する
 	 */
@@ -68,6 +89,12 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called at startup.
+	 * Performs initialization processing.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 初期化処理を実行する.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
@@ -104,6 +131,10 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * Stop this unit's device.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * 自ユニットのデバイスを停止する.
 	 * @throws Exception {@inheritDoc}
@@ -127,17 +158,30 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	////
 
 	/**
+	 * Initialization.
+	 * @param completionHandler the completion handler
+	 *          
 	 * 初期化.
 	 * @param completionHandler the completion handler
 	 */
 	protected abstract void init(Handler<AsyncResult<Void>> completionHandler);
 	/**
+	 * Stop this unit's device.
+	 * Receive the device control state after running the {@link AsyncResult#result()} method of completionHandler.
+	 * @param completionHandler the completion handler
+	 *          
 	 * 自ユニットのデバイスを停止する.
 	 * completionHandler の {@link AsyncResult#result()} で操作後のデバイス制御状態を受け取る.
 	 * @param completionHandler the completion handler
 	 */
 	protected abstract void doLocalStopWithExclusiveLock(Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * Stop this unit's device when the SCRAM command is received.
+	 * Does nothing if the present mode is voltage reference and {@code excludeVoltageReference} is {@code true}.
+	 * Receive the device control state after running the {@link AsyncResult#result()} method of completionHandler.
+	 * @param excludeVoltageReference a flag that prevents stopping when currently in the voltage reference mode
+	 * @param completionHandler the completion handler
+	 *          
 	 * SCRAM 命令受信時に自ユニットのデバイスを停止する.
 	 * 現在のモードが電圧リファレンスで {@code excludeVoltageReference} が {@code true} なら何もしない.
 	 * completionHandler の {@link AsyncResult#result()} で操作後のデバイス制御状態を受け取る.
@@ -146,6 +190,11 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	 */
 	protected abstract void doScramWithExclusiveLock(boolean excludeVoltageReference, Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * Control this unit's devices.
+	 * Receive the device control state after running the {@link AsyncResult#result()} method of completionHandler.
+	 * @param operation processing details
+	 * @param completionHandler the completion handler
+	 *          
 	 * 自ユニットのデバイスを制御する.
 	 * completionHandler の {@link AsyncResult#result()} で操作後のデバイス制御状態を受け取る.
 	 * @param operation 処理内容
@@ -153,6 +202,12 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	 */
 	protected abstract void doDeviceControllingWithExclusiveLock(JsonObject operation, Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * The device control state is bidirectionally merged with the cached unit data to get the result.
+	 * The device control processing response may sometimes contain less than the entire unit data (depending on the driver).
+	 * For this reason, the unit data cache is kept up to date to compensate for missing elements.
+	 * @param value control state of merge source device
+	 * @return control state of merged devices
+	 *          
 	 * デバイス制御状態をユニットデータのキャッシュと双方向マージし結果を取得する.
 	 * デバイス制御処理のレスポンスはユニットデータ中のそれより内容が少ない場合がある ( ドライバによる ).
 	 * なのでユニットデータのキャッシュを最新にしつつ不足要素を補ってもらう.
@@ -164,6 +219,16 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#stopLocal()}
+	 * Scope: local
+	 * Function: Stop this unit's devices.
+	 * Message body: none
+	 * Message header: none
+	 * Response: device control state [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#stopLocal()}
 	 * 範囲 : ローカル
@@ -178,6 +243,7 @@ public abstract class DeviceControlling extends AbstractVerticle {
 		vertx.eventBus().<Void>localConsumer(ServiceAddress.Controller.stopLocal(), req -> {
 			if (log.isInfoEnabled()) log.info("STOP LOCAL command received");
 			if (log.isInfoEnabled()) log.info("( do without exclusive lock !!! )");
+			// Since this is mainly called for error handling, complex exclusion control is passed through
 			// 主にエラー処理で呼ばれるためややこしい排他制御はスルーする
 //			DataAcquisition.acquireExclusiveLock(vertx, resExclusiveLock -> {
 //				if (resExclusiveLock.succeeded()) {
@@ -198,6 +264,20 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#stopLocal()}
+	 * Scope: global
+	 * Function: Emergency stop the devices of all units.
+	 * 　　   GridMaster interlock not required for emergency processing.
+	 * Message body: none
+	 * Message header:
+	 * 　　　　　　　　   - {@code "excludeVoltageReference"}: Voltage reference exclusion flag
+	 * 　　　　　　　　     - {@code "true"}: Pass through if this unit is a voltage reference
+	 * 　　　　　　　　     - {@code "false"}: Send a stop command even if this unit is a voltage reference
+	 * Response: device control state [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#stopLocal()}
 	 * 範囲 : グローバル
@@ -214,11 +294,13 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	 */
 	private void startScramService_(Handler<AsyncResult<Void>> completionHandler) {
 		vertx.eventBus().<Void>consumer(ServiceAddress.Controller.scram(), req -> {
+			// Since this is called during error handling, do not check the GridMaster interlock
 			// エラー処理で呼ばれるため GridMaster インタロックを確認しない
 //			checkGridMasterInterlock_(req, resCheckGridMasterInterlock -> {
 //				if (resCheckGridMasterInterlock.succeeded()) {
 					if (log.isInfoEnabled()) log.info("SCRAM command received");
 					if (log.isInfoEnabled()) log.info("( do without exclusive lock !!! )");
+					// Since this is called for error handling, complex exclusion control is passed through
 					// エラー処理で呼ばれるためややこしい排他制御はスルーする
 //					DataAcquisition.acquireExclusiveLock(vertx, resExclusiveLock -> {
 //						if (resExclusiveLock.succeeded()) {
@@ -244,6 +326,20 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#deviceControlling(String)}
+	 * Scope: global
+	 * Function: Control the devices of a unit specified by ID.
+	 * 　　   The control details are sent in the message body.
+	 * 　　   A gridMasterUnitId must be specified in the header, and must match the GridMaster interlock value.
+	 * 　　   Specific processing is implemented in child classes.
+	 * Message body: commands and parameters [{@link JsonObject}]
+	 * Message header:
+	 * 　　　　　　　　   - {@code "gridMasterUnitId"}: GridMaster unit ID
+	 * Response: device control state [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#deviceControlling(String)}
 	 * 範囲 : グローバル
@@ -260,6 +356,7 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	 */
 	private void startDeviceControllingService_(Handler<AsyncResult<Void>> completionHandler) {
 		vertx.eventBus().<JsonObject>consumer(ServiceAddress.Controller.deviceControlling(ApisConfig.unitId()), req -> {
+			// Check the GridMaster interlock
 			// GridMaster インタロックを確認する
 			checkGridMasterInterlock_(req, resCheckGridMasterInterlock -> {
 				if (resCheckGridMasterInterlock.succeeded()) {
@@ -286,6 +383,13 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	}
 
 	/**
+	 * Check the GridMaster interlock.
+	 * Before that, also check for inclusion in the cluster members listed in POLICY.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param <T> type of {@link Message#body()} of message object
+	 * @param req message object
+	 * @param completionHandler the completion handler
+	 *          
 	 * GridMaster インタロックを確認する.
 	 * POLICY に記載されたクラスタメンバに含まれているかも先に確認する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
@@ -322,6 +426,12 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	}
 
 	/**
+	 * Send out an external HTTP GET request and return the response.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param client an httpclient object
+	 * @param uri the request URI
+	 * @param completionHandler the completion handler
+	 *          
 	 * HTTP GET で外部にリクエストを送信しレスポンスを返す.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param client httpclient オブジェクト
@@ -329,6 +439,7 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	 * @param completionHandler the completion handler
 	 */
 	protected void send(HttpClient client, String uri, Handler<AsyncResult<JsonObject>> completionHandler) {
+		// Number of retries: POLICY.controller.retryLimit [{@link Integer}]
 		// リトライ回数 : POLICY.controller.retryLimit [{@link Integer}]
 		Integer retryLimit = PolicyKeeping.cache().getInteger(DEFAULT_RETRY_LIMIT, "controller", "retryLimit");
 		new Sender_(retryLimit, client, uri).execute_(completionHandler);
@@ -337,6 +448,10 @@ public abstract class DeviceControlling extends AbstractVerticle {
 	////
 
 	/**
+	 * Issues an HTTP GET request to the specified URL.
+	 * If the request fails, retry up to the specified number of times.
+	 * @author OES Project
+	 *          
 	 * 指定された URL に対し HTTP GET する.
 	 * 失敗しても指定回数リトライする.
 	 * @author OES Project
@@ -352,6 +467,11 @@ public abstract class DeviceControlling extends AbstractVerticle {
 			uri_ = uri;
 		}
 		/**
+		 * Perform HTTP GET processing.
+		 * Duplicate results are sometimes returned (maybe due to poor implementation). Block duplicates here.
+		 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+		 * @param completionHandler the completion handler
+		 *          
 		 * HTTP GET 処理実行.
 		 * ( 実装がまずいのか ) 二度結果が返ってくることがあるためここでブロックする.
 		 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
@@ -368,6 +488,10 @@ public abstract class DeviceControlling extends AbstractVerticle {
 			});
 		}
 		/**
+		 * Perform HTTP GET processing.
+		 * Retry if fails.
+		 * @param completionHandler the completion handler
+		 *          
 		 * HTTP GET 処理実行.
 		 * 失敗してもリトライする.
 		 * @param completionHandler the completion handler
@@ -376,6 +500,7 @@ public abstract class DeviceControlling extends AbstractVerticle {
 			send_(client_, uri_, r -> {
 				if (r.succeeded()) {
 					JsonObject data = r.result();
+					                                // Bidirectionally merge with unit data cache
 					data = mergeDeviceStatus(data); // ユニットデータのキャッシュと双方向マージする
 					completionHandler.handle(Future.succeededFuture(data));
 				} else {
@@ -389,6 +514,13 @@ public abstract class DeviceControlling extends AbstractVerticle {
 			});
 		}
 		/**
+		 * Perform HTTP GET processing.
+		 * HTTP timeout is {@code POLICY.controller.requestTimeoutMsec} (default: {@link #DEFAULT_REQUEST_TIMEOUT_MSEC}).
+		 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+		 * @param client an httpclient object
+		 * @param uri the URI to access
+		 * @param completionHandler the completion handler
+		 *          
 		 * HTTP GET 処理実行.
 		 * HTTP タイムアウト は {@code POLICY.controller.requestTimeoutMsec} ( デフォルト値 {@link #DEFAULT_REQUEST_TIMEOUT_MSEC} ).
 		 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.

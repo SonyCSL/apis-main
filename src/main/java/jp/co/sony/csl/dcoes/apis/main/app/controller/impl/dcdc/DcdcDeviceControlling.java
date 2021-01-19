@@ -28,6 +28,14 @@ import jp.co.sony.csl.dcoes.apis.main.app.controller.util.DDCon;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Device control service object Verticle for the DCDC system.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle.
+ * The following types are available, depending on the type of system.
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.emulator.DcdcEmulatorDeviceControlling}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v1.DcdcV1DeviceControlling}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v2.DcdcV2DeviceControlling}
+ * @author OES Project
+ *          
  * DCDC システム向けデバイス制御サービスの親玉 Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.controller.Controller} Verticle から起動される.
  * システムの種類に応じて以下の種類がある.
@@ -40,6 +48,14 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	private static final Logger log = LoggerFactory.getLogger(DcdcDeviceControlling.class);
 
 	/**
+	 * Set the mode of the DCDC converter.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * @param mode the mode to set. Required
+	 * @param gridVoltageV grid voltage value. Required for some modes, not for others
+	 * @param gridCurrentA grid current value. Required for some modes, not for others
+	 * @param droopRatio the droop ratio. Only required when the mode is {@link DDCon.Mode#VOLTAGE_REFERENCE}
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのモードを設定する.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
 	 * @param mode モード. 必須
@@ -50,6 +66,12 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	 */
 	protected abstract void doSetDcdcMode(DDCon.Mode mode, Number gridVoltageV, Number gridCurrentA, Number droopRatio, Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * Set the grid voltage of the DCDC converter.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * @param gridVoltageV grid voltage value. Required
+	 * @param droopRatio the droop ratio. Required
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのグリッド電圧を設定する.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
 	 * @param gridVoltageV グリッド電圧値. 必須
@@ -58,6 +80,11 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	 */
 	protected abstract void doSetDcdcVoltage(Number gridVoltageV, Number droopRatio, Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * Set the grid voltage of the DCDC converter.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * @param gridCurrentA grid current value. Required
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのグリッド電圧を設定する.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
 	 * @param gridCurrentA　グリッド電流値. 必須
@@ -71,12 +98,19 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	@Override protected abstract void init(Handler<AsyncResult<Void>> completionHandler);
 	/**
 	 * {@inheritDoc}
+	 * Simply runs {@link WAIT}.
+	 *          
+	 * {@inheritDoc}
 	 * 単純に {@link WAIT} を実行する.
 	 */
 	@Override protected void doLocalStopWithExclusiveLock(Handler<AsyncResult<JsonObject>> completionHandler) {
 		new WAIT(vertx, this, null).execute(completionHandler);
 	}
 	/**
+	 * {@inheritDoc}
+	 * Does nothing if the present mode is voltage reference and {@code excludeVoltageReference} is {@code true}.
+	 * Otherwise runs {@link Scram}.
+	 *          
 	 * {@inheritDoc}
 	 * 現在のモードが電圧リファレンスで {@code excludeVoltageReference} が {@code true} なら何もしない.
 	 * そうでなければ {@link Scram} を実行する.
@@ -93,6 +127,10 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	}
 	/**
 	 * {@inheritDoc}
+	 * Perform device control according to {@ code operation.command} and {@ code operation.params}.
+	 * The specific process is {@link #doDcdcControlling_ (String, JsonObject, Handler)}.
+	 *          
+	 * {@inheritDoc}
 	 * {@code operation.command} と {@code operation.params} に従ってデバイス制御を実行する.
 	 * 具体的な処理は {@link #doDcdcControlling_(String, JsonObject, Handler)}.
 	 */
@@ -106,6 +144,12 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		}
 	}
 	/**
+	 * 
+	 * {@inheritDoc}
+	 * Merge the device control state specified by {@code value} with {@link DataAcquisition#cache}.
+	 * - Merge {@code value} into {@link DataAcquisition#cache}{@code .dcdc}.
+	 * Returns the merged result {@link DataAcquisition#cache} {@code .dcdc}.
+	 *          
 	 *
 	 * {@inheritDoc}
 	 * {@code value} で指定したデバイス制御状態を {@link DataAcquisition#cache} にマージする.
@@ -120,6 +164,11 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	////
 
 	/**
+	 * Check the validity of the grid current setting.
+	 * @param mode the mode
+	 * @param current current value
+	 * @return an error string if the setting deviates from expectations. Otherwise return {@code null}.
+	 *          
 	 * グリッド電流設定値の正当性をチェックする.
 	 * @param mode モード
 	 * @param current 電流値
@@ -127,6 +176,7 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	 */
 	private String checkCurrentValueRange_(DDCon.Mode mode, Number current) {
 		if (current == null) {
+			// null is NG
 			// null は NG
 			String message = "current value is null";
 			ErrorUtil.report(vertx, Error.Category.LOGIC, Error.Extent.LOCAL, Error.Level.ERROR, message);
@@ -134,9 +184,11 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		}
 		float value = current.floatValue();
 		if (value == 0F) {
+			// 0 is OK
 			// 0 は OK
 			return null;
 		} else if (value < 0F) {
+			// a negative value is NG
 			// 負の値は NG
 			String message = "current value should not be negative : " + value;
 			ErrorUtil.report(vertx, Error.Category.LOGIC, Error.Extent.LOCAL, Error.Level.ERROR, message);
@@ -144,12 +196,14 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		}
 		Float gridCurrentCapacityA = HwConfigKeeping.gridCurrentCapacityA();
 		if (gridCurrentCapacityA == null) {
+			// NG due to misconfiguration
 			// 設定ミスで NG
 			String message = "data deficiency; HWCONFIG.gridCurrentCapacityA : " + gridCurrentCapacityA;
 			ErrorUtil.report(vertx, Error.Category.USER, Error.Extent.LOCAL, Error.Level.ERROR, message);
 			return message;
 		}
 		if (gridCurrentCapacityA < value) {
+			// NG because this unit's current capacity is exceeded
 			// 自ユニットの電流容量オーバーで NG
 			String message = "invalid current value : " + value + "; should less than or equal to : " + gridCurrentCapacityA;
 			ErrorUtil.report(vertx, Error.Category.HARDWARE, Error.Extent.LOCAL, Error.Level.ERROR, message);
@@ -161,6 +215,13 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	////
 
 	/**
+	 * Device control.
+	 * The device control state after performing these control operations is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * Determine the type of processing performed by {@code command}, create an object, and run it.
+	 * @param command the command
+	 * @param params control parameters
+	 * @param completionHandler the completion handler
+	 *          
 	 * デバイス制御.
 	 * completionHandler の {@link AsyncResult#result()} で制御後のデバイス制御状態を受け取る.
 	 * {@code command} で処理の種類を決めオブジェクトを生成し実行する.
@@ -222,6 +283,15 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 	////
 
 	/**
+	 * Set the mode of the DCDC converter.
+	 * Used from subclasses of {@link AbstractDcdcDeviceControllingCommand}.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * The actual processing is implemented by the method {@link #doSetDcdcMode(jp.co.sony.csl.dcoes.apis.main.app.controller.util.DDCon.Mode, Number, Number, Number, Handler)} of subclasses.
+	 * @param mode the mode to set. Required
+	 * @param gridVoltageV grid voltage value. Required for some modes, not for others
+	 * @param gridCurrentA grid current value. Required for some modes, not for others
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのモードを設定する.
 	 * {@link AbstractDcdcDeviceControllingCommand} のサブクラスから使用される.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
@@ -235,6 +305,16 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		setDcdcMode(mode, gridVoltageV, gridCurrentA, Integer.valueOf(0), completionHandler);
 	}
 	/**
+	 * Set the mode of the DCDC converter.
+	 * Used from subclasses of {@link AbstractDcdcDeviceControllingCommand}.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * The actual processing is implemented by the method {@link #doSetDcdcMode(jp.co.sony.csl.dcoes.apis.main.app.controller.util.DDCon.Mode, Number, Number, Number, Handler)} of subclasses.
+	 * @param mode the mode to set. Required
+	 * @param gridVoltageV grid voltage value. Required for some modes, not for others
+	 * @param gridCurrentA grid current value. Required for some modes, not for others
+	 * @param droopRatio the droop ratio. Only required when the mode is {@link DDCon.Mode#VOLTAGE_REFERENCE}
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのモードを設定する.
 	 * {@link AbstractDcdcDeviceControllingCommand} のサブクラスから使用される.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
@@ -270,6 +350,13 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		}
 	}
 	/**
+	 * Set the grid voltage of the DCDC converter.
+	 * Used from subclasses of {@link AbstractDcdcDeviceControllingCommand}.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * The actual processing is implemented by the method {@link #doSetDcdcVoltage (Number, Number, Handler)} of subclasses.
+	 * @param gridVoltageV grid voltage value. Required
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのグリッド電圧を設定する.
 	 * {@link AbstractDcdcDeviceControllingCommand} のサブクラスから使用される.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
@@ -281,6 +368,14 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		setDcdcVoltage(gridVoltageV, Integer.valueOf(0), completionHandler);
 	}
 	/**
+	 * Set the grid voltage of the DCDC converter.
+	 * Used from subclasses of {@link AbstractDcdcDeviceControllingCommand}.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * The actual processing is implemented by the method {@link #doSetDcdcVoltage (Number, Number, Handler)} of subclasses.
+	 * @param gridVoltageV grid voltage value. Required
+	 * @param droopRatio the droop ratio. Required
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのグリッド電圧を設定する.
 	 * {@link AbstractDcdcDeviceControllingCommand} のサブクラスから使用される.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.
@@ -297,6 +392,13 @@ public abstract class DcdcDeviceControlling extends DeviceControlling {
 		}
 	}
 	/**
+	 * Set the grid voltage of the DCDC converter.
+	 * Used from subclasses of {@link AbstractDcdcDeviceControllingCommand}.
+	 * The device control state after performing these settings is received by the {@link AsyncResult#result()} method of completionHandler.
+	 * The actual processing is implemented by the method {@link #doSetDcdcCurrent (Number, Number, Handler)} of subclasses.
+	 * @param gridCurrentA grid current value. Required
+	 * @param completionHandler the completion handler
+	 *          
 	 * DCDC コンバータのグリッド電圧を設定する.
 	 * {@link AbstractDcdcDeviceControllingCommand} のサブクラスから使用される.
 	 * completionHandler の {@link AsyncResult#result()} で設定後のデバイス制御状態を受け取る.

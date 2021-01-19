@@ -6,6 +6,17 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 /**
+ * User service object Verticle.
+ * Launched from the {@link jp.co.sony.csl.dcoes.apis.main.app.Apis} Verticle.
+ * Launches the following Verticles.
+ * - {@link ErrorCollection}: A Verticle that manages errors
+ * - {@link ErrorHandling}: A Verticle that handles errors
+ * - {@link ScenarioKeeping}: A Verticle that manages a SCENARIO
+ * - {@link HouseKeeping}: A Verticle that monitors the status of this unit and issues requests when necessary
+ * - {@link MediatorRequestHandling}: A Verticle that handles requests from other units
+ * - {@link MediatorAcceptsHandling}: A Verticle that processes "accept" responses returned from other units following a request sent from this unit
+ * @author OES Project
+ *          
  * User サービスの親玉 Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.Apis} Verticle から起動される.
  * 以下の Verticle を起動する.
@@ -21,6 +32,17 @@ public class User extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(User.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the following Verticles.
+	 * - {@link ErrorCollection}: A Verticle that manages errors
+	 * - {@link ErrorHandling}: A Verticle that handles errors
+	 * - {@link ScenarioKeeping}: A Verticle that manages a SCENARIO
+	 * - {@link HouseKeeping}: A Verticle that monitors the status of this unit and issues requests when necessary
+	 * - {@link MediatorRequestHandling}: A Verticle that handles requests from other units
+	 * - {@link MediatorAcceptsHandling}: A Verticle that processes "accept" responses returned from other units following a request sent from this unit
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 以下の Verticle を起動する.
 	 * - {@link ErrorCollection} : エラーを管理する Verticle
@@ -74,6 +96,9 @@ public class User extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */

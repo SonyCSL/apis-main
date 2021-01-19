@@ -28,6 +28,12 @@ import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that manages interchange information.
+ * Launched from the {@link Mediator} Verticle.
+ * Registers, destroys and fetches interchange information.
+ * Manages interchange stop requests from units participating in an interchange.
+ * @author OES Project
+ *          
  * 融通情報を管理する Verticle.
  * {@link Mediator} Verticle から起動される.
  * 融通情報の登録と破棄および取得.
@@ -49,6 +55,11 @@ public class DealManagement extends AbstractVerticle {
 //	}
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -96,6 +107,9 @@ public class DealManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -106,6 +120,16 @@ public class DealManagement extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#deals()}
+	 * Scope: global
+	 * Function: Get a list of interchange information.
+	 * Message body: none
+	 * Message header: none
+	 * Response: a list of interchange information managed in shared memory [{@link JsonArray}].
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#deals()}
 	 * 範囲 : グローバル
@@ -130,6 +154,17 @@ public class DealManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#dealCreation()}
+	 * Scope: global
+	 * Function: Register interchange information.
+	 * Message body: Interchange information [{@link JsonObject}]
+	 * Message header: none
+	 * Response: A created list of interchange information [{@link JsonObject}].
+	 *           Fails if unsuccessful.
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#dealCreation()}
 	 * 範囲 : グローバル
@@ -153,6 +188,7 @@ public class DealManagement extends AbstractVerticle {
 							if (repGlobalErrors.succeeded()) {
 								Boolean hasGlobalErrors = repGlobalErrors.result().body();
 								if (hasGlobalErrors != null && hasGlobalErrors) {
+									// Do not register if there is a global error
 									// グローバルエラーがあったら登録しない
 									String msg = "global error exists";
 									if (log.isInfoEnabled()) log.info(msg);
@@ -178,6 +214,7 @@ public class DealManagement extends AbstractVerticle {
 												errors.add(msg);
 											}
 											if (errors.isEmpty()) {
+												// Register if neither of the units at both ends have local errors
 												// 両端ユニットどちらもローカルエラーがなければ登録する
 												createDeal_(deal, resCreate -> {
 													if (resCreate.succeeded()) {
@@ -187,6 +224,7 @@ public class DealManagement extends AbstractVerticle {
 													}
 												});
 											} else {
+												// Do not register if either of the units at both ends has a local error
 												// 両端ユニットどちらか一方でもローカルエラーがあったら登録しない
 												req.fail(-1, errors.encode());
 											}
@@ -212,6 +250,7 @@ public class DealManagement extends AbstractVerticle {
 							}
 						});
 					} else {
+						// Do not register if either one is not a cluster member
 						// どちらか一方でもクラスタメンバでなければ登録しない
 						StringBuilder msg = new StringBuilder();
 						if (!PolicyKeeping.isMember(requestUnitId)) {
@@ -233,6 +272,11 @@ public class DealManagement extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Save the interchange information in shared memory
+	 * Receive a DEAL object registered by the {@link AsyncResult#result()} method of completionHandler.
+	 * @param deal a DEAL object
+	 * @param completionHandler the completion handler
+	 *          
 	 * 融通情報を共有メモリに保存する
 	 * completionHandler の {@link AsyncResult#result()} で登録された DEAL オブジェクトを受け取る.
 	 * @param deal DEAL オブジェクト
@@ -244,7 +288,9 @@ public class DealManagement extends AbstractVerticle {
 		String acceptUnitId = Deal.acceptUnitId(deal);
 		String unitId1_, unitId2_;
 		if (requestUnitId != null && acceptUnitId != null) {
+			// Try to establish some kind of rules for the ordering of resource allocations so that deadlocks do not occur
 			// なんとなくデッドロックが起きないようにリソース確保順序をルール化してみている
+			// TODO: Perhaps deadlocks won't occur even if we don't do this, because we give up when an acquisition failure occurs
 			// TODO : たぶんこんなことしなくてもデッドロック起きない. なぜなら確保失敗で諦めるから
 			if (requestUnitId.compareTo(acceptUnitId) < 0) {
 				unitId1_ = requestUnitId;
@@ -253,11 +299,13 @@ public class DealManagement extends AbstractVerticle {
 				unitId2_ = requestUnitId;
 				unitId1_ = acceptUnitId;
 			}
+			// TODO: Maybe we could do two at the same time?
 			// TODO : たぶん二つ同時にやってよいのではないかと...
 			acquireInterlock_(unitId1_, deal, resAcquire1 -> {
 				if (resAcquire1.succeeded()) {
 					acquireInterlock_(unitId2_, deal, resAcquire2 -> {
 						if (resAcquire2.succeeded()) {
+							// Save information when an interlock has been acquired for the units at both ends
 							// 両端ユニットのインタロックが確保できたら保存する
 							deal.put("createDateTime", DataAcquisition.cache.getString("time"));
 							DealUtil.add(vertx, deal, resAdd -> {
@@ -334,6 +382,16 @@ public class DealManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#dealDisposition()}
+	 * Scope: local
+	 * Function: Delete interchange information
+	 * Message body: interchange ID [{@link String}]
+	 * Message header: none
+	 * Response: The deleted interchange information [{@link JsonObject}].
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#dealDisposition()}
 	 * 範囲 : ローカル
@@ -376,7 +434,9 @@ public class DealManagement extends AbstractVerticle {
 				String acceptUnitId = Deal.acceptUnitId(deal);
 				String unitId1_, unitId2_;
 				if (requestUnitId != null && acceptUnitId != null) {
+					// Try to establish some kind of rules for the ordering of resource allocations so that deadlocks do not occur
 					// なんとなくデッドロックが起きないようにリソース確保順序をルール化してみている
+					// TODO: Perhaps deadlocks won't occur even if we don't do this, because we give up when an acquisition failure occurs
 					// TODO : たぶんこんなことしなくてもデッドロック起きない. なぜなら確保失敗で諦めるから
 					if (requestUnitId.compareTo(acceptUnitId) < 0) {
 						unitId1_ = requestUnitId;
@@ -387,7 +447,9 @@ public class DealManagement extends AbstractVerticle {
 					}
 					DealUtil.remove(vertx, dealId, resRemove -> {
 						if (resRemove.succeeded()) {
+							// Release in the reverse order of allocation
 							// 獲得と逆の順序で開放する
+							// TODO: Maybe we could do two at the same time?
 							// TODO : たぶん二つ同時にやってよいのではないかと...
 							releaseInterlock_(unitId2_, deal, resRelease2 -> {
 								releaseInterlock_(unitId1_, deal, resRelease1 -> {
@@ -414,6 +476,18 @@ public class DealManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#dealNeedToStop()}
+	 * Scope: global
+	 * Function: Send an interchange stop request.
+	 * Message body: The stop request [{@link JsonObject}]
+	 *                - {@code "dealId"}: the interchange ID
+	 *                - {@code "reasons"}: a list of reasons [{@link JsonArray}]
+	 * Message header: none
+	 * Response: interchange ID [{@link String}]
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#dealNeedToStop()}
 	 * 範囲 : グローバル
@@ -460,6 +534,16 @@ public class DealManagement extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#resetLocal()}
+	 * Scope: local
+	 * Function: reset this unit.
+	 * Message body: none
+	 * Message header: none
+	 * Response: this unit's ID [{@link String}].
+	 * 　　　　　Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#resetLocal()}
 	 * 範囲 : ローカル
@@ -476,6 +560,16 @@ public class DealManagement extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#resetAll()}
+	 * Scope: global
+	 * Function: Reset all units and all programs that participate in a cluster.
+	 * Message body: none
+	 * Message header: none
+	 * Response: this unit's ID [{@link String}].
+	 * 　　　　　Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#resetAll()}
 	 * 範囲 : グローバル

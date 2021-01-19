@@ -17,6 +17,17 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectWrapper;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Calculate the state of the entire grid.
+ * Called periodically from {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop}.
+ * Calculate and retain the following.
+ * - numberOfUnits: The number of units
+ * - unitIds: A list of unit IDs
+ * - averageRsoc: The average rsoc value of all units
+ * - averageRsocNumberOfUnits: The number of units used to calculate averageRsoc (should be the same as numberOfUnits, but there may be some units that do not have an rsoc value)
+ * - averageRemainingCapacityWh: The average remaining battery capacity of all units
+ * - averageRemainingCapacityWhNumberOfUnits: The number of units used to calculate averageRemainingCapacityWh (should be the same as numberOfUnits, but there may be some units that do not have a remaining battery capacity value)
+ * @author OES Project
+ *          
  * グリッド全体の状態を計算する.
  * {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop} から定期的に呼ばれる.
  * 以下を計算し保持する.
@@ -32,6 +43,8 @@ public class GlobalDataCalculation {
 	private static final Logger log = LoggerFactory.getLogger(GlobalDataCalculation.class);
 
 	/**
+	 * A cache that retains calculation results.
+	 *          
 	 * 計算結果を保持しておくキャッシュ.
 	 */
 	public static final JsonObjectWrapper cache = new JsonObjectWrapper();
@@ -39,6 +52,17 @@ public class GlobalDataCalculation {
 	private GlobalDataCalculation() { }
 
 	/**
+	 * Processing called from {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop}.
+	 * Calculate and retain the following.
+	 * - numberOfUnits: The number of units
+	 * - unitIds: A list of unit IDs
+	 * - averageRsoc: The average rsoc value of all units
+	 * - averageRsocNumberOfUnits: The number of units used to calculate averageRsoc (should be the same as numberOfUnits, but there may be some units that do not have an rsoc value)
+	 * - averageRemainingCapacityWh: The average remaining battery capacity of all units
+	 * - averageRemainingCapacityWhNumberOfUnits: The number of units used to calculate averageRemainingCapacityWh (should be the same as numberOfUnits, but there may be some units that do not have a remaining battery capacity value)
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link jp.co.sony.csl.dcoes.apis.main.app.gridmaster.MainLoop} から呼ばれる処理.
 	 * 以下を計算し保持する.
 	 * - numberOfUnits : ユニット数

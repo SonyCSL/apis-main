@@ -29,6 +29,12 @@ import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that records interchange information in the file system.
+ * Launched from the {@link Mediator} Verticle.
+ * Periodically write the information of interchanges in which this unit participates to the file system.
+ * This data is written even if externally requested.
+ * @author OES Project
+ *          
  * 融通情報をファイルシステムに記録する Verticle.
  * {@link Mediator} Verticle から起動される.
  * 自ユニットが参加する融通情報を定期的にファイルシステムに書き込む.
@@ -39,11 +45,17 @@ public class DealLogging extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(DealLogging.class);
 
 	/**
+	 * Default duration of the interchange information storage cycle [ms].
+	 * Value: {@value}.
+	 *          
 	 * 融通情報保存周期のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
 	private static final Long DEFAULT_DEAL_LOGGING_PERIOD_MSEC = 5000L;
 	/**
+	 * Default value for interchange information save path format.
+	 * Value: {@value}.
+	 *          
 	 * 融通情報保存パスのフォーマットのデフォルト値.
 	 * 値は {@value}.
 	 */
@@ -53,6 +65,12 @@ public class DealLogging extends AbstractVerticle {
 	private boolean stopped_ = false;
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Start a timer that records interchange information periodically.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * 定期的に融通を記録するタイマを起動する.
@@ -72,6 +90,10 @@ public class DealLogging extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * Set a flag to stop the timer.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * タイマを止めるためのフラグを立てる.
 	 * @throws Exception {@inheritDoc}
@@ -84,6 +106,19 @@ public class DealLogging extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#dealLogging()}
+	 * Scope: global
+	 * Function: Records an interchange
+	 *           If this unit is participating in the received interchange, store it in the file system.
+	 *           Pass through if this unit is not participating in the received interchange.
+	 * Message body: Interchange information [{@link JsonObject}]
+	 * Message header: none
+	 * Response: ID of this unit if it is participating in the received interchange [{@link String}].
+	 *           {@code "N/A"} if this unit is not participating in the received interchange.
+	 *           Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#dealLogging()}
 	 * 範囲 : グローバル
@@ -102,6 +137,7 @@ public class DealLogging extends AbstractVerticle {
 			JsonObject deal = req.body();
 			if (deal != null) {
 				if (Deal.isInvolved(deal, ApisConfig.unitId()) && Deal.isSaveworthy(deal)) {
+					// Only record details if this unit is participating in the interchange and is in an internal state that should be recorded
 					// 自ユニットがその融通に参加しており記録しておくべき内部状態である場合にのみ記録する
 					List<JsonObject> deals = new ArrayList<>(1);
 					deals.add(deal);
@@ -122,6 +158,9 @@ public class DealLogging extends AbstractVerticle {
 	}
 
 	/**
+	 * Set an interchange storage timer.
+	 * The timeout duration is {@code POLICY.mediator.dealLoggingPeriodMsec} (default: {@link #DEFAULT_DEAL_LOGGING_PERIOD_MSEC}).
+	 *          
 	 * 融通保存タイマ設定.
 	 * 待ち時間は {@code POLICY.mediator.dealLoggingPeriodMsec} ( デフォルト値 {@link #DEFAULT_DEAL_LOGGING_PERIOD_MSEC} ).
 	 */
@@ -130,6 +169,9 @@ public class DealLogging extends AbstractVerticle {
 		setDealLoggingTimer_(delay);
 	}
 	/**
+	 * Set an interchange storage timer.
+	 * @param delay cycle duration [ms]
+	 *          
 	 * 融通保存タイマ設定.
 	 * @param delay 周期 [ms]
 	 */
@@ -137,6 +179,9 @@ public class DealLogging extends AbstractVerticle {
 		dealLoggingTimerId_ = vertx.setTimer(delay, this::dealLoggingTimerHandler_);
 	}
 	/**
+	 * Perform interchange storage timer processing.
+	 * @param timerId timer ID
+	 *          
 	 * 融通保存タイマ処理.
 	 * @param timerId タイマ ID
 	 */
@@ -151,11 +196,13 @@ public class DealLogging extends AbstractVerticle {
 		});
 	}
 	private void doDealLogging_(Handler<AsyncResult<Void>> completionHandler) {
+		// Get the interchange that this unit is participating in
 		// 自ユニットが参加している融通を取得
 		DealUtil.withUnitId(vertx, ApisConfig.unitId(), resWithUnitId -> {
 			if (resWithUnitId.succeeded()) {
 				List<JsonObject> deals = resWithUnitId.result();
 				if (!deals.isEmpty()) {
+					// Exclude items that do not have to be recorded
 					// 記録する必要がないものは除外する
 					List<JsonObject> filtered = new ArrayList<>(deals.size());
 					for (JsonObject aDeal : deals) {
@@ -182,6 +229,9 @@ public class DealLogging extends AbstractVerticle {
 		LOG_DIR_FORMATTER_ = DateTimeFormatter.ofPattern(s);
 	}
 	/**
+	 * A class that stores interchange information in the file system.
+	 * @author OES Project
+	 *          
 	 * 融通情報をファイルシステムに保存するクラス.
 	 * @author OES Project
 	 */
@@ -190,6 +240,10 @@ public class DealLogging extends AbstractVerticle {
 		private Handler<AsyncResult<Void>> completionHandler_;
 		private List<JsonObject> dealsForLoop_;
 		/**
+		 * Make an instance.
+		 * @param deals a list of DEAL objects
+		 * @param completionHandler the completion handler
+		 *          
 		 * インスタンス作成.
 		 * @param deals DEAL オブジェクトのリスト
 		 * @param completionHandler the completion handler
@@ -241,16 +295,22 @@ public class DealLogging extends AbstractVerticle {
 									if (resCreate.succeeded()) {
 										completionHandler.handle(Future.succeededFuture());
 									} else {
+										// Failed when attempting to create a file that doesn't exist...
 										// 無いから作ろうとしたら失敗したけど...
 										vertx.fileSystem().exists(path, resExistsAgain -> {
 											if (resExistsAgain.succeeded()) {
 												if (resExistsAgain.result()) {
+													// Checked again and it was there
 													// 再確認してみたらあった
+													// → Someone else must have created this file while we were trying to do so
 													// → 作ろうとしている隙に誰かが作ったに違いない
+													// → Maybe this is OK
 													// → たぶん OK
 													completionHandler.handle(Future.succeededFuture());
 												} else {
+													// Checked again and it's not there
 													// 再確認してみたけどなかった
+													// → NG
 													// → NG
 													ErrorUtil.reportAndFail(vertx, Error.Category.FRAMEWORK, Error.Extent.LOCAL, Error.Level.FATAL, "Operation failed on File System", resCreate.cause(), completionHandler);
 												}

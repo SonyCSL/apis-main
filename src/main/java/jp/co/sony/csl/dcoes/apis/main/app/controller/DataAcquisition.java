@@ -38,6 +38,14 @@ import jp.co.sony.csl.dcoes.apis.main.util.ErrorExceptionUtil;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * Data acquisition service object Verticle.
+ * Launched from the {@link Controller} Verticle.
+ * The following types are available, depending on the type of system.
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.emulator.DcdcEmulatorDataAcquisition}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v1.DcdcV1DataAcquisition}
+ * - {@link jp.co.sony.csl.dcoes.apis.main.app.controller.impl.dcdc.v2.DcdcV2DataAcquisition}
+ * @author OES Project
+ *          
  * データ取得サービスの親玉 Verticle.
  * {@link Controller} Verticle から起動される.
  * システムの種類に応じて以下の種類がある.
@@ -50,16 +58,25 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(DataAcquisition.class);
 
 	/**
+	 * Default duration of data acquisition cycle [ms].
+	 * Value: {@value}.
+	 *          
 	 * データ取得周期のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
 	private static final Long DEFAULT_DATA_ACQUISITION_PERIOD_MSEC = 5000L;
 	/**
+	 * Default HTTP request timeout duration [ms].
+	 * Value: {@value}.
+	 *          
 	 * HTTP リクエストのタイムアウト時間のデフォルト値 [ms].
 	 * 値は {@value}.
 	 */
 	private static final Long DEFAULT_REQUEST_TIMEOUT_MSEC = 5000L;
 	/**
+	 * Default HTTP request retry count.
+	 * Value: {@value}.
+	 *          
 	 * HTTP リクエストのリトライ回数のデフォルト値.
 	 * 値は {@value}.
 	 */
@@ -67,6 +84,11 @@ public abstract class DataAcquisition extends AbstractVerticle {
 
 	private static final LocalExclusiveLock exclusiveLock_ = new LocalExclusiveLock(DataAcquisition.class.getName());
 	/**
+	 * Acquire an exclusive lock.
+	 * Results are received with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param vertx a vertx object
+	 * @param completionHandler the completion handler
+	 *          
 	 * 排他ロックを獲得する.
 	 * completionHandler の {@link AsyncResult#result()} で受け取る.
 	 * @param vertx vertx オブジェクト
@@ -76,6 +98,9 @@ public abstract class DataAcquisition extends AbstractVerticle {
 		exclusiveLock_.acquire(vertx, completionHandler);
 	}
 	/**
+	 * Reset an exclusive lock.
+	 * @param vertx a vertx object
+	 *          
 	 * 排他ロックをリセットする.
 	 * @param vertx vertx オブジェクト
 	 */
@@ -84,6 +109,8 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * A cache that retains unit data.
+	 *          
 	 * ユニットデータを保持しておくキャッシュ.
 	 */
 	public static final JsonObjectWrapper cache = new JsonObjectWrapper();
@@ -93,6 +120,13 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	private boolean stopped_ = false;
 
 	/**
+	 * Called at startup.
+	 * Perform various initialization processes.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Start a timer for periodic acquisition of unit data and cache updates.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * 各種初期化処理を実行する.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
@@ -137,6 +171,10 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * Set a flag to stop the timer.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * タイマを止めるためのフラグを立てる.
 	 * @throws Exception {@inheritDoc}
@@ -149,23 +187,40 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	////
 
 	/**
+	 * Initialization.
+	 * @param completionHandler the completion handler
+	 *          
 	 * 初期化.
 	 * @param completionHandler the completion handler
 	 */
 	protected abstract void init(Handler<AsyncResult<Void>> completionHandler);
 	/**
+	 * Fetch this unit's hardware information.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param completionHandler the completion handler
+	 *          
 	 * 自ユニットのハードウェア情報を取得する.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param completionHandler the completion handler
 	 */
 	protected abstract void getData(Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * Fetch this unit's device control state.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param completionHandler the completion handler
+	 *          
 	 * 自ユニットのデバイス制御状態を取得する.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param completionHandler the completion handler
 	 */
 	protected abstract void getDeviceStatus(Handler<AsyncResult<JsonObject>> completionHandler);
 	/**
+	 * The device control state is bidirectionally merged with the cached unit data to get the result.
+	 * If only the device control state is acquired, then there may be less content than in cases where all the unit data is acquired (depending on the driver).
+	 * For this reason, the unit data cache is kept up to date to compensate for missing elements.
+	 * @param value control state of merge source device
+	 * @return control state of merged devices
+	 *          
 	 * デバイス制御状態をユニットデータのキャッシュと双方向マージし結果を取得する.
 	 * デバイス制御状態のみを取得すると全ユニットデータを取得する場合より内容が少ない場合がある ( ドライバによる ).
 	 * なのでユニットデータのキャッシュを最新にしつつ不足要素を補ってもらう.
@@ -177,6 +232,17 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#urgentUnitData()}
+	 * Scope: local
+	 * Function: Acquire the unit data of this unit.
+	 * 　　   Query the device directly and return fresh data instead of relying on the cache.
+	 * Message body: none
+	 * Message header: none
+	 * Response: unit data [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#urgentUnitData()}
 	 * 範囲 : ローカル
@@ -201,6 +267,17 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Controller#urgentUnitDeviceStatus()}
+	 * Scope: local
+	 * Function: Fetch this unit's device control state.
+	 * 　　   Query the device directly and return fresh data instead of relying on the cache.
+	 * Message body: none
+	 * Message header: none
+	 * Response: device control state [{@link JsonObject}].
+	 * 　　　　　   Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Controller#urgentUnitDeviceStatus()}
 	 * 範囲 : ローカル
@@ -225,6 +302,16 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#resetLocal()}
+	 * Scope: local
+	 * Function: reset this unit.
+	 * Message body: none
+	 * Message header: none
+	 * Response: this unit's ID [{@link String}].
+	 * 　　　　　Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#resetLocal()}
 	 * 範囲 : ローカル
@@ -241,6 +328,16 @@ public abstract class DataAcquisition extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress#resetAll()}
+	 * Scope: global
+	 * Function: Reset all units and all programs that participate in a cluster.
+	 * Message body: none
+	 * Message header: none
+	 * Response: this unit's ID [{@link String}].
+	 * 　　　　　Fails if an error occurs.
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress#resetAll()}
 	 * 範囲 : グローバル
@@ -257,6 +354,9 @@ public abstract class DataAcquisition extends AbstractVerticle {
 		}).completionHandler(completionHandler);
 	}
 	/**
+	 * Actual implementation of reset process.
+	 * @param message the message requiring a reply
+	 *          
 	 * リセット処理の実実装.
 	 * @param message : 返信対象メッセージ
 	 */
@@ -266,6 +366,9 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Data acquisition timer setting.
+	 * The timeout duration is {@code POLICY.controller.dataAcquisitionPeriodMsec} (default: {@link #DEFAULT_DATA_ACQUISITION_PERIOD_MSEC}).
+	 *          
 	 * データ取得タイマ設定.
 	 * 待ち時間は {@code POLICY.controller.dataAcquisitionPeriodMsec} ( デフォルト値 {@link #DEFAULT_DATA_ACQUISITION_PERIOD_MSEC} ).
 	 */
@@ -274,6 +377,9 @@ public abstract class DataAcquisition extends AbstractVerticle {
 		setDataAcquisitionTimer_(delay);
 	}
 	/**
+	 * Data acquisition timer setting.
+	 * @param delay cycle duration [ms]
+	 *          
 	 * データ取得タイマ設定.
 	 * @param delay 周期 [ms]
 	 */
@@ -281,6 +387,9 @@ public abstract class DataAcquisition extends AbstractVerticle {
 		dataAcquisitionTimerId_ = vertx.setTimer(delay, this::dataAcquisitionTimerHandler_);
 	}
 	/**
+	 * Data acquisition timer processing.
+	 * @param timerId timer ID
+	 *          
 	 * データ取得タイマ処理.
 	 * @param timerId タイマ ID
 	 */
@@ -290,16 +399,19 @@ public abstract class DataAcquisition extends AbstractVerticle {
 			ErrorUtil.report(vertx, Error.Category.LOGIC, Error.Extent.LOCAL, Error.Level.WARN, "illegal timerId : " + timerId + ", dataAcquisitionTimerId_ : " + dataAcquisitionTimerId_);
 			return;
 		}
+		// I guess periodic data acquisition is OK, so...
 		// 定期的なデータ取得はまあ適当でよいので...
 		if (lastDataAcquisitionMillis_ != 0L) {
 			long millisAfterLastDataAcquisition = (System.currentTimeMillis() - lastDataAcquisitionMillis_);
 			Long period = PolicyKeeping.cache().getLong(DEFAULT_DATA_ACQUISITION_PERIOD_MSEC, "controller", "dataAcquisitionPeriodMsec");
 			if (millisAfterLastDataAcquisition < period) {
+				// If the timer cycle time has not elapsed since the last data acquisition, reset the timer to the time difference and finish without doing anything
 				// 前回のデータ取得からタイマ周期時間経過していない場合は差分時間でタイマを再セットし何もせず終わる
 				setDataAcquisitionTimer_(period - millisAfterLastDataAcquisition);
 				return;
 			}
 		}
+		// Perform device control and exclusion control
 		// デバイス制御と排他制御する
 		acquireExclusiveLock(vertx, resExclusiveLock -> {
 			if (resExclusiveLock.succeeded()) {
@@ -323,18 +435,25 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	////
 
 	/**
+	 * Actual implementation of unit data acquisition process.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param completionHandler the completion handler
+	 *          
 	 * ユニットデータ取得処理の実実装.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param completionHandler the completion handler
 	 */
 	private void getData_(Handler<AsyncResult<JsonObject>> completionHandler) {
+		                                      // Record the start time of the data acquisition process
 		long ts = System.currentTimeMillis(); // データ取得処理開始時刻を記録しておく
 		Future<JsonObject> getDataFuture = Future.future();
 		Future<JsonObject> getOesunitFuture = Future.future();
+		                        // Call the actual implementation of the subclass for each driver
 		getData(getDataFuture); // ドライバごとのサブクラスの実実装を呼ぶ
 		getOesunit_(getOesunitFuture);
 		CompositeFuture.<JsonObject, JsonObject>all(getDataFuture, getOesunitFuture).setHandler(ar -> {
 			if (ar.succeeded()) {
+				                                 // Update the data acquisition process start time
 				lastDataAcquisitionMillis_ = ts; // データ取得処理開始時刻を更新する
 				JsonObject result = ar.result().resultAt(0);
 				JsonObject oesunit = ar.result().resultAt(1);
@@ -344,12 +463,14 @@ public abstract class DataAcquisition extends AbstractVerticle {
 						JsonObject apis = res.result();
 						result.put("apis", apis);
 					}
+					// Attributes for the old BUDO system
 					// いにしえの BUDO システム用の属性
 					if ("autonomous".equals(JsonObjectUtil.getString(result, "apis", "operation_mode", "effective"))) {
 						JsonObjectUtil.put(result, "1", "oesunit", "budo");
 					} else {
 						JsonObjectUtil.put(result, "0", "oesunit", "budo");
 					}
+					                             // Update the cache
 					cache.setJsonObject(result); // キャッシュを更新
 					LocalSafetyEvaluation.check(vertx, PolicyKeeping.cache().jsonObject(), result, resSafetyEvaluation -> {
 						completionHandler.handle(Future.succeededFuture(result));
@@ -362,6 +483,10 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * This information is also mostly for the old BUDO system.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param completionHandler the completion handler
+	 *          
 	 * このへんもいにしえの BUDO システム用の情報がメイン.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param completionHandler the completion handler
@@ -438,6 +563,11 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Various attributes associated with APIS.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param data unit data. Needs {@code rsoc} in order to calculate {@code remaining_capacity_wh}.
+	 * @param completionHandler the completion handler
+	 *          
 	 * APIS まわりの諸々の属性.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param data ユニットデータ. {@code remaining_capacity_wh} 算出のために {@code rsoc} が必要.
@@ -486,15 +616,21 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Actual implementation of device control state acquisition process.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param completionHandler the completion handler
+	 *          
 	 * デバイス制御状態の取得処理の実実装.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param completionHandler the completion handler
 	 */
 	private void getDeviceStatus_(Handler<AsyncResult<JsonObject>> completionHandler) {
+		// Call the actual implementation of the subclass for each driver
 		// ドライバごとのサブクラスの実実装を呼ぶ
 		getDeviceStatus(resGetdDeviceStatus -> {
 			if (resGetdDeviceStatus.succeeded()) {
 				JsonObject result = resGetdDeviceStatus.result();
+				                                    // Bidirectionally merge with unit data cache
 				result = mergeDeviceStatus(result); // ユニットデータのキャッシュと双方向マージする
 				completionHandler.handle(Future.succeededFuture(result));
 			} else {
@@ -504,6 +640,12 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	}
 
 	/**
+	 * Send out an external HTTP GET request and return the response.
+	 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+	 * @param client an httpclient object
+	 * @param uri the request URI
+	 * @param completionHandler the completion handler
+	 *          
 	 * HTTP GET で外部にリクエストを送信しレスポンスを返す.
 	 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
 	 * @param client httpclient オブジェクト
@@ -511,6 +653,7 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	 * @param completionHandler the completion handler
 	 */
 	protected void send(HttpClient client, String uri, Handler<AsyncResult<JsonObject>> completionHandler) {
+		// Number of retries: POLICY.controller.retryLimit [{@link Integer}]
 		// リトライ回数 : POLICY.controller.retryLimit [{@link Integer}]
 		Integer retryLimit = PolicyKeeping.cache().getInteger(DEFAULT_RETRY_LIMIT, "controller", "retryLimit");
 		new Sender_(retryLimit, client, uri).execute_(completionHandler);
@@ -519,6 +662,10 @@ public abstract class DataAcquisition extends AbstractVerticle {
 	////
 
 	/**
+	 * Issues an HTTP GET request to the specified URL.
+	 * If the request fails, retry up to the specified number of times.
+	 * @author OES Project
+	 *          
 	 * 指定された URL に対し HTTP GET する.
 	 * 失敗しても指定回数リトライする.
 	 * @author OES Project
@@ -534,6 +681,11 @@ public abstract class DataAcquisition extends AbstractVerticle {
 			uri_ = uri;
 		}
 		/**
+		 * Perform HTTP GET processing.
+		 * Duplicate results are sometimes returned (maybe due to poor implementation). Block duplicates here.
+		 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+		 * @param completionHandler the completion handler
+		 *          
 		 * HTTP GET 処理実行.
 		 * ( 実装がまずいのか ) 二度結果が返ってくることがあるためここでブロックする.
 		 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.
@@ -550,6 +702,10 @@ public abstract class DataAcquisition extends AbstractVerticle {
 			});
 		}
 		/**
+		 * Perform HTTP GET processing.
+		 * Retry if fails.
+		 * @param completionHandler the completion handler
+		 *          
 		 * HTTP GET 処理実行.
 		 * 失敗してもリトライする.
 		 * @param completionHandler the completion handler
@@ -569,6 +725,13 @@ public abstract class DataAcquisition extends AbstractVerticle {
 			});
 		}
 		/**
+		 * Perform HTTP GET processing.
+		 * HTTP timeout is {@code POLICY.controller.requestTimeoutMsec} (default: {@link #DEFAULT_REQUEST_TIMEOUT_MSEC}).
+		 * Receive the results with the {@link AsyncResult#result()} method of completionHandler.
+		 * @param client an httpclient object
+		 * @param uri the URI to access
+		 * @param completionHandler the completion handler
+		 *          
 		 * HTTP GET 処理実行.
 		 * HTTP タイムアウト は {@code POLICY.controller.requestTimeoutMsec} ( デフォルト値 {@link #DEFAULT_REQUEST_TIMEOUT_MSEC} ).
 		 * completionHandler の {@link AsyncResult#result()} で結果を受け取る.

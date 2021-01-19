@@ -14,6 +14,11 @@ import jp.co.sony.csl.dcoes.apis.main.util.ApisConfig;
 import jp.co.sony.csl.dcoes.apis.main.util.ErrorUtil;
 
 /**
+ * A Verticle that handles requests from its own unit.
+ * Launched from the {@link Mediator} Verticle.
+ * Launches the {@link Negotiation} Verticle, which it uses to handle processing.
+ * @author OES Project
+ *          
  * 自ユニットからのリクエストを処理する Verticle.
  * {@link Mediator} Verticle から起動される.
  * {@link Negotiation} Verticle を起動し処理を任せる.
@@ -23,6 +28,11 @@ public class InternalRequestHandling extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(InternalRequestHandling.class);
 
 	/**
+	 * Called at startup.
+	 * Launches the {@link io.vertx.core.eventbus.EventBus} service.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 起動時に呼び出される.
 	 * {@link io.vertx.core.eventbus.EventBus} サービスを起動する.
 	 * @param startFuture {@inheritDoc}
@@ -40,6 +50,9 @@ public class InternalRequestHandling extends AbstractVerticle {
 	}
 
 	/**
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 *          
 	 * 停止時に呼び出される.
 	 * @throws Exception {@inheritDoc}
 	 */
@@ -50,6 +63,16 @@ public class InternalRequestHandling extends AbstractVerticle {
 	////
 
 	/**
+	 * Launch the {@link io.vertx.core.eventbus.EventBus} service.
+	 * Address: {@link ServiceAddress.Mediator#internalRequest()}
+	 * Scope: local
+	 * Function: Receive requests from this unit and perform interchange negotiation.
+	 *           Interchange negotiation is performed by launching and entrusting processing to {@link Negotiation}.
+	 * Message body: request information [{@link JsonObject}]
+	 * Message header: none
+	 * Response: deploymentID [{@link String}]
+	 * @param completionHandler the completion handler
+	 *          
 	 * {@link io.vertx.core.eventbus.EventBus} サービス起動.
 	 * アドレス : {@link ServiceAddress.Mediator#internalRequest()}
 	 * 範囲 : ローカル
@@ -68,9 +91,11 @@ public class InternalRequestHandling extends AbstractVerticle {
 				Integer dealAmountMinWh = PolicyKeeping.cache().getInteger(0, "mediator", "deal", "amountMinWh");
 				Integer amountWh = request.getInteger("amountWh", 0);
 				if (dealAmountMinWh < amountWh) {
+					// Issue a request if the requested interchange power from this unit (amoutWh) is greater than the minimum value (POLICY.mediator.deal.amountMinWh)
 					// 自ユニットからのリクエストの融通電力量 ( amountWh ) が最低値 ( POLICY.mediator.deal.amountMinWh ) より大きければリクエストを出す
 					request.put("dealGridCurrentA", PolicyKeeping.cache().getFloat(0F, "mediator", "deal", "gridCurrentA"));
 					request.put("unitId", ApisConfig.unitId());
+					// Create and deploy a Negotiation
 					// Negotiation を作ってお任せする
 					vertx.deployVerticle(new Negotiation(request), resDeployNegotiation -> {
 						if (resDeployNegotiation.succeeded()) {
