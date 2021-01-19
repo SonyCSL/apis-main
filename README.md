@@ -138,6 +138,19 @@ $ bash start4.sh
 &emsp;[apis-main_specificaton(JP)](https://github.com/oes-github/apis-main/blob/master/doc/jp/apis-main_specification.md)
 
 
+## API Specification  
+
+An example of creating an API specification using the Javadoc command is shown below.  
+(For Ubuntu18.04)  
+  
+```bash  
+$ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/  
+$ cd apis-main  
+$ mvn javadoc:javadoc  
+```  
+
+The API specification is created in apis-main/target/site/apidocs/.  
+
 ## License
 &emsp;[Apache License Version 2.0](https://github.com/oes-github/apis-main/blob/master/LICENSE)
 
