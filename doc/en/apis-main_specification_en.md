@@ -1,6 +1,6 @@
 **apis-main Specification**
 ====================
-**Rev 0.75**
+**Rev 0.76**
 
 # **Contents**
 - [**apis-main Specification**](#apis-main-specification)
@@ -1022,8 +1022,7 @@ Because nodes in a cluster need to have common settings, this file has an integr
 <td>operationMode</td>
 <td><p>Set operation mode of all clusters</p>
 <p>autonomous: Usual energy sharing mode</p>
-<p>heteronomous : Continue existing energy sharing</p>
-<p>Disable generation of new energy sharing</p>
+<p>heteronomous : Continue existing energy sharing, Disable generation of new energy sharing</p>
 <p>stop : Mode in which the energy sharing is stopped</p>
 <p>manual : Manual mode (used for testing)</p></td>
 </tr>
