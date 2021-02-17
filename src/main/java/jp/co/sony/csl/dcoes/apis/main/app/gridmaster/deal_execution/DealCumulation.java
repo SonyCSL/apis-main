@@ -72,7 +72,7 @@ public class DealCumulation extends AbstractStoppableDealExecution {
 							// If the calculated total exceeds the promised interchange quantity,
 							// 計算結果が約束した融通量を超えたら
 							// Stop with the unit on the non-voltage-reference side
-							// 電圧リファレンス側じゃない方のユニットと止め
+							// 電圧リファレンス側じゃない方のユニットを止め
 							stopDcdc_(resStopDcdc -> {
 								if (resStopDcdc.succeeded()) {
 									// Put the interchange information in the "stop" state

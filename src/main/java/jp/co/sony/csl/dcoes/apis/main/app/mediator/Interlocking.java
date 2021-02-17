@@ -91,12 +91,12 @@ public class Interlocking extends AbstractVerticle {
 
 	/**
 	 * Get the possible number of simultaneous interchanges.
-	 * This is calculated from the grid voltage capacity and the grid current for each interchange.
+	 * This is calculated from the grid current capacity and the grid current for each interchange.
 	 * @param vertx a vertx object
 	 * @return the number of possible simultaneous interchanges
 	 *          
 	 * 同時融通可能数を取得する.
-	 * グリッド電圧容量と融通ごとのグリッド電流から算出する.
+	 * グリッド電流容量と融通ごとのグリッド電流から算出する.
 	 * @param vertx vertx オブジェクト
 	 * @return 同時融通可能数
 	 */
