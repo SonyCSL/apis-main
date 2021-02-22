@@ -152,8 +152,8 @@ $ mvn javadoc:javadoc
 The API specification is created in apis-main/target/site/apidocs/.  
 
 ## License
-&emsp;[Apache License Version 2.0](https://github.com/oes-github/apis-main/blob/master/LICENSE)
+&emsp;[Apache License Version 2.0](https://github.com/SonyCSL/apis-main/blob/master/LICENSE)
 
 
 ## Notice
-&emsp;[Notice](https://github.com/oes-github/apis-main/blob/master/NOTICE.md)
+&emsp;[Notice](https://github.com/SonyCSL/apis-main/blob/master/NOTICE.md)
