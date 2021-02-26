@@ -2350,7 +2350,7 @@ The following table shows the software used by apis-main and information about t
 
 # **16. Operating Environment**
     
-## **16.2. Recommended Hardware Specifications**
+## **16.1. Recommended Hardware Specifications**
 
 The recommended hardware specifications for apis-main are as follows.
 
